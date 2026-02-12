@@ -12,3 +12,16 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+:root {
+  /* Colors */
+  --main-bg-color: #FFFFFF;
+  --primary-color: #3F7D58; 
+  --secondary-color: #5EBC84;
+  --text-black: #1E1E1E;
+
+  /* Font sizes */
+  --title-size: 2rem;
+  --subtitle-size:1.2rem;
+}
