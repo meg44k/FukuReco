@@ -9,6 +9,12 @@ a {
   text-decoration: none;
 }
 
+h1, h2{
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+
 * {
   box-sizing: border-box;
 }
@@ -17,11 +23,18 @@ a {
 :root {
   /* Colors */
   --main-bg-color: #FFFFFF;
-  --primary-color: #3F7D58; 
+  --primary-color: #3F7D58;
   --secondary-color: #5EBC84;
   --text-black: #1E1E1E;
 
   /* Font sizes */
   --title-size: 2rem;
   --subtitle-size:1.2rem;
+}
+
+.lucide{
+  stroke-width: 1.2px;
+  height: 20px;
+  width: 20px;
+  color: var(--text-black);
 }
