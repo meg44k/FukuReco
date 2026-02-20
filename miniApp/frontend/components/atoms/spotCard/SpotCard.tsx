@@ -2,6 +2,9 @@ import { Button, IconButton, ThemeProvider, createTheme } from '@mui/material';
 import { X, Sun, Moon, User, Baby } from 'lucide-react';
 import './SpotCard.css';
 
+// 将来的にtypesディレクトリに移動
+type SpotKinds = "shop" | "spot";
+
 // メインカラー
 // 将来的には別の定数フォルダに移動、もしくはpage.tsxでプロバイダで包む
 const theme = createTheme({
@@ -23,8 +26,26 @@ const theme = createTheme({
     },
 })
 
+// アイコンのオブジェクト化
+const iconConfig = {
+  shop: {
+    icon1: <Sun />,
+    icon2: <Moon />,
+    bg1: "#FFA726",
+    bg2: "#5C6BC0",
+  },
+  spot: {
+    icon1: <User />,
+    icon2: <Baby />,
+    bg1: "#26A69A",
+    bg2: "#EF5350",
+  },
+  // アイコンの追加はここに
+};
+
+
 type Props = {
-    spotKind: string;   // 観光地の種類
+    spotKind: SpotKinds;   // 観光地の種類
     spotName: string;   // 店舗(観光地)名
     isOpen?: boolean;   // 営業中かどうか
     imageSrc: string;   // 画像URL
@@ -49,23 +70,13 @@ export const SpotCard = ({
     onCloseClick,
 }: Props) => {
 
-    // スポットの種類によって価格帯のアイコンを変更
-    let icon1 = null;
-    let icon2 = null;
-    switch(spotKind) {
-        case "shop":
-            icon1 = <Sun/>;
-            icon2 = <Moon/>;
-            break;
-        case "spot":
-            icon1 = <User/>;
-            icon2 = <Baby/>;
-            break;
-        // アイコンを追加はここに
-
-        default:
-            break;
-    }
+    const config = iconConfig[spotKind];
+    // タグを最大4つに
+    const limitedTags = spotTags.slice(0, 4);
+    // タグを2つに分割
+    const mid = Math.ceil(limitedTags.length / 2);
+    const firstRowTags = limitedTags.slice(0, mid);
+    const secondRowTags = limitedTags.slice(mid);
 
     return (
         <ThemeProvider theme={theme}>
@@ -74,7 +85,7 @@ export const SpotCard = ({
                 <div className='cardHeader'>
                     <div className='title'>{spotName}</div>
                     {typeof isOpen === 'boolean' && (
-                        <div className='shopStatus'>{isOpen ? "営業中" : "営業時間外"}</div>
+                        <div className={`statusBadge ${isOpen ? 'open' : 'closed'}`}>{isOpen ? "営業中" : "営業時間外"}</div>
                     )}
                     <IconButton onClick={onCloseClick} size="small"><X></X></IconButton>
                 </div>
@@ -82,18 +93,35 @@ export const SpotCard = ({
                 {/* 画像部分 */}
                 <div className='cardImage'>
                     {imageSrc ? (
-                        <img src={imageSrc} alt='画像なし' />    
+                        <img src={imageSrc} alt='画像なし' />
                     ) : (
                         <div className='noImagePlaceholder'><span>No Image</span></div>
-                    )} 
+                    )}
                 </div>
 
                 {/* コンテンツ部分　タグ,価格帯 */}
                 <div className='cardContents'>
-                    <div className='tagArea'></div>
-                    <div className='priceRangeArea'>
-                        <div className='pieceRange'>{icon1}{price1 || "-"}</div>
-                        <div className='pieceRange'>{icon2}{price2 || "-"}</div>
+                    <div className='row'>
+                        <div className='tagsRow'>
+                            {firstRowTags.map((tag, index) => (
+                                <span key={index} className='tag'>#{tag}</span>
+                            ))}
+                        </div>
+                        <div className='pieceRange'>
+                            <span className='icon' style={{ backgroundColor: config.bg1}}>{config.icon1}</span>
+                            {price1 || "-"}
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='tagsRow'>
+                            {secondRowTags.map((tag, index) => (
+                                <span key={index} className='tag'>#{tag}</span>
+                            ))}
+                        </div>
+                        <div className='pieceRange'>
+                            <span className='icon' style={{ backgroundColor: config.bg2}}>{config.icon2}</span>
+                            {price2 || "-"}
+                        </div>
                     </div>
                 </div>
 

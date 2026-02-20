@@ -1,0 +1,149 @@
+/* ===============================
+   Card 全体
+================================= */
+.spotCard {
+    width: 100%;
+    max-width: 600px;
+    background: #f4f4f4;
+    border-radius: clamp(16px, 2vw, 24px);
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ===============================
+   ヘッダー
+================================= */
+.cardHeader {
+    display: flex;
+    align-items: center;
+    padding: clamp(12px, 2vw, 20px);
+    gap: clamp(8px, 1.5vw, 16px);
+}
+
+.title {
+    font-size: clamp(20px, 3.2vw, 32px);
+    font-weight: 700;
+    margin-right: auto;
+}
+
+.statusBadge {
+    padding: clamp(4px, 0.8vw, 6px) clamp(10px, 1.5vw, 14px);
+    border-radius: 999px;
+    font-size: clamp(12px, 1.5vw, 16px);
+    font-weight: 600;
+}
+
+.statusBadge.open {
+    background: #e5f3ea;
+    color: #3F7D58;
+    border: 1px solid #3F7D58;
+}
+
+.statusBadge.closed {
+    background: #eee;
+    color: #888;
+}
+
+
+/* ===============================
+   画像
+================================= */
+.cardImage {
+    width: 100%;
+    aspect-ratio: 16 / 5;
+    overflow: hidden;
+}
+
+.cardImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.noImagePlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ddd;
+    font-size: clamp(14px, 2vw, 18px);
+}
+
+
+/* ===============================
+   コンテンツ
+================================= */
+.cardContents {
+    padding: clamp(12px, 2vw, 20px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.5vw, 16px);
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: clamp(16px, 3vw, 40px);
+}
+
+.tagsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(6px, 1vw, 10px);
+}
+
+.tag {
+    font-size: clamp(18px, 2vw, 26px);
+    color: #3F7D58;
+}
+
+
+/* 価格帯 */
+.pieceRange {
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 1vw, 10px);
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 600;
+    color: #2f4f3f;
+}
+
+/* アイコン丸背景 */
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: clamp(30px, 3vw, 36px);
+    height: clamp(30px, 3vw, 36px);
+
+    border-radius: 20%;
+}
+
+.icon svg {
+    stroke: white;
+    stroke-width: 3;
+    width: 60%;
+    height: 60%;
+}
+
+
+/* ===============================
+   フッター
+================================= */
+.cardFooter {
+    padding: clamp(12px, 2vw, 20px);
+    display: flex;
+    gap: clamp(12px, 2vw, 20px);
+}
+
+.cardFooter button {
+    flex: 1;
+    font-size: clamp(18px, 2.2vw, 22px);
+    padding: clamp(8px, 1vw, 14px) 0;
+}
