@@ -43,8 +43,9 @@
 }
 
 .statusBadge.closed {
-    background: #eee;
-    color: #888;
+    background: #ffe4c4;
+    color: #EF633D;
+    border: 1px solid #EF633D;
 }
 
 
