@@ -1,0 +1,41 @@
+.mapPage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* LINEミニアプリ safe area */
+  padding-bottom: 34px;
+
+  box-sizing: border-box;
+}
+
+/* マップ全体 */
+.mapContainer {
+  flex: 1; /* 残り全部をマップに */
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* カード表示領域（ピン選択時） */
+.cardWrapper {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 600px;
+  z-index: 10;
+
+  transition: all 0.3s ease;
+}
+
+/* カードが非表示の場合 */
+.cardHidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 20px);
+}
