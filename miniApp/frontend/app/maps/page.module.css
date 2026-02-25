@@ -39,3 +39,16 @@
   pointer-events: none;
   transform: translate(-50%, 20px);
 }
+
+/* 現在地に戻るボタン */
+.backToCurrentBtn {
+  position: absolute;
+  bottom: 24px;
+  right: 20px;
+  z-index: 10;
+
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}

@@ -1,7 +1,6 @@
 'use client';
 
 import styles from "./page.module.css"
-
 import { useEffect, useRef, useState } from "react";
 import {
   GoogleMap,
@@ -10,6 +9,8 @@ import {
   DirectionsService,
   DirectionsRenderer,
 } from '@react-google-maps/api'
+import { LocateFixed } from "lucide-react";
+import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 
 // 将来的に、typesディレクトリに移動
@@ -17,6 +18,7 @@ type SpotKinds = "shop" | "spot";
 type SpotData = {
   id: number;
   spotKind: SpotKinds;
+  pinKind: string;
   spotName: string;
   isOpen: boolean;
   imageSrc: string;
@@ -58,32 +60,55 @@ export default function Map() {
     {
       id: 1,
       spotKind: "shop" as SpotKinds,
+      pinKind: "FoodPin.svg",
       spotName: "なんとかラーメン",
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["ラーメン", "豚骨", "待ち時間少", "禁煙"],
       price1: "￥:1500",
       price2: "￥:200~3000",
-      position: { lat: 33.5915, lng: 130.4017 },
+      position: { lat: 33.5905, lng: 130.3817 },
     },
     {
       id: 2,
       spotKind: "shop" as SpotKinds,
+      pinKind: "ChairPin.svg",
       spotName: "なんとかなるうどん",
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["うどん", "地元人気", "待ち時間少", "禁煙"],
       price1: "￥:1500",
-      position: { lat: 33.5925, lng: 130.4027 },
+      position: { lat: 33.5900, lng: 130.3998 },
+    },
+    {
+      id: 3,
+      spotKind: "shop" as SpotKinds,
+      pinKind: "CameraPin.svg",
+      spotName: "なんとかもつ鍋",
+      isOpen: true,
+      imageSrc: "/sampleImage.png",
+      spotTags: ["ラーメン", "豚骨", "待ち時間少", "禁煙"],
+      price1: "￥:1500",
+      price2: "￥:200~3000",
+      position: { lat: 33.5905, lng: 130.3857 },
+    },
+    {
+      id: 4,
+      spotKind: "shop" as SpotKinds,
+      pinKind: "GiftPin.svg",
+      spotName: "なんとかなる明太子",
+      isOpen: true,
+      imageSrc: "/sampleImage.png",
+      spotTags: ["うどん", "地元人気", "待ち時間少", "禁煙"],
+      price1: "￥:1500",
+      position: { lat: 33.5900, lng: 130.3958 },
     },
   ];
 
   // マップ表示のオプション
   const options: google.maps.MapOptions = {
     mapId: "2180f9c8f0d419cfa3681583",
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: false,
+    disableDefaultUI: true,
   };
 
   // ユーザの現在地取得
@@ -99,7 +124,7 @@ export default function Map() {
   }, []);
 
   // ピンクリックハンドラ
-  const pinClickHandle = (spot: SpotData) => {
+  const handlePinClick = (spot: SpotData) => {
     setSelectedSpot(prev => {
       if (prev?.id === spot.id) return null;
       setDirections(null);
@@ -134,6 +159,14 @@ export default function Map() {
     }
   }
 
+  // マップの中心を現在地に戻す関数
+  const handleBackToCurrent = () => {
+    if (mapRef.current && currentPos) {
+      mapRef.current.panTo(currentPos);
+      mapRef.current.setZoom(15);
+    }
+  };
+
   // スクリプトが読み込まれるまで待つ
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -157,7 +190,7 @@ export default function Map() {
             options={{
               origin: currentPos,
               destination: selectedSpot?.position,
-              travelMode: google.maps.TravelMode.WALKING,
+              travelMode: google.maps.TravelMode.TRANSIT,
             }}
             callback={directionsCallBack}
             />
@@ -172,14 +205,31 @@ export default function Map() {
           />
         )}
 
+        {/* 現在地のマーカー */}
+        {currentPos && (
+          <Marker
+            position={currentPos}
+            icon={{
+              // Google風の青いドットを再現
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: "#4285F4",
+              fillOpacity: 1,
+              scale: 8,
+              strokeColor: "white",
+              strokeWeight: 2,
+            }}
+          />
+        )}
+
         {/* マーカー配置 */}
         {spots.map((spot) => (
           <Marker
             key={spot.id}
             position={spot.position}
-            onClick={() => pinClickHandle(spot)}
+            onClick={() => handlePinClick(spot)}
             icon={{
-              url: "/FoodPin.svg",
+              // 仮として、spotsデータにアイコンの
+              url: spot.pinKind,
               scaledSize: new google.maps.Size(
                 selectedSpot?.id === spot.id ? 80 :50,
                 selectedSpot?.id === spot.id ? 80 :50
@@ -210,6 +260,13 @@ export default function Map() {
               />
             </div>
         }
+        </div>
+
+        {/* 現在地に戻るボタン */}
+        <div className={styles.backToCurrentBtn}>
+          {!selectedSpot &&
+            <IconButton onClick={handleBackToCurrent}><LocateFixed/></IconButton>
+          }
         </div>
       </GoogleMap>
     </div>
