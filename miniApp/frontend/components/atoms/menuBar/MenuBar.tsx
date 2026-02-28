@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
     BottomNavigation,
     BottomNavigationAction,
@@ -15,11 +17,19 @@ import{
 } from "lucide-react";
 
 export default function MenuBar(){
-    const [value, setValue] = React.useState('map'); // Default to 'map'
+    const pathname = usePathname();
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-        setValue(newValue);
+    // Mapping between pathname and BottomNavigation value
+    const getValueFromPath = (path: string) => {
+        if (path.startsWith('/maps')) return 'map';
+        if (path.startsWith('/courses')) return 'route';
+        if (path.startsWith('/favorites')) return 'heart';
+        if (path.startsWith('/mypage')) return 'user';
+        if (path.startsWith('/search')) return 'search';
+        return 'map';
     };
+
+    const value = getValueFromPath(pathname);
 
     const selectedStyle = {
         '&.Mui-selected': {
@@ -42,7 +52,7 @@ export default function MenuBar(){
     return(
         <Box sx={{
             display: 'flex',
-            width: '100%',
+            width: '95vw',
             gap: '10px', // The space between the two groups
             padding: '8px' // Add some padding around the component
         }}>
@@ -59,31 +69,38 @@ export default function MenuBar(){
                 <BottomNavigation
                     showLabels
                     value={value}
-                    onChange={handleChange}
                     sx={{ backgroundColor: 'transparent' }}
                 >
                     <BottomNavigationAction 
                         value="map" 
                         label="Map" 
                         icon={<Map/>} 
+                        component={Link}
+                        href="/maps"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} // Combine styles
                     />
                     <BottomNavigationAction 
                         value="route" 
                         label="モデルコース" 
                         icon={<Route/>} 
+                        component={Link}
+                        href="/courses"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                     <BottomNavigationAction 
                         value="heart" 
                         label="保存" 
                         icon={<Heart/>} 
+                        component={Link}
+                        href="/favorites"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                     <BottomNavigationAction 
                         value="user" 
                         label="マイページ" 
                         icon={<User/>} 
+                        component={Link}
+                        href="/mypage"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                 </BottomNavigation>
@@ -102,13 +119,14 @@ export default function MenuBar(){
                 <BottomNavigation
                     showLabels
                     value={value}
-                    onChange={handleChange}
                     sx={{ backgroundColor: 'transparent' }}
                 >
                     <BottomNavigationAction 
                         value="search" 
                         label="検索" 
                         icon={<Search/>} 
+                        component={Link}
+                        href="/search"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                 </BottomNavigation>

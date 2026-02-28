@@ -7,9 +7,13 @@
   margin-top: 60px;
 }
 
-.menuBar{
+.menuBar {
   position: fixed;
-  bottom: 5;
+  bottom: calc(env(safe-area-inset-bottom) + 5px);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1000;
+  width: 95vw;
+  display: flex;
+  justify-content: center;
 }
