@@ -1,0 +1,158 @@
+.container {
+  font-family: sans-serif;
+  background-color: var(--main-bg-color);
+  color: #333;
+}
+
+.mainImageContainer {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  padding: 0  1.5rem 1rem;
+  background-color: white;
+}
+
+.chips{
+  display: flex;
+  gap: 10px;
+}
+
+.title {
+  color: var(--text-black);
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.evaluationHighlight {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.menuItem {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  padding: 0.5rem;
+  position: relative;
+}
+
+.menuImage {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #ff9800;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 8px 0 8px 0;
+}
+
+.infoTable {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.infoRow {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-weight: bold;
+  padding: 1rem;
+  width: 100px;
+  background-color: #f9f9f9;
+}
+
+.infoValue {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.infoValue p {
+    margin: 0 0 0.5rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.button {
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.primary {
+  background-color: #4caf50;
+  color: white;
+}
+
+.secondary {
+  background-color: white;
+  color: #4caf50;
+  border: 2px solid #4caf50;
+}
+
+.iconButton {
+    background: none;
+    border: 2px solid #4caf50;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #4caf50;
+    cursor: pointer;
+}
+
