@@ -6,3 +6,10 @@
   color: #2c3e50;
   margin-top: 60px;
 }
+
+.menuBar{
+  position: fixed;
+  bottom: 5;
+  left: 50%;
+  transform: translateX(-50%);
+}
