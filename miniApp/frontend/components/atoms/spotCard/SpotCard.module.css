@@ -5,11 +5,20 @@
     width: 100%;
     max-width: 600px;
     background: #f4f4f4;
-    border-radius: clamp(16px, 2vw, 24px);
+    border: 1.2px solid #c3c3c3;
+    border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+
+    /* global.cssに統合 */
+    font-family: 
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        "Yu Gothic",
+        "Meiryo",
+        "Noto Sans JP",;
 }
 
 
@@ -19,33 +28,35 @@
 .cardHeader {
     display: flex;
     align-items: center;
-    padding: clamp(12px, 2vw, 20px);
+    padding-right: 8px;
     gap: clamp(8px, 1.5vw, 16px);
 }
 
 .title {
-    font-size: clamp(20px, 3.2vw, 32px);
+    font-size: clamp(1.25rem, 0.25rem + 5.33vw, 2.25rem);
     font-weight: 700;
+    padding: 2px 0px;
+    margin-left: 5%;
     margin-right: auto;
 }
 
 .statusBadge {
-    padding: clamp(4px, 0.8vw, 6px) clamp(10px, 1.5vw, 14px);
-    border-radius: 999px;
-    font-size: clamp(12px, 1.5vw, 16px);
+    padding: 2px clamp(10px, 1.5vw, 14px);
+    border-radius: 10px;
+    font-size: clamp(0.75rem, 0.375rem + 2vw, 1.125rem);
     font-weight: 600;
 }
 
 .statusBadge.open {
     background: #e5f3ea;
     color: #3F7D58;
-    border: 1px solid #3F7D58;
+    border: 2px solid #3F7D58;
 }
 
 .statusBadge.closed {
     background: #ffe4c4;
     color: #EF633D;
-    border: 1px solid #EF633D;
+    border: 2px solid #EF633D;
 }
 
 
@@ -80,10 +91,14 @@
    コンテンツ
 ================================= */
 .cardContents {
-    padding: clamp(12px, 2vw, 20px);
+    padding:
+      5px                      /* top */
+      clamp(12px, 2vw, 20px)   /* right */
+      5px                      /* bottom */
+      clamp(40px, 4vw, 60px);  /* left ←ここだけ大きく */
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 1.5vw, 16px);
+    gap: 4px clamp(10px, 1.5vw, 16px);
 }
 
 .row {
@@ -100,7 +115,8 @@
 }
 
 .tag {
-    font-size: clamp(18px, 2vw, 26px);
+    font-size: clamp(0.875rem, 0.25rem + 3.0vw, 1.5rem);
+    font-weight: 550;
     color: #3F7D58;
 }
 
@@ -110,7 +126,7 @@
     display: flex;
     align-items: center;
     gap: clamp(6px, 1vw, 10px);
-    font-size: clamp(18px, 2vw, 26px);
+    font-size: clamp(0.875rem, 0.375rem + 2.5vw, 1.375rem);
     font-weight: 600;
     color: #2f4f3f;
 }
@@ -121,8 +137,8 @@
     align-items: center;
     justify-content: center;
 
-    width: clamp(30px, 3vw, 36px);
-    height: clamp(30px, 3vw, 36px);
+    width: clamp(1.5rem, 0.75rem + 4vw, 2.0rem);
+    height: clamp(1.5rem, 0.75rem + 4vw, 2.0rem);
 
     border-radius: 20%;
 }
@@ -139,13 +155,15 @@
    フッター
 ================================= */
 .cardFooter {
-    padding: clamp(12px, 2vw, 20px);
+    padding: 0px 5% 6px 5%;
     display: flex;
-    gap: clamp(12px, 2vw, 20px);
+    gap: clamp(12px, 2vw, 20px) 5%;
 }
 
 .cardFooter button {
     flex: 1;
-    font-size: clamp(18px, 2.2vw, 22px);
-    padding: clamp(8px, 1vw, 14px) 0;
+    font-size: 18px;
+    padding: 0px clamp(8px, 1vw, 14px);
+    height: clamp(40px, 8vw, 48px);
+    border: 2px solid #3F7D58;
 }
