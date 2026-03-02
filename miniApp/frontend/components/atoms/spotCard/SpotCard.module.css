@@ -92,10 +92,10 @@
 ================================= */
 .cardContents {
     padding:
-      5px                      /* top */
-      clamp(12px, 2vw, 20px)   /* right */
-      5px                      /* bottom */
-      clamp(40px, 4vw, 60px);  /* left ←ここだけ大きく */
+      5px   /* top */
+      2%    /* right */
+      5px   /* bottom */
+      7%;   /* left */
     display: flex;
     flex-direction: column;
     gap: 4px clamp(10px, 1.5vw, 16px);
@@ -105,7 +105,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    column-gap: clamp(16px, 3vw, 40px);
+    column-gap: 8px;
 }
 
 .tagsRow {
@@ -115,7 +115,7 @@
 }
 
 .tag {
-    font-size: clamp(0.875rem, 0.25rem + 3.0vw, 1.5rem);
+    font-size: clamp(0.875rem, 0.25rem + 3.5vw, 1.5rem);
     font-weight: 550;
     color: #3F7D58;
 }
@@ -162,7 +162,7 @@
 
 .cardFooter button {
     flex: 1;
-    font-size: 18px;
+    font-size: clamp(1rem, 0.5rem + 2.67vw, 1.5rem);
     padding: 0px clamp(8px, 1vw, 14px);
     height: clamp(40px, 8vw, 48px);
     border: 2px solid #3F7D58;
