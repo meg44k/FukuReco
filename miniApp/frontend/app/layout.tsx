@@ -5,7 +5,7 @@ import MenuBar from "../components/atoms/menuBar/MenuBar"
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "LIFF App",
+  title: "フクレコ",
   icons: {
     icon: "/favicon.ico",
   },
