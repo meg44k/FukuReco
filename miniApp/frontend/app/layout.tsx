@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LIFFProvider } from "../providers/liff-providers";
+import MenuBar from "../components/atoms/menuBar/MenuBar"
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "LIFF App",
+  title: "フクレコ",
   icons: {
     icon: "/favicon.ico",
   },
@@ -23,6 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <LIFFProvider>{children}</LIFFProvider>
+        <div className={styles.menuBar}>
+        <MenuBar/>
+        </div>
       </body>
     </html>
   );
