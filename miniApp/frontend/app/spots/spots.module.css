@@ -26,6 +26,13 @@
   gap: 10px;
 }
 
+.catchphrase{
+  color: var(--text-black);
+  font-size:0.8rem;
+  font-weight:500;
+  margin-bottom: 0rem;
+}
+
 .title {
   color: var(--text-black);
   font-size: 2rem;
