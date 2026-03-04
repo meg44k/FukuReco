@@ -52,6 +52,7 @@ type Props = {
     isOpen?: boolean;   // 営業中かどうか
     imageSrc: string;   // 画像URL
     spotTags: string[]; // タグの配列
+    detailURL: string; // 詳細のURL
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
     onRouteClick: () => void;   // ルート検索ボタンの動作
@@ -65,6 +66,7 @@ export const SpotCard = ({
     isOpen,
     imageSrc,
     spotTags,
+    detailURL,
     price1,
     price2,
     onRouteClick,
@@ -154,7 +156,7 @@ export const SpotCard = ({
                 </div>
 
                 <div className={styles.cardFooter}>
-                    <Button onClick={onDetailClick} variant="contained" href='a'>
+                    <Button onClick={onDetailClick} variant="contained" href={detailURL}>
                     もっと詳しく
                     </Button>
                     <Button onClick={onRouteClick} variant="outlined">

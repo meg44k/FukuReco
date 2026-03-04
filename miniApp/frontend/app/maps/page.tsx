@@ -23,6 +23,7 @@ type SpotData = {
   isOpen: boolean;
   imageSrc: string;
   spotTags: string[];
+  detailURL: string;
   price1?: string;
   price2?: string;
   position: google.maps.LatLngLiteral;
@@ -65,6 +66,7 @@ export default function Map() {
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["ラーメン", "豚骨", "待ち時間少", "禁煙"],
+      detailURL: "/spots/restaurant",
       price1: "￥:1500",
       price2: "￥:200~3000",
       position: { lat: 33.5905, lng: 130.3817 },
@@ -77,6 +79,7 @@ export default function Map() {
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["うどん", "地元人気", "待ち時間少", "禁煙"],
+      detailURL: "/spots/restaurant",
       price1: "￥:1500",
       position: { lat: 33.5900, lng: 130.3998 },
     },
@@ -88,6 +91,7 @@ export default function Map() {
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["ラーメン", "豚骨", "待ち時間少", "禁煙"],
+      detailURL: "/spots/restaurant",
       price1: "￥:1500",
       price2: "￥:200~3000",
       position: { lat: 33.5905, lng: 130.3857 },
@@ -100,6 +104,7 @@ export default function Map() {
       isOpen: true,
       imageSrc: "/sampleImage.png",
       spotTags: ["うどん", "地元人気", "待ち時間少", "禁煙"],
+      detailURL: "/spots/restaurant",
       price1: "￥:1500",
       position: { lat: 33.5900, lng: 130.3958 },
     },
@@ -252,6 +257,7 @@ export default function Map() {
                 isOpen={selectedSpot.isOpen}
                 imageSrc={selectedSpot.imageSrc}
                 spotTags={selectedSpot.spotTags}
+                detailURL={selectedSpot.detailURL}
                 price1={selectedSpot.price1}
                 price2={selectedSpot.price2}
                 onCloseClick={() => setSelectedSpot(null)}
