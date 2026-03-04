@@ -11,25 +11,25 @@
 
 /* 通常枠線 */
 .searchField :global(.MuiOutlinedInput-notchedOutline) {
-    border-color: #3F7D58;
+    border-color: var(--primary-color);
     border-width: 3px;
 }
 
 /* hover */
 .searchField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-    border-color: #3F7D58;
+    border-color: var(--primary-color);
     border-width: 3px;
 }
 
 /* focus */
 .searchField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
-    border-color: #3F7D58;
+    border-color: var(--primary-color);
     border-width: 3px;
 }
 
 /* アイコン色 */
 .icon {
-    color: #1b1b1b;
+    color: var(--text-black);
     width: 35px !important;
     height: 35px !important;
 }
