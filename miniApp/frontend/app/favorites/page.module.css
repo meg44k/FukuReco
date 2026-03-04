@@ -1,0 +1,80 @@
+.container {
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 32px;
+  color: #1a1a1a;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 0.85; /* Adjust based on the image */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cardImage {
+  transition: transform 0.3s ease;
+}
+
+.cardOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.2) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.cardName {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: center;
+}
+
+.detailButton {
+  background-color: #ffffff !important;
+  color: #3f7d58 !important;
+  border-radius: 9999px !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  padding: 4px 12px !important;
+  text-transform: none !important;
+}
+
+.spacer {
+  height: 80px; /* Space for the bottom MenuBar */
+}
