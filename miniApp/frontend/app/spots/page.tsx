@@ -24,11 +24,12 @@ const SpotPage = () => {
         />
       </div>
       <div className={styles.content}>
+        <p className={styles.catchphrase}>博多駅から徒歩5分！一度は食べるべきラーメン</p>
         <h1 className={styles.title}>なんとかラーメン</h1>
         <div className={styles.chips}>
-          <Chip label="¥1,000" variant="outlined" size="small"/>
-          <Chip icon={<MapPin />} label="天神" variant="outlined" size="small"/>
-          <Chip icon={<Footprints />} label="博多駅から徒歩3分" variant="outlined" size="small"/>
+          <Chip label="# 1,000" variant="outlined" size="small"/>
+          <Chip label="# 天神" variant="outlined" size="small"/>
+          <Chip label="# 博多駅から徒歩3分" variant="outlined" size="small"/>
         </div>
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>お店のコメント</h2>
