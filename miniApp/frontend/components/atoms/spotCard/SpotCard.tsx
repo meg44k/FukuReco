@@ -154,7 +154,7 @@ export const SpotCard = ({
                 </div>
 
                 <div className={styles.cardFooter}>
-                    <Button onClick={onDetailClick} variant="contained">
+                    <Button onClick={onDetailClick} variant="contained" href='a'>
                     もっと詳しく
                     </Button>
                     <Button onClick={onRouteClick} variant="outlined">
