@@ -33,7 +33,7 @@ const iconConfig = {
   shop: {
     icon1: <Sun />,
     icon2: <Moon />,
-    bg1: "#FFA726",
+    bg1: "#efab58",
     bg2: "#5C6BC0",
   },
   spot: {
