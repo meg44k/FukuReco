@@ -39,10 +39,7 @@ export default function Search() {
         const params = new URLSearchParams();
 
         // 1つのボタンしか選択できないため、パラメータは1つ
-        params.append("tag", option);
-
-        // 金額や距離などはここで数値に変換してクエリパラメータに追加
-        //if (option === "安い") params.append("maxBudget", "2000");
+        params.append("optinos", option);
 
         // マップページに遷移
         router.push(`/maps?${params.toString()}`);
