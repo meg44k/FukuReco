@@ -1,0 +1,76 @@
+
+.container {
+    padding: 24px 20px 160px 20px; /* 下部に固定する要素が被らないようにpadding-bottomを多めに確保 */
+    background-color: #ffffff;
+    font-family: sans-serif;
+    color: #333333;
+    min-height: 100vh;
+}
+
+.pageTitle {
+    font-size: var(--title-size);
+    font-weight: bold;
+    margin-bottom: 24px;
+    margin-top: 0;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.sectionTitle {
+    font-size: var(--subtitle-size);
+    font-weight: bold;
+    margin-bottom: 16px;
+    margin-top: 0;
+}
+
+.buttonGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+/* MUI Buttonのベーススタイル上書き */
+.customButton {
+    width: 100%;
+    height: 52px;
+    border-radius: 8px !important;
+    font-size: var(--subtitle-size) !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+    letter-spacing: 1px !important;
+    /* MUI特有の英語大文字化設定を無効化 */
+    text-transform: none !important; 
+}
+
+/* 濃い緑のボタン */
+.buttonDark {
+    background-color: var(--primary-color) !important;
+}
+/* .buttonDark:hover {
+    background-color: var(--text-black) !important;
+} */
+
+/* 薄い緑のボタン */
+.buttonLight {
+    background-color: var(--secondary-color) !important;
+}
+/* .buttonLight:hover {
+    background-color: var(--primary-color) !important;
+} */
+
+/* 検索バー */
+.searchTextField {
+    position: fixed;
+    /* layout.tsxにあるナビゲーションバーの高さに合わせてbottomの数値を変更してください（例は70px） */
+    bottom: 70px; 
+    left: 0;
+    width: 100%;
+    padding: 10px 20px 10px 20px;
+    background-color: var(--main-bg-color);
+    /* box-sizing: border-box; */
+    z-index: 1000;
+    /* ナビバーとの境目が分かりにくい場合は、下のボーダーや影をつけると綺麗です */
+    /* border-bottom: 1px solid #eeeeee; */
+}
