@@ -1,0 +1,52 @@
+/* テキストフィールド全体のレイアウト */
+.searchField :global(.MuiOutlinedInput-root) {
+    border-radius: 15px;
+    height: 56px;
+}
+
+/* 文字サイズ調整 */
+.searchField :global(.MuiOutlinedInput-input) {
+    font-size: 1.2rem;
+}
+
+/* 通常枠線 */
+.searchField :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--primary-color);
+    border-width: 3px;
+}
+
+/* hover */
+.searchField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+    border-color: var(--primary-color);
+    border-width: 3px;
+}
+
+/* focus */
+.searchField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+    border-color: var(--primary-color);
+    border-width: 3px;
+}
+
+/* アイコン色 */
+.icon {
+    color: var(--text-black);
+    width: 35px !important;
+    height: 35px !important;
+}
+
+/* 検索ボタン */
+.searchButton {
+    padding: 0;
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+/* ホバー時 */
+.searchButton:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* 押したとき */
+.searchButton:active {
+    background-color: rgba(0, 0, 0, 0.15);
+    transform: scale(0.95);
+}
