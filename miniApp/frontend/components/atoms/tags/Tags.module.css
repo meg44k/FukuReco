@@ -1,0 +1,25 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.chip {
+  border-color: #EF633D !important;
+  color: #EF633D !important;
+  background-color: rgba(239, 99, 61, 0.1) !important; /* Semi-transparent version of #EF633D */
+  font-weight: bold !important;
+}
+
+.showMoreTags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  font-weight:500;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
