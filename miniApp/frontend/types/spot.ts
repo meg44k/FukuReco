@@ -1,4 +1,4 @@
-export interface Spot{
+export interface Spot {
   id: string; // または number (場所ID)
   name: string; // 場所名
   catchphrase?: string; // キャッチフレーズ
@@ -39,3 +39,12 @@ export interface FacilityInfo {
   // 例: { hasWifi: true, hasWheelchairAccess: false } など
   [key: string]: any; 
 }
+
+export interface Restaurant extends Spot{
+  restaurantComment?: string;
+  avgLunchBudget?: number;
+  avgDinnerBudget?: number;
+  seatingInfo?: number;
+  avgWaitTime?: string;
+}
+
