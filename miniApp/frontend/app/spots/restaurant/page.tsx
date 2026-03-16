@@ -6,6 +6,9 @@ import {
   SquareArrowOutUpRight
 } from "lucide-react";
 import { Spot } from '@/types/spot'
+import { Menu } from '@/types/menu'
+
+import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Menus from "@/components/atoms/menus/Menus"
 import Tags from "@/components/atoms/tags/Tags";
@@ -18,9 +21,22 @@ async function getRestaurantData(){
   return res.json()
 }  
 
-export default async function RestaurantPage () {
-  const restaurantData: Spot = await getRestaurantData()
+async function getMenuData(){
+  // TODO: SpotIDからMenuを取ってくるようにする
+  const res = await fetch(BACKEND_ENDPOINT+'/api/menu', {cache: 'no-store'});
+  if (!res.ok) throw new Error('Faliled to fetch data');
+  return res.json();
+}
 
+export default async function RestaurantPage () {
+  const restaurantData: Spot = await getRestaurantData();
+  const menuData: Menu[] = await getMenuData();
+  const recommendMenus: Menu[] = [];
+  for(const menu of menuData){
+    if (menu.isRecommend)
+      recommendMenus.push(menu)
+  }
+  
   return (
     <div className={styles.container}>
       {/* Header Carousel */}
@@ -63,15 +79,10 @@ export default async function RestaurantPage () {
           <div className={styles.sectionBar}></div>
           <h2 className={styles.sectionTitle}>おすすめメニュー</h2>
         </div>
-        <div className={styles.recommendedItem}>
-          <div className={styles.itemImage}></div>
-          <div className={styles.itemInfo}>
-            <p className={styles.itemName}>なんとかAセット</p>
-            <p className={styles.itemDesc}>ご飯おかわり無料！ボリューム満点</p>
-            <p className={styles.itemPrice}>¥1,200</p>
-          </div>
-        </div>
-      </div>
+       {/* ここにrecommendItems */}
+        {recommendMenus.map((recommendMenu,index)=>(<RecommendMenu key={index} recommendMenu={recommendMenu}/>))}
+        
+       </div>
 
       {/* Full Menu */}
       <div className={styles.section}>

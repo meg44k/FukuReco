@@ -4,5 +4,5 @@ export interface Menu {
     price: number; // 金額
     detail: string; // メニューの説明
     AssetId: string; // メニューの写真
-    isReccomend: boolean; // おすすめかどうか
+    isRecommend: boolean; // おすすめかどうか
 }
