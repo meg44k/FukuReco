@@ -14,6 +14,8 @@
     "@line/liff": "2.27.3",
     "@mui/material": "^7.3.8",
     "@react-google-maps/api": "^2.20.8",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.1",
     "lucide-react": "^0.563.0",
     "next": "16.1.4",
     "react": "19.2.3",
