@@ -1,6 +1,5 @@
 'use client'
 
-import React from "react";
 import { Button } from "@mui/material";
 import styles from './page.module.css'
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
@@ -39,7 +38,7 @@ export default function Search() {
         const params = new URLSearchParams();
 
         // 1つのボタンしか選択できないため、パラメータは1つ
-        params.append("optinos", option);
+        params.append("options", option);
 
         // マップページに遷移
         router.push(`/maps?${params.toString()}`);
