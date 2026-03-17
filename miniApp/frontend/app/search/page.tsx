@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import styles from './page.module.css'
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // 表示するタイトルとボタン
 const FILTER_GROUPS = [
@@ -74,7 +75,8 @@ export default function Search() {
                                         variant="contained"
                                         disableElevation
                                         className={`${styles.customButton} ${buttonClass}`}
-                                        onClick={() => handleButtonSearch(option)}
+                                        component={Link} 
+                                        href={`/maps?options=${encodeURIComponent(option)}`} 
                                     >
                                         {option}
                                     </Button>
@@ -87,7 +89,7 @@ export default function Search() {
 
             {/* 検索バーのみを下部に固定 */}
             <div className={styles.searchTextField}>
-                <SearchTextField onSearch={handleTextSearch}/>
+                <SearchTextField onSearch={handleTextSearch} />
             </div>
         </div>
     );
