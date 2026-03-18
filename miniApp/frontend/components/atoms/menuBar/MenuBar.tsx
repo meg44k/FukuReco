@@ -22,7 +22,7 @@ export default function MenuBar(){
     // Mapping between pathname and BottomNavigation value
     const getValueFromPath = (path: string) => {
         if (path.startsWith('/maps')) return 'map';
-        if (path.startsWith('/courses')) return 'route';
+        if (path.startsWith('/modelcourse')) return 'route';
         if (path.startsWith('/favorites')) return 'heart';
         if (path.startsWith('/mypage')) return 'user';
         if (path.startsWith('/search')) return 'search';
@@ -84,7 +84,7 @@ export default function MenuBar(){
                         label="モデルコース" 
                         icon={<Route/>} 
                         component={Link}
-                        href="/courses"
+                        href="/modelcourse"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                     <BottomNavigationAction 
