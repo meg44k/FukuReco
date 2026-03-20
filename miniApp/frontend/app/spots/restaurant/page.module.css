@@ -14,51 +14,11 @@
   overflow: hidden; /* Hide images outside the view */
 }
 
-.imageTrack {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s ease-in-out; /* Smooth sliding */
-}
-
-.imageContainer {
-  position: relative;
-  min-width: 100%;
-  height: 100%;
-}
-
-.mainImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.carouselNav {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-  transform: translateY(-50%);
-  color: white;
-}
-
 .navIcon {
   cursor: pointer;
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
 }
 
-.carouselIndicator {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-}
 
 .content {
   background-color: white;
@@ -75,31 +35,6 @@
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 1rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 0.8rem;
-}
-
-.chip {
-  border-color: #EF633D !important;
-  color: #EF633D !important;
-  background-color: rgba(239, 99, 61, 0.1) !important; /* Semi-transparent version of #EF633D */
-  font-weight: bold !important;
-}
-
-.showMoreTags {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 0.9rem;
-  font-weight:500;
-  margin-bottom: 1.5rem;
-  cursor: pointer;
 }
 
 .safetySection {
@@ -182,46 +117,6 @@
   font-weight: bold;
 }
 
-.primaryText {
-  color: var(--primary-color);
-}
-
-.recommendedItem {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.itemImage {
-  width: 100px;
-  height: 100px;
-  background-color: #ddd;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
-.itemInfo {
-  flex: 1;
-}
-
-.itemName {
-  font-weight: bold;
-  font-size: 1.05rem;
-  margin-bottom: 2px;
-}
-
-.itemDesc {
-  font-size: 0.8rem;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.itemPrice {
-  color: #EF633D;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
 .menuList {
   display: flex;
   flex-direction: column;
@@ -260,23 +155,6 @@
   white-space: nowrap;
 }
 
-.dots {
-  flex: 1;
-  border-bottom: 1.5px dotted #ccc;
-  margin: 0 8px;
-  transform: translateY(3px); /* Explicitly move the line up by 2px */
-}
-
-.showMoreMenu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-top: 1.5rem;
-  cursor: pointer;
-}
 
 .staffComment {
   background-color: #eef4f1;

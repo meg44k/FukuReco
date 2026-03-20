@@ -1,0 +1,37 @@
+.recommendedItem {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.itemImage {
+  width: 100px;
+  height: 100px;
+  background-color: #ddd;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemName {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.itemDesc {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.itemPrice {
+  color: #EF633D;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
