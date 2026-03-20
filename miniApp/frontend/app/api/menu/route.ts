@@ -9,7 +9,7 @@ export async function GET() {
       price: 850,
       detail: "24時間炊き出した濃厚なスープが自慢の一品です。",
       AssetId: "/tonkotsu.jpg",
-      isrecommend: true,
+      isRecommend: true,
     },
     {
       spotId: "p-001",
@@ -17,7 +17,7 @@ export async function GET() {
       price: 1100,
       detail: "自家製チャーシューがたっぷりのった贅沢なラーメンです。",
       AssetId: "/ramen.jpg",
-      isrecommend: false,
+      isRecommend: false,
     },
     {
       spotId: "p-002",
@@ -25,7 +25,7 @@ export async function GET() {
       price: 980,
       detail: "門司港名物！とろ〜りチーズと卵が絶妙なハーモニー。",
       AssetId: "/sampleImage.png",
-      isrecommend: true,
+      isRecommend: true,
     },
   ];
 

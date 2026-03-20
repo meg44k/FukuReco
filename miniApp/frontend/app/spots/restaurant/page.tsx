@@ -10,7 +10,7 @@ import { Menu } from '@/types/menu'
 
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
-import Menus from "@/components/atoms/menus/Menus"
+import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
 
 const BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -32,9 +32,13 @@ export default async function RestaurantPage () {
   const restaurantData: Spot = await getRestaurantData();
   const menuData: Menu[] = await getMenuData();
   const recommendMenus: Menu[] = [];
+  const generalMenus: Menu[] = [];
   for(const menu of menuData){
-    if (menu.isRecommend)
+    if (menu.isRecommend) {
       recommendMenus.push(menu)
+    } else {
+      generalMenus.push(menu)
+    }
   }
   
   return (
@@ -84,13 +88,13 @@ export default async function RestaurantPage () {
         
        </div>
 
-      {/* Full Menu */}
+      {/* General Menu */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionBar}></div>
-          <h2 className={styles.sectionTitle}>全メニュー</h2>
+          <h2 className={styles.sectionTitle}>メニュー</h2>
         </div>
-        <Menus/>
+        <GeneralMenus GeneralMenus={generalMenus}/>
         <div className={styles.staffComment}>
           <p className={styles.commentText}>{restaurantData.fukurekoComment}</p>
           <p className={styles.commentAuthor}>— FukuReco運営スタッフ</p>
