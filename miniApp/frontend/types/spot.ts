@@ -27,6 +27,8 @@ export interface Spot {
   facilities: FacilityInfo; // 設備内容(JSON)
   remarks?: string; // 備考
   averageBudget?: string | number; // 平均予算
+  latitude?: number; // 緯度
+  longitude?: number; // 経度
 }
 
 // --- JSON用の型定義（例） ---
@@ -40,7 +42,7 @@ export interface FacilityInfo {
   [key: string]: any; 
 }
 
-export interface Restaurant extends Spot{
+export interface Restaurant extends Spot {
   restaurantComment?: string;
   avgLunchBudget?: number;
   avgDinnerBudget?: number;
@@ -48,3 +50,14 @@ export interface Restaurant extends Spot{
   avgWaitTime?: string;
 }
 
+export interface Shop extends Spot {
+  shopComment?: string;
+}
+
+export interface RestingSpot extends Spot {
+  seatingInfo?: string;
+}
+
+export interface SightseeingSpot extends Spot {
+  avgWaitTime?: string;
+}
