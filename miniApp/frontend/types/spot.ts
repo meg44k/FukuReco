@@ -34,12 +34,12 @@ export interface Spot {
 // --- JSON用の型定義（例） ---
 export interface PricingInfo {
   // 例: { adult: 1000, child: 500 } など
-  [key: string]: string;
+  [key: string]: unknown; // 将来的にzodなどを用いて型を定義する
 }
 
 export interface FacilityInfo {
   // 例: { hasWifi: true, hasWheelchairAccess: false } など
-  [key: string]: string; 
+  [key: string]: unknown; // 上に同じ
 }
 
 export interface Restaurant extends Spot {
