@@ -1,5 +1,5 @@
 export interface Spot {
-  id: string; // または number (場所ID)
+  id: number; // または number (場所ID)
   name: string; // 場所名
   catchphrase?: string; // キャッチフレーズ
   distanceFromTransit?: string; // 公共交通機関からの距離

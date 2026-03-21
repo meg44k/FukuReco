@@ -1,6 +1,6 @@
 // 飲食店のメニューの型
 export interface Menu {
-    spotId: string; // 場所ID
+    spotId: number; // 場所ID
     name: string; // メニュー名
     price?: number; // 金額
     detail?: string; // メニューの説明
