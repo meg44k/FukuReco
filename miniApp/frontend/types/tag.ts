@@ -2,11 +2,11 @@
 
 // 関連型
 export interface SpotTag {
-    spotId: string;
+    spotId: number;
     tagId: string;
 }
 
 export interface Tag {
-    tagId: string;
+    tagId: number;
     detail: string;
 }
