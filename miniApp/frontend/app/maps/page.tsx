@@ -158,8 +158,8 @@ export default function Map() {
   // ズーム度合いに対してオフセットを返す関数
 
   // ルート用コールバック関数
-  const directionsCallBack = (result: google.maps.DirectionsResult) => {
-    if (result !== null && result.status === "OK"){
+  const directionsCallBack = (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
+    if (result !== null && status === "OK"){
       setDirections(result)
     }
   }
