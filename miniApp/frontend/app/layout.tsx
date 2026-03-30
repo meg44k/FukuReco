@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LIFFProvider } from "../providers/liff-providers";
-import MenuBar from "../components/atoms/menuBar/MenuBar"
-import styles from "./page.module.css";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 export const metadata: Metadata = {
