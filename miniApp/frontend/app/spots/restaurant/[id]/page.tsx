@@ -1,10 +1,15 @@
-import { createClient } from '@/lib/supabase/server';
-import { notFound } from 'next/navigation';
-import styles from '../page.module.css'; // 親ディレクトリのスタイルを流用
+"use client"
+import { createClient } from '@/lib/supabase/client';
+import { notFound, useRouter } from 'next/navigation';
+import { useState, useEffect, use } from 'react';
+import styles from '../page.module.css'; 
 import {
   Clock,
   ExternalLink,
-  Heart
+  Heart,
+  ChevronLeft,
+  X,
+  MapPin
 } from "lucide-react";
 import { Spot } from '@/types/spot'
 import { Menu } from '@/types/menu'
@@ -18,38 +23,60 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function RestaurantDetailPage({ params }: Props) {
-  const { id } = await params;
-  const supabase = await createClient();
+export default function RestaurantDetailPage({ params }: Props) {
+  const { id } = use(params);
+  const router = useRouter();
+  const [spotData, setSpotData] = useState<any>(null);
+  const [menuData, setMenuData] = useState<any[]>([]);
+  const [assetData, setAssetData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const [showNav, setShowNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  // IDが数値の場合は数値として扱う（PostgRESTの型不一致エラー回避のため）
-  const spotId = !isNaN(Number(id)) ? Number(id) : id;
+  useEffect(() => {
+    const fetchData = async () => {
+      const supabase = createClient();
+      const spotId = !isNaN(Number(id)) ? Number(id) : id;
 
-  // 1. スポットデータの取得
-  const { data: spotData, error: spotError } = await supabase
-    .from('spots')
-    .select('*')
-    .eq('id', spotId)
-    .single();
+      const [spotRes, menuRes, assetRes] = await Promise.all([
+        supabase.from('spots').select('*').eq('id', spotId).single(),
+        supabase.from('menus').select('*').eq('spot_id', spotId),
+        supabase.from('assets').select('*').eq('spot_id', spotId)
+      ]);
 
-  if (spotError || !spotData) {
-    notFound();
-  }
+      if (spotRes.error || !spotRes.data) {
+        notFound();
+        return;
+      }
 
-  // 2. メニューデータの取得
-  const { data: menuData, error: menuError } = await supabase
-    .from('menus')
-    .select('*')
-    .eq('spot_id', spotId);
+      setSpotData(spotRes.data);
+      setMenuData(menuRes.data || []);
+      setAssetData(assetRes.data || []);
+      setLoading(false);
+    };
 
-  // 3. アセット（画像）の取得
-  const { data: assetData, error: assetError } = await supabase
-    .from('assets')
-    .select('*')
-    .eq('spot_id', spotId);
+    fetchData();
+  }, [id]);
 
-  // DBのカラム名（スネークケース）から型定義（キャメルケース）へのマッピング
-  // ※ 型定義に合わせた変換をここで行います
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // 50px以上スクロールしていて、かつ下にスクロールしている場合は隠す
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setShowNav(false);
+      } else {
+        setShowNav(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  if (loading) return null;
+
   const restaurant: Spot = {
     id: spotData.id,
     name: spotData.name,
@@ -74,30 +101,36 @@ export default async function RestaurantDetailPage({ params }: Props) {
     closedDays: spotData.closed_days
   };
 
-  // メニューの整理
-  // アセットIDからURLへのマップを作成
-  const assetMap = (assetData || []).reduce((acc, asset) => {
+  const assetMap = assetData.reduce((acc, asset) => {
     acc[asset.id] = asset.url;
     return acc;
   }, {} as Record<number, string>);
 
-  const menus: Menu[] = (menuData || []).map(m => ({
+  const menus: Menu[] = menuData.map(m => ({
     spotId: m.spot_id,
     name: m.name,
     price: m.price,
     detail: m.detail,
-    assetId: m.asset_id ? assetMap[m.asset_id] : undefined, // IDをURLに変換
+    assetId: m.asset_id ? assetMap[m.asset_id] : undefined,
     isRecommend: m.is_recommend
   }));
 
   const recommendMenus = menus.filter(m => m.isRecommend);
   const generalMenus = menus.filter(m => !m.isRecommend);
-  
-  // フォトギャラリー用の画像リスト
-  const photoUrls = assetData?.map(a => a.url) || [];
+  const photoUrls = assetData.map(a => a.url);
 
   return (
     <div className={styles.container}>
+      {/* Floating Navigation */}
+      <div className={`${styles.floatingHeader} ${showNav ? styles.navVisible : styles.navHidden}`}>
+        <button className={styles.navButton} onClick={() => router.back()}>
+          <ChevronLeft size={18} color="#3F7D58" />
+        </button>
+        <button className={styles.navButton} onClick={() => router.push('/maps')}>
+          <X size={18} color="#3F7D58" />
+        </button>
+      </div>
+
       {/* Header Carousel */}
       <div className={styles.header}>
         <PhotoGallery images={photoUrls} />
