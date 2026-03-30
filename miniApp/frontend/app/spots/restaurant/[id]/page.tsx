@@ -69,6 +69,9 @@ export default async function RestaurantDetailPage({ params }: Props) {
     updatedAt: new Date(spotData.updated_at),
     createdAt: new Date(spotData.created_at),
     nearbyCoinLockers: spotData.nearby_coin_lockers,
+    parkingInfo: spotData.parking_info,
+    paymentMethods: spotData.payment_methods,
+    closedDays: spotData.closed_days
   };
 
   // メニューの整理
@@ -184,7 +187,27 @@ export default async function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>定休日</div>
-            <div className={styles.infoValue}>不定休</div>
+            <div className={styles.infoValue}>{restaurant.closedDays || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>平均予算</div>
+            <div className={styles.infoValue}>{restaurant.averageBudget || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>支払方法</div>
+            <div className={styles.infoValue}>{restaurant.paymentMethods || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>駐車場</div>
+            <div className={styles.infoValue}>{restaurant.parkingInfo || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>ウェブサイト</div>
+            <div className={styles.infoValue}>{restaurant.websiteUrl || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>備考</div>
+            <div className={styles.infoValue}>{restaurant.remarks || "無し"}</div>
           </div>
         </div>
       </div>
