@@ -26,6 +26,7 @@ h1, h2{
   --primary-color: #3F7D58;
   --secondary-color: #5EBC84;
   --text-black: #1E1E1E;
+  --text-gray: #999999;
 
   /* Font sizes */
   --title-size: 2rem;
