@@ -241,6 +241,12 @@
   line-height: 1.6;
 }
 
+.link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .nearbyScroll {
   display: flex;
   gap: 12px;
