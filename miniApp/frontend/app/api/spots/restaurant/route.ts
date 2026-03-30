@@ -3,7 +3,7 @@ import { Restaurant } from '@/types/spot';
 
 export async function GET() {
   const dummyData: Restaurant = {
-  id: "p-001",
+  id: 1,
   name: "海風テラス 門司港",
   catchphrase: "関門海峡を一望できる、レトロモダンなカフェ＆ワークスペース",
   distanceFromTransit: "門司港駅から徒歩5分",

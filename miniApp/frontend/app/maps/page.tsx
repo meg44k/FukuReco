@@ -52,7 +52,7 @@ export default function Map() {
   const [selectedSpot, setSelectedSpot] = useState<null | SpotData>(null);  // 選択店舗
   const mapRef = useRef<google.maps.Map | null>(null);    // googlemapインスタンス
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);   // ユーザの現在地座標
-  const [directions, setDirections] = useState<any | null>(null);   // 目的地までのルート情報
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);   // 目的地までのルート情報
   const [showRoute, setShowRoute] = useState<boolean>(false);   // ルートを表示するかのフラグ
 
 
@@ -137,6 +137,9 @@ export default function Map() {
       return spot; 
     });
   };
+  const calculateOffsetByZoom = (zoom: number) => {
+    return 0.00018 * Math.pow(2, 20 - zoom);
+  };
 
   // ピン選択変更時処理
   useEffect(() => {
@@ -153,13 +156,10 @@ export default function Map() {
   }, [selectedSpot]);
 
   // ズーム度合いに対してオフセットを返す関数
-  const calculateOffsetByZoom = (zoom: number) => {
-    return 0.00018 * Math.pow(2, 20 - zoom);
-  };
 
   // ルート用コールバック関数
-  const directionsCallBack = (result: any) => {
-    if (result !== null && result.status === "OK"){
+  const directionsCallBack = (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
+    if (result !== null && status === "OK"){
       setDirections(result)
     }
   }

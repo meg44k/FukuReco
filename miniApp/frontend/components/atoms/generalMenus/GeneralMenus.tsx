@@ -7,6 +7,7 @@ import {
     ChevronDown,
 } from "lucide-react"
 import { Menu } from '@/types/menu'
+import Image from 'next/image'
 
 type GeneralMenusProps = {
   GeneralMenus: Menu[];
@@ -19,12 +20,21 @@ export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
        <div className={styles.menuList}>
           {GeneralMenus.slice(0, 3).map((item, i) => (
             <div key={i} className={styles.menuItem}>
-              <div className={styles.menuItemTop}>
-                <p className={styles.itemName}>{item.name}</p>
-                <div className={styles.dots}></div>
-                <p className={styles.itemPrice}>¥{item.price}</p>
+              <div className={styles.itemImage}>
+                {item.assetId ? (
+                  <Image src={item.assetId} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                ) : (
+                  <div className={styles.noImage}>No Image</div>
+                )}
               </div>
-              <p className={styles.itemDesc}>{item.detail}</p>
+              <div className={styles.menuItemContent}>
+                <div className={styles.menuItemTop}>
+                  <p className={styles.itemName}>{item.name}</p>
+                  <div className={styles.dots}></div>
+                  <p className={styles.itemPrice}>¥{item.price}</p>
+                </div>
+                <p className={styles.itemDesc}>{item.detail}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -32,12 +42,21 @@ export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
           <div className={styles.menuList} style={{ marginTop: '1rem' }}>
             {GeneralMenus.slice(3).map((item, i) => (
               <div key={i + 3} className={styles.menuItem}>
-                <div className={styles.menuItemTop}>
-                  <p className={styles.itemName}>{item.name}</p>
-                  <div className={styles.dots}></div>
-                  <p className={styles.itemPrice}>¥{item.price}</p>
+                <div className={styles.itemImage}>
+                  {item.assetId ? (
+                    <Image src={item.assetId} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                  ) : (
+                    <div className={styles.noImage}>No Image</div>
+                  )}
                 </div>
-                <p className={styles.itemDesc}>{item.detail}</p>
+                <div className={styles.menuItemContent}>
+                  <div className={styles.menuItemTop}>
+                    <p className={styles.itemName}>{item.name}</p>
+                    <div className={styles.dots}></div>
+                    <p className={styles.itemPrice}>¥{item.price}</p>
+                  </div>
+                  <p className={styles.itemDesc}>{item.detail}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -47,9 +66,9 @@ export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
           onClick={() => setShowAllMenu(!showAllMenu)}
         >
           {showAllMenu ? (
-            <>メニューを閉じる <ChevronUp size={18} /></>
+            <>メニューを閉じる <ChevronUp size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
           ) : (
-            <>メニューをすべてみる <ChevronDown size={18} /></>
+            <>メニューをすべてみる <ChevronDown size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
           )}
         </div>
       </div>

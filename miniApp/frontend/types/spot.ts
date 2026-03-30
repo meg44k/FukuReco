@@ -1,5 +1,5 @@
 export interface Spot {
-  id: string; // または number (場所ID)
+  id: number; // または number (場所ID)
   name: string; // 場所名
   catchphrase?: string; // キャッチフレーズ
   distanceFromTransit?: string; // 公共交通機関からの距離
@@ -27,20 +27,22 @@ export interface Spot {
   facilities: FacilityInfo; // 設備内容(JSON)
   remarks?: string; // 備考
   averageBudget?: string | number; // 平均予算
+  latitude?: number; // 緯度
+  longitude?: number; // 経度
 }
 
 // --- JSON用の型定義（例） ---
 export interface PricingInfo {
   // 例: { adult: 1000, child: 500 } など
-  [key: string]: any; 
+  [key: string]: unknown; // 将来的にzodなどを用いて型を定義する
 }
 
 export interface FacilityInfo {
   // 例: { hasWifi: true, hasWheelchairAccess: false } など
-  [key: string]: any; 
+  [key: string]: unknown; // 上に同じ
 }
 
-export interface Restaurant extends Spot{
+export interface Restaurant extends Spot {
   restaurantComment?: string;
   avgLunchBudget?: number;
   avgDinnerBudget?: number;
@@ -48,3 +50,14 @@ export interface Restaurant extends Spot{
   avgWaitTime?: string;
 }
 
+export interface Shop extends Spot {
+  shopComment?: string;
+}
+
+export interface RestingSpot extends Spot {
+  seatingInfo?: string;
+}
+
+export interface SightseeingSpot extends Spot {
+  avgWaitTime?: string;
+}

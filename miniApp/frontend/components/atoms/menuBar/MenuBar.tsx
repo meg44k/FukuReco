@@ -19,6 +19,10 @@ import{
 export default function MenuBar(){
     const pathname = usePathname();
 
+    if (pathname.startsWith('/admin')) {
+        return null;
+    }
+
     // Mapping between pathname and BottomNavigation value
     const getValueFromPath = (path: string) => {
         if (path.startsWith('/maps')) return 'map';
