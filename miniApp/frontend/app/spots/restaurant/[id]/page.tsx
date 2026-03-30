@@ -72,12 +72,18 @@ export default async function RestaurantDetailPage({ params }: Props) {
   };
 
   // メニューの整理
+  // アセットIDからURLへのマップを作成
+  const assetMap = (assetData || []).reduce((acc, asset) => {
+    acc[asset.id] = asset.url;
+    return acc;
+  }, {} as Record<number, string>);
+
   const menus: Menu[] = (menuData || []).map(m => ({
     spotId: m.spot_id,
     name: m.name,
     price: m.price,
     detail: m.detail,
-    assetId: m.asset_id,
+    assetId: m.asset_id ? assetMap[m.asset_id] : undefined, // IDをURLに変換
     isRecommend: m.is_recommend
   }));
 
@@ -106,6 +112,10 @@ export default async function RestaurantDetailPage({ params }: Props) {
         <div className={styles.safetyTitle}>
           <Clock size={20} />
           <span>知っておくと安心！</span>
+        </div>
+        <div className={styles.safetyCard}>
+          <p className={styles.safetyLabel}>最寄り駅/バス停</p>
+          <p className={styles.safetyValue}>{restaurant.nearestStation || '情報なし'}</p>
         </div>
         <div className={styles.safetyCard}>
           <p className={styles.safetyLabel}>空港・駅から（最短）</p>
@@ -174,7 +184,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>定休日</div>
-            <div className={styles.infoValue}>不定休（年始を除く）</div>
+            <div className={styles.infoValue}>不定休</div>
           </div>
         </div>
       </div>
