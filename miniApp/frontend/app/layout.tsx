@@ -27,9 +27,6 @@ export default function RootLayout({
       <body>
         <AppRouterCacheProvider>
           <LIFFProvider>{children}</LIFFProvider>
-          <div className={styles.menuBar}>
-            <MenuBar/>
-          </div>
         </AppRouterCacheProvider>
       </body>
     </html>
