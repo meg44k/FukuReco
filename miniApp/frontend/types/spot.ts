@@ -14,7 +14,7 @@ export interface Spot {
   parkingInfo?: string; // 駐車場
   websiteUrl?: string; // 公式サイト
   nearbyCoinLockers?: string; // 近くのコインロッカー
-  
+  reservationURL?: string;
   // JSON項目は別途専用の型（interface）を定義することをお勧めします
   pricing: PricingInfo; // 料金(JSON)
   placeType: string; // 場所の種類

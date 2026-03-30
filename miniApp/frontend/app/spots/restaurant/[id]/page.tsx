@@ -9,9 +9,8 @@ import {
   Heart,
   ChevronLeft,
   X,
-  MapPin
 } from "lucide-react";
-import { Spot } from '@/types/spot'
+import { Restaurant, Spot } from '@/types/spot'
 import { Menu } from '@/types/menu'
 
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
@@ -77,7 +76,7 @@ export default function RestaurantDetailPage({ params }: Props) {
 
   if (loading) return null;
 
-  const restaurant: Spot = {
+  const restaurant: Restaurant = {
     id: spotData.id,
     name: spotData.name,
     catchphrase: spotData.catchphrase,
@@ -96,6 +95,10 @@ export default function RestaurantDetailPage({ params }: Props) {
     updatedAt: new Date(spotData.updated_at),
     createdAt: new Date(spotData.created_at),
     nearbyCoinLockers: spotData.nearby_coin_lockers,
+    parkingInfo: spotData.parking_info,
+    paymentMethods: spotData.payment_methods,
+    closedDays: spotData.closed_days,
+    reservationURL: spotData.reservation_url,
   };
 
   const assetMap = assetData.reduce((acc, asset) => {
@@ -115,6 +118,14 @@ export default function RestaurantDetailPage({ params }: Props) {
   const recommendMenus = menus.filter(m => m.isRecommend);
   const generalMenus = menus.filter(m => !m.isRecommend);
   const photoUrls = assetData.map(a => a.url);
+
+  const handleAction = () => {
+    if (restaurant.reservationURL) {
+      window.open(restaurant.reservationURL, '_blank', 'noopener,noreferrer');
+    } else if (restaurant.phoneNumber) {
+      window.location.href = `tel:${restaurant.phoneNumber}`;
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -217,14 +228,69 @@ export default function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>定休日</div>
-            <div className={styles.infoValue}>不定休</div>
+            <div className={styles.infoValue}>{restaurant.closedDays || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>平均予算</div>
+            <div className={styles.infoValue}>{restaurant.averageBudget || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>支払方法</div>
+            <div className={styles.infoValue}>{restaurant.paymentMethods || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>駐車場</div>
+            <div className={styles.infoValue}>{restaurant.parkingInfo || "情報なし"}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>ウェブサイト</div>
+            <div className={styles.infoValue}>
+              {restaurant.websiteUrl ? (
+                <a 
+                  href={restaurant.websiteUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.link}
+                >
+                  {restaurant.websiteUrl}
+                </a>
+              ) : (
+                "情報なし"
+              )}
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>備考</div>
+            <div className={styles.infoValue}>{restaurant.remarks || "無し"}</div>
           </div>
         </div>
       </div>
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>
-        <button className={styles.reserveBtn}>予約する</button>
+        {restaurant.reservationURL ? (
+          <a 
+            href={restaurant.reservationURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.reserveBtn}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            予約する
+          </a>
+        ) : restaurant.phoneNumber ? (
+          <a 
+            href={`tel:${restaurant.phoneNumber}`}
+            className={styles.reserveBtn}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            電話する
+          </a>
+        ) : (
+          <button className={styles.reserveBtn} disabled>
+            予約不可
+          </button>
+        )}
         <button className={styles.routeBtn}>
           ルートを見る <ExternalLink size={18} />
         </button>
