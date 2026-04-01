@@ -160,6 +160,9 @@ export default function RestaurantDetailPage({ params }: Props) {
       <div className={styles.content}>
         <p className={styles.catchphrase}>{restaurant.catchphrase}</p>
         <h1 className={styles.title}>{restaurant.name}</h1>
+        <div className={styles.updatedAt}>
+          更新日: {restaurant.updatedAt.toLocaleDateString('ja-JP')}
+        </div>
         <Tags tags={tagData} />
       </div>
 

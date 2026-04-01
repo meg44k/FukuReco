@@ -27,6 +27,7 @@ type SpotData = {
   price1?: string;
   price2?: string;
   position: google.maps.LatLngLiteral;
+  updatedAt: Date;
 }
 
 const containerStyle = {
@@ -70,6 +71,7 @@ export default function Map() {
       price1: "￥:1500",
       price2: "￥:200~3000",
       position: { lat: 33.5905, lng: 130.3817 },
+      updatedAt: new Date(),
     },
     {
       id: 2,
@@ -82,6 +84,7 @@ export default function Map() {
       detailURL: "/spots/restaurant",
       price1: "￥:1500",
       position: { lat: 33.5900, lng: 130.3998 },
+      updatedAt: new Date(),
     },
     {
       id: 3,
@@ -95,6 +98,7 @@ export default function Map() {
       price1: "￥:1500",
       price2: "￥:200~3000",
       position: { lat: 33.5905, lng: 130.3857 },
+      updatedAt: new Date(),
     },
     {
       id: 4,
@@ -107,6 +111,7 @@ export default function Map() {
       detailURL: "/spots/restaurant",
       price1: "￥:1500",
       position: { lat: 33.5900, lng: 130.3958 },
+      updatedAt: new Date(),
     },
   ];
 
@@ -260,6 +265,7 @@ export default function Map() {
                 detailURL={selectedSpot.detailURL}
                 price1={selectedSpot.price1}
                 price2={selectedSpot.price2}
+                updatedAt={selectedSpot.updatedAt}
                 onCloseClick={() => setSelectedSpot(null)}
                 onDetailClick={() => {}}
                 onRouteClick={() => setShowRoute(true)}

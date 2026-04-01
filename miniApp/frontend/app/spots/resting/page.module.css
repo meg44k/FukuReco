@@ -64,6 +64,12 @@
 .title {
   font-size: 1.8rem;
   font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.updatedAt {
+  font-size: 0.75rem;
+  color: #888;
   margin-bottom: 1rem;
 }
 

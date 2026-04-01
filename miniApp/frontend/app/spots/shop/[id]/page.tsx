@@ -151,6 +151,9 @@ export default function ShopDetailPage({ params }: Props) {
       <div className={styles.content}>
         <p className={styles.catchphrase}>{spot.catchphrase}</p>
         <h1 className={styles.title}>{spot.name}</h1>
+        <div className={styles.updatedAt}>
+          更新日: {spot.updatedAt.toLocaleDateString('ja-JP')}
+        </div>
         <Tags tags={tagData} />
       </div>
 
