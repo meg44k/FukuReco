@@ -128,7 +128,12 @@ export default function SightseeingDetailPage({ params }: Props) {
 
   const recommendMenus = menus.filter(m => m.isRecommend);
   const generalMenus = menus.filter(m => !m.isRecommend);
-  const photoUrls = assetData.map(a => a.url);
+  const photoUrls = assetData
+    ? assetData
+        .filter((a: any) => a.is_photo_gallery === true)
+        .sort((a: any, b: any) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
+        .map((a: any) => a.url || a.URL)
+    : [];
 
   return (
     <div className={styles.container}>
