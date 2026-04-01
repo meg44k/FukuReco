@@ -24,6 +24,7 @@ export default function RestingDetailPage({ params }: Props) {
   const router = useRouter();
   const [spotData, setSpotData] = useState<any>(null);
   const [assetData, setAssetData] = useState<any[]>([]);
+  const [tagData, setTagData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   
@@ -35,9 +36,10 @@ export default function RestingDetailPage({ params }: Props) {
       const supabase = createClient();
       const spotId = !isNaN(Number(id)) ? Number(id) : id;
 
-      const [spotRes, assetRes] = await Promise.all([
+      const [spotRes, assetRes, tagRes] = await Promise.all([
         supabase.from('spots').select('*').eq('id', spotId).single(),
-        supabase.from('assets').select('*').eq('spot_id', spotId)
+        supabase.from('assets').select('*').eq('spot_id', spotId),
+        supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
       ]);
 
       if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'resting_spot') {
@@ -48,6 +50,10 @@ export default function RestingDetailPage({ params }: Props) {
 
       setSpotData(spotRes.data);
       setAssetData(assetRes.data || []);
+
+      const tags = (tagRes.data as any[])?.map((item: any) => item.tags?.detail).filter(Boolean) || [];
+      setTagData(tags);
+
       setLoading(false);
     };
 
@@ -123,7 +129,7 @@ export default function RestingDetailPage({ params }: Props) {
       <div className={styles.content}>
         <p className={styles.catchphrase}>{spot.catchphrase}</p>
         <h1 className={styles.title}>{spot.name}</h1>
-        <Tags />
+        <Tags tags={tagData} />
       </div>
 
       {/* Safety Info Section */}
@@ -156,7 +162,7 @@ export default function RestingDetailPage({ params }: Props) {
       <div className={styles.section}>
         <div className={styles.staffComment}>
           <p className={styles.commentText}>{spot.fukurekoComment}</p>
-          <p className={styles.commentAuthor}>— FukuReco運営スタッフ</p>
+          <p className={styles.commentAuthor}>— フクレコ運営スタッフ</p>
         </div>
       </div>
 

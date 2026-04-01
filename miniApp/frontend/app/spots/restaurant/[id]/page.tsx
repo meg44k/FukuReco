@@ -28,6 +28,7 @@ export default function RestaurantDetailPage({ params }: Props) {
   const [spotData, setSpotData] = useState<any>(null);
   const [menuData, setMenuData] = useState<any[]>([]);
   const [assetData, setAssetData] = useState<any[]>([]);
+  const [tagData, setTagData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   
@@ -39,10 +40,11 @@ export default function RestaurantDetailPage({ params }: Props) {
       const supabase = createClient();
       const spotId = !isNaN(Number(id)) ? Number(id) : id;
 
-      const [spotRes, menuRes, assetRes] = await Promise.all([
+      const [spotRes, menuRes, assetRes, tagRes] = await Promise.all([
         supabase.from('spots').select('*').eq('id', spotId).single(),
         supabase.from('menus').select('*').eq('spot_id', spotId),
-        supabase.from('assets').select('*').eq('spot_id', spotId)
+        supabase.from('assets').select('*').eq('spot_id', spotId),
+        supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
       ]);
 
       if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'restaurant') {
@@ -54,6 +56,10 @@ export default function RestaurantDetailPage({ params }: Props) {
       setSpotData(spotRes.data);
       setMenuData(menuRes.data || []);
       setAssetData(assetRes.data || []);
+
+      const tags = (tagRes.data as any[])?.map((item: any) => item.tags?.detail).filter(Boolean) || [];
+      setTagData(tags);
+
       setLoading(false);
     };
 
@@ -154,7 +160,7 @@ export default function RestaurantDetailPage({ params }: Props) {
       <div className={styles.content}>
         <p className={styles.catchphrase}>{restaurant.catchphrase}</p>
         <h1 className={styles.title}>{restaurant.name}</h1>
-        <Tags />
+        <Tags tags={tagData} />
       </div>
 
       {/* Safety Info Section */}
@@ -178,7 +184,7 @@ export default function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.safetyCard}>
             <p className={styles.safetyLabel}>近くのコインロッカー</p>
-            <p className={`${styles.safetyValue} ${styles.link}`}>{restaurant.nearbyCoinLockers || '情報なし'}</p>
+            <p className={styles.safetyValue}>{restaurant.nearbyCoinLockers || '情報なし'}</p>
           </div>
         </div>
       </div>
@@ -209,7 +215,7 @@ export default function RestaurantDetailPage({ params }: Props) {
         )}
         <div className={styles.staffComment}>
           <p className={styles.commentText}>{restaurant.fukurekoComment}</p>
-          <p className={styles.commentAuthor}>— FukuReco運営スタッフ</p>
+          <p className={styles.commentAuthor}>— フクレコ運営スタッフ</p>
         </div>
       </div>
 

@@ -8,20 +8,14 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-export default function Tags () {
+interface TagsProps {
+  tags?: string[];
+}
+
+export default function Tags ({ tags = [] }: TagsProps) {
     const [showAllTags, setShowAllTags] = useState(false);
-    const tags = [
-        "#おひとり様OK",
-        "#大型荷物OK",
-        "#ベビーカー可",
-        "#駅近",
-        "#深夜営業",
-        "#カウンター席あり",
-        "#スープがなくなり次第終了",
-        "#クレジットカード可"
-    ];
     
-    const displayedTags = showAllTags ? tags : tags.slice(0, 3);
+    if (tags.length === 0) return null;
 
     return (
        <div>
@@ -29,26 +23,29 @@ export default function Tags () {
           {tags.slice(0, 3).map((tag, index) => (
             <Chip key={index} label={tag} variant="outlined" size="small" className={styles.chip} />
           ))}
-          {!showAllTags && <div style={{ color: "#ccc", display: "flex", alignItems: "center" }}>...</div>}
+          {tags.length > 3 && !showAllTags && <div style={{ color: "#ccc", display: "flex", alignItems: "center" }}>...</div>}
         </div>
-        <Collapse in={showAllTags}>
-          <div className={styles.chips} style={{ marginTop: '8px' }}>
-            {tags.slice(3).map((tag, index) => (
-              <Chip key={index + 3} label={tag} variant="outlined" size="small" className={styles.chip} />
-            ))}
-          </div>
-        </Collapse>
-        <div 
-          className={styles.showMoreTags} 
-          onClick={() => setShowAllTags(!showAllTags)}
-        >
-          {showAllTags ? (
-            <>タグを閉じる <ChevronUp size={16} /></>
-          ) : (
-            <>タグをすべてみる <ChevronDown size={16} /></>
-          )}
-        </div>
-
+        {tags.length > 3 && (
+          <>
+            <Collapse in={showAllTags}>
+              <div className={styles.chips} style={{ marginTop: '8px' }}>
+                {tags.slice(3).map((tag, index) => (
+                  <Chip key={index + 3} label={tag} variant="outlined" size="small" className={styles.chip} />
+                ))}
+              </div>
+            </Collapse>
+            <div 
+              className={styles.showMoreTags} 
+              onClick={() => setShowAllTags(!showAllTags)}
+            >
+              {showAllTags ? (
+                <>タグを閉じる <ChevronUp size={16} /></>
+              ) : (
+                <>タグをすべてみる <ChevronDown size={16} /></>
+              )}
+            </div>
+          </>
+        )}
        </div> 
     )
 }
