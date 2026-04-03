@@ -10,23 +10,19 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { Restaurant, Spot } from '@/types/spot'
-import { Menu } from '@/types/menu'
+import { RestingSpot } from '@/types/spot'
 
-import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
-import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default function RestaurantDetailPage({ params }: Props) {
+export default function RestingDetailPage({ params }: Props) {
   const { id } = use(params);
   const router = useRouter();
   const [spotData, setSpotData] = useState<any>(null);
-  const [menuData, setMenuData] = useState<any[]>([]);
   const [assetData, setAssetData] = useState<any[]>([]);
   const [tagData, setTagData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,21 +36,19 @@ export default function RestaurantDetailPage({ params }: Props) {
       const supabase = createClient();
       const spotId = !isNaN(Number(id)) ? Number(id) : id;
 
-      const [spotRes, menuRes, assetRes, tagRes] = await Promise.all([
+      const [spotRes, assetRes, tagRes] = await Promise.all([
         supabase.from('spots').select('*').eq('id', spotId).single(),
-        supabase.from('menus').select('*').eq('spot_id', spotId),
         supabase.from('assets').select('*').eq('spot_id', spotId),
         supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
       ]);
 
-      if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'restaurant') {
+      if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'resting_spot') {
         setHasError(true);
         setLoading(false);
         return;
       }
 
       setSpotData(spotRes.data);
-      setMenuData(menuRes.data || []);
       setAssetData(assetRes.data || []);
 
       const tags = (tagRes.data as any[])?.map((item: any) => item.tags?.detail).filter(Boolean) || [];
@@ -69,7 +63,6 @@ export default function RestaurantDetailPage({ params }: Props) {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      // 50px以上スクロールしていて、かつ下にスクロールしている場合は隠す
       if (currentScrollY > lastScrollY && currentScrollY > 50) {
         setShowNav(false);
       } else {
@@ -88,7 +81,7 @@ export default function RestaurantDetailPage({ params }: Props) {
 
   if (loading) return null;
 
-  const restaurant: Restaurant = {
+  const spot: RestingSpot = {
     id: spotData.id,
     name: spotData.name,
     catchphrase: spotData.catchphrase,
@@ -110,39 +103,15 @@ export default function RestaurantDetailPage({ params }: Props) {
     parkingInfo: spotData.parking_info,
     paymentMethods: spotData.payment_methods,
     closedDays: spotData.closed_days,
-    reservationURL: spotData.reservation_url,
+    seatingInfo: spotData.seating_info,
   };
 
-  const assetMap = assetData.reduce((acc, asset) => {
-    acc[asset.id] = asset.url;
-    return acc;
-  }, {} as Record<number, string>);
-
-  const menus: Menu[] = menuData.map(m => ({
-    spotId: m.spot_id,
-    name: m.name,
-    price: m.price,
-    detail: m.detail,
-    assetId: m.asset_id ? assetMap[m.asset_id] : undefined,
-    isRecommend: m.is_recommend
-  }));
-
-  const recommendMenus = menus.filter(m => m.isRecommend);
-  const generalMenus = menus.filter(m => !m.isRecommend);
   const photoUrls = assetData
     ? assetData
         .filter((a: any) => a.is_photo_gallery === true)
         .sort((a: any, b: any) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
         .map((a: any) => a.url || a.URL)
     : [];
-
-  const handleAction = () => {
-    if (restaurant.reservationURL) {
-      window.open(restaurant.reservationURL, '_blank', 'noopener,noreferrer');
-    } else if (restaurant.phoneNumber) {
-      window.location.href = `tel:${restaurant.phoneNumber}`;
-    }
-  };
 
   return (
     <div className={styles.container}>
@@ -163,10 +132,10 @@ export default function RestaurantDetailPage({ params }: Props) {
 
       {/* Content Section */}
       <div className={styles.content}>
-        <p className={styles.catchphrase}>{restaurant.catchphrase}</p>
-        <h1 className={styles.title}>{restaurant.name}</h1>
+        <p className={styles.catchphrase}>{spot.catchphrase}</p>
+        <h1 className={styles.title}>{spot.name}</h1>
         <div className={styles.updatedAt}>
-          更新日: {restaurant.updatedAt.toLocaleDateString('ja-JP')}
+          更新日: {spot.updatedAt.toLocaleDateString('ja-JP')}
         </div>
         <Tags tags={tagData} />
       </div>
@@ -179,50 +148,28 @@ export default function RestaurantDetailPage({ params }: Props) {
         </div>
         <div className={styles.safetyCard}>
           <p className={styles.safetyLabel}>最寄り駅/バス停</p>
-          <p className={styles.safetyValue}>{restaurant.nearestStation || '情報なし'}</p>
+          <p className={styles.safetyValue}>{spot.nearestStation || '情報なし'}</p>
         </div>
         <div className={styles.safetyCard}>
           <p className={styles.safetyLabel}>空港・駅から（最短）</p>
-          <p className={styles.safetyValue}>{restaurant.distanceFromTransit || '情報なし'}</p>
+          <p className={styles.safetyValue}>{spot.distanceFromTransit || '情報なし'}</p>
         </div>
         <div className={styles.safetyGrid}>
           <div className={styles.safetyCard}>
             <p className={styles.safetyLabel}>滞在目安</p>
-            <p className={styles.safetyValue}>{restaurant.stayDuration || '情報なし'}</p>
+            <p className={styles.safetyValue}>{spot.stayDuration || '情報なし'}</p>
           </div>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>近くのコインロッカー</p>
-            <p className={styles.safetyValue}>{restaurant.nearbyCoinLockers || '情報なし'}</p>
+            <p className={styles.safetyLabel}>座席情報</p>
+            <p className={styles.safetyValue}>{spot.seatingInfo || '情報なし'}</p>
           </div>
         </div>
       </div>
 
-      {/* Recommended Menu */}
+      {/* Staff Comment */}
       <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionBar}></div>
-          <h2 className={styles.sectionTitle}>おすすめメニュー</h2>
-        </div>
-        {recommendMenus.length > 0 ? (
-          recommendMenus.map((menu, index) => <RecommendMenu key={index} recommendMenu={menu} />)
-        ) : (
-          <p className={styles.noData}>おすすめメニューはまだ登録されていません。</p>
-        )}
-      </div>
-
-      {/* General Menu */}
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionBar}></div>
-          <h2 className={styles.sectionTitle}>メニュー</h2>
-        </div>
-        {generalMenus.length > 0 ? (
-          <GeneralMenus GeneralMenus={generalMenus} />
-        ) : (
-          <p className={styles.noData}>メニューはまだ登録されていません。</p>
-        )}
         <div className={styles.staffComment}>
-          <p className={styles.commentText}>{restaurant.fukurekoComment}</p>
+          <p className={styles.commentText}>{spot.fukurekoComment}</p>
           <p className={styles.commentAuthor}>— フクレコ運営スタッフ</p>
         </div>
       </div>
@@ -236,43 +183,23 @@ export default function RestaurantDetailPage({ params }: Props) {
         <div className={styles.infoTable}>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>住所</div>
-            <div className={styles.infoValue}>{restaurant.address}</div>
+            <div className={styles.infoValue}>{spot.address}</div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>営業時間</div>
-            <div className={styles.infoValue}>{restaurant.businessHours || '情報なし'}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>電話番号</div>
-            <div className={styles.infoValue}>{restaurant.phoneNumber || '情報なし'}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>定休日</div>
-            <div className={styles.infoValue}>{restaurant.closedDays || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>平均予算</div>
-            <div className={styles.infoValue}>{restaurant.averageBudget || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>支払方法</div>
-            <div className={styles.infoValue}>{restaurant.paymentMethods || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>駐車場</div>
-            <div className={styles.infoValue}>{restaurant.parkingInfo || "情報なし"}</div>
+            <div className={styles.infoValue}>{spot.businessHours || '情報なし'}</div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>ウェブサイト</div>
             <div className={styles.infoValue}>
-              {restaurant.websiteUrl ? (
+              {spot.websiteUrl ? (
                 <a 
-                  href={restaurant.websiteUrl} 
+                  href={spot.websiteUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.link}
                 >
-                  {restaurant.websiteUrl}
+                  {spot.websiteUrl}
                 </a>
               ) : (
                 "情報なし"
@@ -281,37 +208,14 @@ export default function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>備考</div>
-            <div className={styles.infoValue}>{restaurant.remarks || "無し"}</div>
+            <div className={styles.infoValue}>{spot.remarks || "無し"}</div>
           </div>
         </div>
       </div>
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>
-        {restaurant.reservationURL ? (
-          <a 
-            href={restaurant.reservationURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.reserveBtn}
-            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            予約する
-          </a>
-        ) : restaurant.phoneNumber ? (
-          <a 
-            href={`tel:${restaurant.phoneNumber}`}
-            className={styles.reserveBtn}
-            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            電話する
-          </a>
-        ) : (
-          <button className={styles.reserveBtn} disabled>
-            予約不可
-          </button>
-        )}
-        <button className={styles.routeBtn}>
+        <button className={styles.routeBtn} style={{ flex: 2 }}>
           ルートを見る <ExternalLink size={18} />
         </button>
         <button className={styles.heartBtn}>

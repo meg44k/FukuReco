@@ -22,7 +22,13 @@ export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
             <div key={i} className={styles.menuItem}>
               <div className={styles.itemImage}>
                 {item.assetId ? (
-                  <Image src={item.assetId} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                  <Image 
+                    src={item.assetId} 
+                    alt={item.name} 
+                    fill 
+                    style={{ objectFit: 'cover' }} 
+                    unoptimized={item.assetId.startsWith('http')}
+                  />
                 ) : (
                   <div className={styles.noImage}>No Image</div>
                 )}
@@ -44,7 +50,13 @@ export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
               <div key={i + 3} className={styles.menuItem}>
                 <div className={styles.itemImage}>
                   {item.assetId ? (
-                    <Image src={item.assetId} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                    <Image 
+                    src={item.assetId} 
+                    alt={item.name} 
+                    fill 
+                    style={{ objectFit: 'cover' }} 
+                    unoptimized={item.assetId.startsWith('http')}
+                  />
                   ) : (
                     <div className={styles.noImage}>No Image</div>
                   )}

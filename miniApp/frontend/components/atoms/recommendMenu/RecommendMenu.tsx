@@ -16,6 +16,7 @@ export default function RecommendMenu ({ recommendMenu }: recommendMenuProps) {
                     alt={recommendMenu.name} 
                     fill 
                     style={{ objectFit: 'cover' }}
+                    unoptimized={recommendMenu.assetId.startsWith('http')}
                 />
             ) : (
                 <div className={styles.noImage}>No Image</div>
