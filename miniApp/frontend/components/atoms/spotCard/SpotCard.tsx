@@ -114,7 +114,13 @@ export const SpotCard = ({
 
                 <div className={styles.cardImage}>
                     {imageSrc ? (
-                    <Image src={imageSrc} alt="画像なし" fill style={{ objectFit: "cover" }}/>
+                    <Image 
+                        src={imageSrc} 
+                        alt="画像なし" 
+                        fill 
+                        style={{ objectFit: "cover" }}
+                        unoptimized={imageSrc.startsWith('http')}
+                    />
                     ) : (
                     <div className={styles.noImagePlaceholder}>
                         <span>No Image</span>
