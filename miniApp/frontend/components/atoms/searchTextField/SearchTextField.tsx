@@ -21,6 +21,9 @@ export const SearchTextField = ({ onSearch, label = "検索" }: Props) => {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // IME変換中のエンターキー押下（変換確定）の場合は検索を実行しない
+    if (e.nativeEvent.isComposing) return;
+
     if (e.key === "Enter") {
       handleSearch();
     }

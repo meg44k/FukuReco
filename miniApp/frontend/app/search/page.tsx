@@ -33,23 +33,12 @@ const FILTER_GROUPS = [
 export default function Search() {
     const router = useRouter();
 
-    //　ボタン検索ハンドラ
-    const handleButtonSearch = (option: string) => {
-        // クエリパラメータ組み立て用標準API
-        const params = new URLSearchParams();
-
-        // 1つのボタンしか選択できないため、パラメータは1つ
-        params.append("options", option);
-
-        // マップページに遷移
-        router.push(`/maps?${params.toString()}`);
-    }
-
     // テキスト検索ハンドラ
     const handleTextSearch = (keyword: string) => {
         // クエリパラメータ組み立て用標準API
         const params = new URLSearchParams();
-        params.append("keyword", keyword);
+        const normalizedKeyword = keyword.trim();
+        params.append("keyword", normalizedKeyword);
 
         // マップページに遷移
         router.push(`/maps?${params.toString()}`);
@@ -59,9 +48,9 @@ export default function Search() {
         <div className={styles.container}>
             <h1 className={styles.pageTitle}>条件から検索</h1>
 
-            <div className={styles.filterContent}>
-                {FILTER_GROUPS.map((group, groupIndex) => (
-                    <div key={groupIndex} className={styles.section}>
+            <div>
+                {FILTER_GROUPS.map((group) => (
+                    <div key={group.title} className={styles.section}>
                         <h2 className={styles.sectionTitle}>{group.title}</h2>
                         <div className={styles.buttonGrid}>
                             {group.options.map((option, optionIndex) => {
@@ -71,7 +60,7 @@ export default function Search() {
 
                                 return (
                                     <Button
-                                        key={optionIndex}
+                                        key={option}
                                         variant="contained"
                                         disableElevation
                                         className={`${styles.customButton} ${buttonClass}`}

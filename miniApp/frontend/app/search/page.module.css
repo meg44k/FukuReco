@@ -1,6 +1,6 @@
 
 .container {
-    padding: 24px 20px 160px 20px; /* 下部に固定する要素が被らないようにpadding-bottomを多めに確保 */
+    padding: 24px 20px calc(env(safe-area-inset-bottom) + var(--bottom-nav-height, 65px) + 90px) 20px; /* 下部に固定する要素が被らないようにpadding-bottomを動的に計算 */
     background-color: #ffffff;
     font-family: sans-serif;
     color: #333333;
@@ -48,29 +48,23 @@
 .buttonDark {
     background-color: var(--primary-color) !important;
 }
-/* .buttonDark:hover {
-    background-color: var(--text-black) !important;
-} */
 
 /* 薄い緑のボタン */
 .buttonLight {
     background-color: var(--secondary-color) !important;
 }
-/* .buttonLight:hover {
-    background-color: var(--primary-color) !important;
-} */
 
 /* 検索バー */
 .searchTextField {
     position: fixed;
-    /* layout.tsxにあるナビゲーションバーの高さに合わせてbottomの数値を変更してください（例は70px） */
-    bottom: 70px; 
+    /* layout.tsx のナビゲーションバーの safe-area を考慮した位置に合わせる */
+    bottom: calc(env(safe-area-inset-bottom) + var(--bottom-nav-height, 65px));
     left: 0;
     width: 100%;
     padding: 10px 20px 10px 20px;
     background-color: var(--main-bg-color);
-    /* box-sizing: border-box; */
     z-index: 1000;
-    /* ナビバーとの境目が分かりにくい場合は、下のボーダーや影をつけると綺麗です */
-    /* border-bottom: 1px solid #eeeeee; */
+    /* スクロール時の境界を分かりやすくするための境界線と影 */
+    border-top: 1px solid #eeeeee;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
