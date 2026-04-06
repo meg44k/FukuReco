@@ -49,16 +49,19 @@ export async function GET(request: Request) {
         }
 
         // mapでjsonを展開
-        const formattedData = data.spot_tags.map((item: any) => {
-            const temp = item.spots;
-            return {
-                id: temp.id,
-                name: temp.name,
-                latitude: temp.latitude,
-                longitude: temp.longitude,
-                tags: temp.spot_tags.map((st: any) => st.tags.detail)
-            };
-        });
+        const formattedData = data.spot_tags
+            .filter((item: any) => item.spots !== null)
+            .map((item: any) => {
+                const temp = item.spots;
+                return {
+                    id: temp?.id,
+                    name: temp?.name,
+                    pricing: temp?.pricing,
+                    latitude: temp?.latitude,
+                    longitude: temp?.longitude,
+                    tags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
+                };
+            });
 
         return NextResponse.json(formattedData);
     } catch (err) {
