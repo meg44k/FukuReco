@@ -1,5 +1,5 @@
 import { Button, IconButton, ThemeProvider, createTheme } from '@mui/material';
-import { X, Sun, Moon, User, Baby } from 'lucide-react';
+import { X, Sun, Moon, User, Baby, Heart } from 'lucide-react';
 import styles from './SpotCard.module.css';
 import Image from "next/image"
 
@@ -55,9 +55,11 @@ type Props = {
     detailURL: string; // 詳細のURL
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
+    isFavorite?: boolean; // お気に入りかどうか
     onRouteClick: () => void;   // ルート検索ボタンの動作
     onDetailClick: () => void;  // もっと詳しくボタンの動作
     onCloseClick: () => void;   // 閉じるボタンの動作
+    onFavoriteToggle?: () => void; // お気に入りボタンの動作
 };
 
 export const SpotCard = ({
@@ -69,9 +71,11 @@ export const SpotCard = ({
     detailURL,
     price1,
     price2,
+    isFavorite,
     onRouteClick,
     onDetailClick,
     onCloseClick,
+    onFavoriteToggle,
 }: Props) => {
 
     const config = iconConfig[spotKind];
@@ -98,9 +102,17 @@ export const SpotCard = ({
                     </div>
                     )}
 
-                    <IconButton onClick={onCloseClick} size="small">
-                    <X />
-                    </IconButton>
+                    <div className={styles.headerButtons}>
+                        <IconButton onClick={onFavoriteToggle} size="small" className={styles.favoriteButton}>
+                            <Heart 
+                                fill={isFavorite ? "#EF5350" : "none"} 
+                                color={isFavorite ? "#EF5350" : "currentColor"} 
+                            />
+                        </IconButton>
+                        <IconButton onClick={onCloseClick} size="small">
+                            <X />
+                        </IconButton>
+                    </div>
                 </div>
 
                 <div className={styles.cardImage}>
@@ -156,7 +168,7 @@ export const SpotCard = ({
                 </div>
 
                 <div className={styles.cardFooter}>
-                    <Button onClick={onDetailClick} variant="contained" href={detailURL}>
+                    <Button onClick={onDetailClick} variant="contained">
                     もっと詳しく
                     </Button>
                     <Button onClick={onRouteClick} variant="outlined">

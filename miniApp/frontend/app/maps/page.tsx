@@ -12,6 +12,8 @@ import {
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useRouter } from "next/navigation";
 
 // 将来的に、typesディレクトリに移動
 type SpotKinds = "shop" | "spot";
@@ -42,6 +44,7 @@ const initCenter = {
 };
 
 export default function Map() {
+  const router = useRouter();
   // Google MapsスクリプトをReact経由で読み込む
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey:
@@ -54,6 +57,8 @@ export default function Map() {
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);   // ユーザの現在地座標
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);   // 目的地までのルート情報
   const [showRoute, setShowRoute] = useState<boolean>(false);   // ルートを表示するかのフラグ
+
+  const { isFavorite, toggleFavorite } = useFavorites();
 
 
   // テスト用データ
@@ -260,9 +265,11 @@ export default function Map() {
                 detailURL={selectedSpot.detailURL}
                 price1={selectedSpot.price1}
                 price2={selectedSpot.price2}
+                isFavorite={isFavorite(selectedSpot.id)}
                 onCloseClick={() => setSelectedSpot(null)}
-                onDetailClick={() => {}}
+                onDetailClick={() => router.push(`${selectedSpot.detailURL}/${selectedSpot.id}`)}
                 onRouteClick={() => setShowRoute(true)}
+                onFavoriteToggle={() => toggleFavorite(selectedSpot.id)}
               />
             </div>
         }

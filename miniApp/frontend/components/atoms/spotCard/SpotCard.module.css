@@ -30,6 +30,17 @@
     align-items: center;
     padding-right: 8px;
     gap: clamp(8px, 1.5vw, 16px);
+    justify-content: space-between;
+}
+
+.headerButtons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.favoriteButton {
+    color: #c3c3c3;
 }
 
 .title {

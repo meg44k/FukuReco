@@ -17,6 +17,7 @@ import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
+import { useFavorites } from '@/hooks/useFavorites';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -32,6 +33,8 @@ export default function RestaurantDetailPage({ params }: Props) {
   
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -294,8 +297,15 @@ export default function RestaurantDetailPage({ params }: Props) {
         <button className={styles.routeBtn}>
           ルートを見る <ExternalLink size={18} />
         </button>
-        <button className={styles.heartBtn}>
-          <Heart size={24} />
+        <button 
+          className={styles.heartBtn}
+          onClick={() => toggleFavorite(!isNaN(Number(id)) ? Number(id) : id)}
+        >
+          <Heart 
+            size={24} 
+            fill={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "none"} 
+            color={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "currentColor"}
+          />
         </button>
       </div>
     </div>
