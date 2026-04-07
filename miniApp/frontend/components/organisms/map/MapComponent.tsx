@@ -12,7 +12,7 @@ import {
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
-import { MapSpotData } from "@/types/map";
+import { MapSpotData, MinimalSpotData } from "@/types/map";
 
 const containerStyle = {
   width: "100%",
@@ -20,85 +20,91 @@ const containerStyle = {
 };
 
 // マップ表示時の中心
-// ユーザの現在地を取得して使用
 const initCenter = {
   lat: 33.5902,
   lng: 130.4017,
 };
 
 type Props = {
-  spots: MapSpotData[];
+  searchResults: MapSpotData[]; // 検索結果（詳細データあり）
+  initialSpots: MinimalSpotData[]; // 初期表示は最小限のデータ配列を受け取る
 }
 
-export const MapComponent = ({ spots }: Props) => {
-  // Google MapsスクリプトをReact経由で読み込む
+export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey:
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
 
   // state管理
-  const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択店舗
-  const mapRef = useRef<google.maps.Map | null>(null);    // googlemapインスタンス
-  const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);   // ユーザの現在地座標
-  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);   // 目的地までのルート情報
-  const [showRoute, setShowRoute] = useState<boolean>(false);   // ルートを表示するかのフラグ
+  const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [showRoute, setShowRoute] = useState<boolean>(false);
 
-  // マップ表示のオプション
   const options: google.maps.MapOptions = {
     mapId: "2180f9c8f0d419cfa3681583",
     disableDefaultUI: true,
   };
 
-  // ユーザの現在地取得
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCurrentPos({ lat: position.coords.latitude, lng: position.coords.longitude, });
+        setCurrentPos({ lat: position.coords.latitude, lng: position.coords.longitude });
       },
-      (error) => {
-        console.error("位置情報取得失敗", error);
-      }
+      (error) => console.error("位置情報取得失敗", error)
     );
   }, []);
 
-  // ピンクリックハンドラ
-  const handlePinClick = (spot: MapSpotData) => {
-    setSelectedSpot(prev => {
-      if (prev?.id === spot.id) return null;
-      setDirections(null);
-      setShowRoute(false);
-      return spot; 
-    });
+  // ピンクリック時に詳細データを取得（現在はモックで対応）
+  const handlePinClick = async (minimalSpot: MinimalSpotData) => {
+    if (selectedSpot?.id === minimalSpot.id) {
+      setSelectedSpot(null);
+      return;
+    }
+
+    // 1. すでに検索結果(searchResults)の中に詳細データがあれば、それを使う
+    const alreadyFetched = searchResults.find(s => s.id === minimalSpot.id);
+    if (alreadyFetched) {
+      setSelectedSpot(alreadyFetched);
+    } else {
+      // 将来的にはここで fetch(`/api/spots/${minimalSpot.id}`) などを行う
+      // 今回はテストとしてデータを生成してセット
+      const mockDetail: MapSpotData = {
+        ...minimalSpot,
+        spotKind: "shop",
+        spotName: `店舗 ${minimalSpot.id} (詳細フェッチ後)`,
+        isOpen: true,
+        imageSrc: "/sampleImage.png",
+        spotTags: ["タグ1", "タグ2"],
+        detailURL: `/spots/restaurant/${minimalSpot.id}`,
+        price1: "¥1,000〜",
+        updatedAt: new Date(),
+      };
+
+      setSelectedSpot(mockDetail);
+    }
+    setDirections(null);
+    setShowRoute(false);
   };
 
-  // ズーム度合いに対してオフセットを返す関数
-  const calculateOffsetByZoom = (zoom: number) => {
-    return 0.00018 * Math.pow(2, 20 - zoom);
-  };
+  const calculateOffsetByZoom = (zoom: number) => 0.00018 * Math.pow(2, 20 - zoom);
 
-  // ピン選択変更時処理
   useEffect(() => {
     if (!selectedSpot || !mapRef.current) return;
-
     const map = mapRef.current;
-    // ズームに応じたオフセットを取得
-    const offsetLat = calculateOffsetByZoom(map.getZoom() ?? 15)
+    const offsetLat = calculateOffsetByZoom(map.getZoom() ?? 15);
     map.panTo(selectedSpot.position);
-    mapRef.current.panTo({
+    map.panTo({
       lat: selectedSpot.position.lat - offsetLat,
       lng: selectedSpot.position.lng,
     });
   }, [selectedSpot]);
 
-  // ルート用コールバック関数
   const directionsCallBack = (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
-    if (result !== null && status === "OK"){
-      setDirections(result)
-    }
+    if (result !== null && status === "OK") setDirections(result);
   }
 
-  // マップの中心を現在地に戻す関数
   const handleBackToCurrent = () => {
     if (mapRef.current && currentPos) {
       mapRef.current.panTo(currentPos);
@@ -106,7 +112,6 @@ export const MapComponent = ({ spots }: Props) => {
     }
   };
 
-  // スクリプトが読み込まれるまで待つ
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
@@ -116,40 +121,26 @@ export const MapComponent = ({ spots }: Props) => {
         center={initCenter}
         zoom={14}
         options={options}
-        onLoad={(map) => {
-          mapRef.current = map;
-        }}
-        onClick={() => {
-          setSelectedSpot(null);
-        }}
+        onLoad={(map) => { mapRef.current = map; }}
+        onClick={() => setSelectedSpot(null)}
       >
         {currentPos && selectedSpot && showRoute && !directions && (
-          // 現在地からルートを計算してdirectionaを更新
           <DirectionsService
             options={{
               origin: currentPos,
-              destination: selectedSpot?.position,
+              destination: selectedSpot.position,
               travelMode: google.maps.TravelMode.TRANSIT,
             }}
             callback={directionsCallBack}
-            />
-        )}
-
-        {directions && (
-          <DirectionsRenderer
-            options={{
-              directions: directions,
-              suppressMarkers: false,
-            }}
           />
         )}
 
-        {/* 現在地のマーカー */}
+        {directions && <DirectionsRenderer options={{ directions, suppressMarkers: false }} />}
+
         {currentPos && (
           <Marker
             position={currentPos}
             icon={{
-              // Google風の青いドットを再現
               path: google.maps.SymbolPath.CIRCLE,
               fillColor: "#4285F4",
               fillOpacity: 1,
@@ -160,30 +151,24 @@ export const MapComponent = ({ spots }: Props) => {
           />
         )}
 
-        {/* マーカー配置 */}
-        {spots.map((spot) => (
+        {/* 最小限のデータ(initialSpots)でピンを大量に描画 */}
+        {initialSpots.map((spot) => (
           <Marker
             key={spot.id}
             position={spot.position}
             onClick={() => handlePinClick(spot)}
             icon={{
-              // 仮として、spotsデータにアイコンの
               url: spot.pinKind,
               scaledSize: new google.maps.Size(
-                selectedSpot?.id === spot.id ? 80 :50,
-                selectedSpot?.id === spot.id ? 80 :50
+                selectedSpot?.id === spot.id ? 80 : 50,
+                selectedSpot?.id === spot.id ? 80 : 50
               ),
             }}
           />
         ))}
 
-        {/* カードを表示 */}
-        <div className={
-          selectedSpot
-            ? styles.cardWrapper
-            : `${styles.cardWrapper} ${styles.cardHidden}`
-        }>
-          {selectedSpot && 
+        <div className={selectedSpot ? styles.cardWrapper : `${styles.cardWrapper} ${styles.cardHidden}`}>
+          {selectedSpot && (
             <div className={styles.cardWrapper}>
               <SpotCard
                 spotKind={selectedSpot.spotKind}
@@ -200,14 +185,11 @@ export const MapComponent = ({ spots }: Props) => {
                 onRouteClick={() => setShowRoute(true)}
               />
             </div>
-        }
+          )}
         </div>
 
-        {/* 現在地に戻るボタン */}
         <div className={styles.backToCurrentBtn}>
-          {!selectedSpot &&
-            <IconButton onClick={handleBackToCurrent}><LocateFixed/></IconButton>
-          }
+          {!selectedSpot && <IconButton onClick={handleBackToCurrent}><LocateFixed /></IconButton>}
         </div>
       </GoogleMap>
     </div>

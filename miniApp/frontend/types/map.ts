@@ -13,3 +13,10 @@ export type MapSpotData = {
   position: google.maps.LatLngLiteral; // { lat: number, lng: number }
   updatedAt: Date;
 };
+
+// マップ初期表示用の最小限のデータ型
+export type MinimalSpotData = {
+  id: number;
+  position: google.maps.LatLngLiteral;
+  pinKind: string;             // アイコンの種類（種類によってピンを変えるため保持）
+};
