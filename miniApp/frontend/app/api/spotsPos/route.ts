@@ -17,7 +17,7 @@ export async function GET() {
                 id,
                 latitude,
                 longitude,
-                placeType
+                place_type
             `);
 
         if (error) {
@@ -25,7 +25,7 @@ export async function GET() {
         }
 
         // フロントエンドの MinimalSpotData 形式に合わせて変換
-        // placeType に基づいて pinKind を決定するロジック（仮）
+        // place_type に基づいて pin画像 を決定するロジック（修正必須）
         const formattedData = data.map((spot: any) => {
             let pinKind = "/FoodPin.svg"; // デフォルト
             
