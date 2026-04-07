@@ -1,0 +1,124 @@
+.primaryText {
+  color: var(--primary-color);
+}
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.itemImage {
+  width: 100px;
+  height: 100px;
+  background-color: #ddd;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemName {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.itemDesc {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.itemPrice {
+  color: #EF633D;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.menuItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  background-color: #ddd;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.noImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: #888;
+}
+
+.menuItemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItemTop {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.itemName {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.itemDesc {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 2px 0 0 0;
+}
+
+.itemPrice {
+  color: #EF633D;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+
+.dots {
+  flex: 1;
+  border-bottom: 1.5px dotted #ccc;
+  margin: 0 8px;
+  transform: translateY(3px); /* Explicitly move the line up by 2px */
+}
+
+.showMoreMenu {
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+}
+

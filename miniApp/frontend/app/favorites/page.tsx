@@ -32,6 +32,7 @@ const FavoritesPage = () => {
                 fill
                 style={{ objectFit: "cover" }}
                 className={styles.cardImage}
+                unoptimized={item.image.startsWith('http')}
               />
               <div className={styles.cardOverlay}>
                 <div className={styles.cardHeader}>
@@ -63,6 +64,7 @@ const FavoritesPage = () => {
                 fill
                 style={{ objectFit: "cover" }}
                 className={styles.cardImage}
+                unoptimized={item.image.startsWith('http')}
               />
               <div className={styles.cardOverlay}>
                 <div className={styles.cardHeader}>

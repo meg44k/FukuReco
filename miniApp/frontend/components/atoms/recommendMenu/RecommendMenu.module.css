@@ -1,0 +1,48 @@
+.recommendedItem {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.itemImage {
+  width: 120px;
+  height: 120px;
+  background-color: #ddd;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.noImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemName {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.itemDesc {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.itemPrice {
+  color: #EF633D;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+

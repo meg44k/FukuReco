@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LIFFProvider } from "../providers/liff-providers";
-import MenuBar from "../components/atoms/menuBar/MenuBar"
-import styles from "./page.module.css";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 export const metadata: Metadata = {
   title: "フクレコ",
@@ -22,13 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body>
-        <LIFFProvider>{children}</LIFFProvider>
-        <div className={styles.menuBar}>
-        <MenuBar/>
-        </div>
+        <AppRouterCacheProvider>
+          <LIFFProvider>{children}</LIFFProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
 }
+

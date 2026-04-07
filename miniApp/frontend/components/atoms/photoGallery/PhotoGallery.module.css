@@ -1,0 +1,48 @@
+.galleryContainer{
+    position: relative; /* 子要素の absolute 配置の基準にする */
+    width: 100%;
+    height: 100%;      /* ここで具体的な高さを指定 */
+    overflow: hidden;
+}
+.imageTrack {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out; /* Smooth sliding */
+}
+
+.imageContainer {
+  position: relative;
+  min-width: 100%;
+  flex-shrink: 0; /* 追加: フレックスボックス内で画像が縮まないようにする */
+  height: 100%;
+}
+
+.mainImage,
+.mainVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carouselNav {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  color: white;
+}
+
+.carouselIndicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+}

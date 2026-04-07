@@ -1,8 +1,44 @@
+.floatingHeader {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.navVisible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.navHidden {
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 0;
+}
+
+.navButton {
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border: none;
+  border-radius: 6px; /* 縮小に合わせて角丸も調整 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
 .container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f5f5f5; /* Slight gray for overall background */
   color: var(--text-black);
-  padding-bottom: 160px; /* Space for fixed bottom buttons and nav */
+  padding-bottom: 80px; /* Space for fixed bottom buttons and nav */
   max-width: 500px;
   margin: 0 auto;
 }
@@ -14,51 +50,11 @@
   overflow: hidden; /* Hide images outside the view */
 }
 
-.imageTrack {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s ease-in-out; /* Smooth sliding */
-}
-
-.imageContainer {
-  position: relative;
-  min-width: 100%;
-  height: 100%;
-}
-
-.mainImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.carouselNav {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-  transform: translateY(-50%);
-  color: white;
-}
-
 .navIcon {
   cursor: pointer;
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
 }
 
-.carouselIndicator {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-}
 
 .content {
   background-color: white;
@@ -74,37 +70,18 @@
 .title {
   font-size: 1.8rem;
   font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.updatedAt {
+  font-size: 0.75rem;
+  color: #888;
   margin-bottom: 1rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 0.8rem;
-}
-
-.chip {
-  border-color: #EF633D !important;
-  color: #EF633D !important;
-  background-color: rgba(239, 99, 61, 0.1) !important; /* Semi-transparent version of #EF633D */
-  font-weight: bold !important;
-}
-
-.showMoreTags {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 0.9rem;
-  font-weight:500;
-  margin-bottom: 1.5rem;
-  cursor: pointer;
 }
 
 .safetySection {
   background-color: #eef4f1; /* Light green background from image */
-  padding: 1.5rem 1.2rem;
+  padding: 1rem 1.2rem;
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.06); /* Inner shadow on section */
 }
 
@@ -116,7 +93,7 @@
   font-size: 1.1rem;
   font-weight: bold;
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .safetyGrid {
@@ -129,8 +106,8 @@
 .safetyCard {
   background-color: white;
   border-radius: 12px;
-  padding: 0.6rem 1rem;
-  margin-bottom: 0.8rem;
+  padding: 0.4rem 1rem;
+  margin-bottom: 0.6rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   text-align: center;
   display: flex;
@@ -150,7 +127,7 @@
   font-weight: bold; /* Restored bold */
   font-size: 0.95rem;
   line-height: 1.2;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   color: var(--text-black); /* Restored color */
 }
 
@@ -180,46 +157,6 @@
 .sectionTitle {
   font-size: 1.2rem;
   font-weight: bold;
-}
-
-.primaryText {
-  color: var(--primary-color);
-}
-
-.recommendedItem {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.itemImage {
-  width: 100px;
-  height: 100px;
-  background-color: #ddd;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
-.itemInfo {
-  flex: 1;
-}
-
-.itemName {
-  font-weight: bold;
-  font-size: 1.05rem;
-  margin-bottom: 2px;
-}
-
-.itemDesc {
-  font-size: 0.8rem;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.itemPrice {
-  color: #EF633D;
-  font-weight: bold;
-  font-size: 1.1rem;
 }
 
 .menuList {
@@ -260,23 +197,6 @@
   white-space: nowrap;
 }
 
-.dots {
-  flex: 1;
-  border-bottom: 1.5px dotted #ccc;
-  margin: 0 8px;
-  transform: translateY(3px); /* Explicitly move the line up by 2px */
-}
-
-.showMoreMenu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-top: 1.5rem;
-  cursor: pointer;
-}
 
 .staffComment {
   background-color: #eef4f1;
@@ -327,6 +247,12 @@
   line-height: 1.6;
 }
 
+.link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .nearbyScroll {
   display: flex;
   gap: 12px;
@@ -344,15 +270,13 @@
 /* Footer UI */
 .actionFooter {
   position: fixed;
-  bottom: 80px; /* Above bottom nav */
+  bottom: 0px; /* Above bottom nav */
   left: 0;
   right: 0;
-  background-color: white;
   padding: 12px 20px;
   display: flex;
   gap: 12px;
   align-items: center;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
   z-index: 100;
   max-width: 500px;
   margin: 0 auto;
