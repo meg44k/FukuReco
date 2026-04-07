@@ -6,9 +6,6 @@
   flex-direction: column;
   overflow: hidden;
 
-  /* LINEミニアプリ safe area */
-  padding-bottom: 34px;
-
   box-sizing: border-box;
 }
 
