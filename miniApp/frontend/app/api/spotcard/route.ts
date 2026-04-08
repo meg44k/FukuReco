@@ -31,6 +31,10 @@ export async function GET(request: Request) {
                     tags (
                         detail 
                     )
+                ),
+                assets (
+                    url,
+                    is_cardthumbnail
                 )
             `)
             .eq('id', id)
@@ -44,6 +48,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'スポットが見つかりませんでした' }, { status: 404 });
         }
 
+        // サムネイル画像を取得（is_cardthumbnailがtrueのもの）
+        const thumbnail = data.assets?.find((a: any) => a.is_cardthumbnail === true);
+        const imageSrc = thumbnail?.url || "/sampleImage.png"; // 見つからなければデフォルト画像
+
         // MapSpotData (UI用) の形式に整形
         const formattedData = {
             id: data.id,
@@ -51,7 +59,7 @@ export async function GET(request: Request) {
             // 本来はカテゴリ等から判定するが、一旦共通のパスをセット（フロントエンドで上書き可能）
             pinKind: data.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
             spotName: data.name,
-            imageSrc: "/sampleImage.png", // 本来はDBの画像URLを使用する
+            imageSrc: imageSrc,
             spotTags: data.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
             detailURL: `/spots/restaurant/${data.id}`,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
