@@ -70,14 +70,14 @@ const FavoritesPage = () => {
 
           if (assetError) throw assetError;
 
-          const assetMap = assetData.reduce((acc: any, asset: any) => {
+          const assetMap = assetData.reduce((acc: Record<number, string>, asset: { spot_id: number, url: string }) => {
             if (!acc[asset.spot_id]) {
               acc[asset.spot_id] = asset.url;
             }
             return acc;
           }, {});
 
-          const formattedFavorites: FavoriteSpot[] = spotData.map((spot: any) => ({
+          const formattedFavorites: FavoriteSpot[] = spotData.map((spot: { id: number, name: string, place_type: string }) => ({
             id: spot.id,
             name: spot.name,
             placeType: spot.place_type,

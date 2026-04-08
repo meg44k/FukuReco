@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { Restaurant, Spot } from '@/types/spot'
+import { Restaurant } from '@/types/spot'
 import { Menu } from '@/types/menu'
 
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
@@ -26,9 +26,9 @@ interface Props {
 export default function RestaurantDetailPage({ params }: Props) {
   const { id } = use(params);
   const router = useRouter();
-  const [spotData, setSpotData] = useState<any>(null);
-  const [menuData, setMenuData] = useState<any[]>([]);
-  const [assetData, setAssetData] = useState<any[]>([]);
+  const [spotData, setSpotData] = useState<Record<string, unknown> | null>(null);
+  const [menuData, setMenuData] = useState<Record<string, unknown>[]>([]);
+  const [assetData, setAssetData] = useState<Record<string, unknown>[]>([]);
   const [tagData, setTagData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -60,7 +60,13 @@ export default function RestaurantDetailPage({ params }: Props) {
       setMenuData(menuRes.data || []);
       setAssetData(assetRes.data || []);
 
-      const tags = (tagRes.data as any[])?.map((item: any) => item.tags?.detail).filter(Boolean) || [];
+      const rawTags = tagRes.data as unknown as { tags: { detail: string } | { detail: string }[] | null }[];
+      const tags = rawTags?.map((item) => {
+        if (Array.isArray(item.tags)) {
+          return item.tags[0]?.detail;
+        }
+        return item.tags?.detail;
+      }).filter((detail): detail is string => !!detail) || [];
       setTagData(tags);
 
       setLoading(false);
@@ -72,7 +78,6 @@ export default function RestaurantDetailPage({ params }: Props) {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      // 50px以上スクロールしていて、かつ下にスクロールしている場合は隠す
       if (currentScrollY > lastScrollY && currentScrollY > 50) {
         setShowNav(false);
       } else {
@@ -89,39 +94,67 @@ export default function RestaurantDetailPage({ params }: Props) {
     notFound();
   }
 
-  if (loading) return null;
+  if (loading || !spotData) return null;
 
-  const restaurant: Restaurant = {
-    id: spotData.id,
-    name: spotData.name,
-    catchphrase: spotData.catchphrase,
-    distanceFromTransit: spotData.distance_from_transit,
-    stayDuration: spotData.stay_duration,
-    fukurekoComment: spotData.fukureko_comment,
-    address: spotData.address,
-    businessHours: spotData.business_hours,
-    phoneNumber: spotData.phone_number,
-    nearestStation: spotData.nearest_station,
-    websiteUrl: spotData.website_url,
-    averageBudget: spotData.average_budget,
-    placeType: spotData.place_type,
-    pricing: spotData.pricing || {},
-    facilities: spotData.facilities || {},
-    updatedAt: new Date(spotData.updated_at),
-    createdAt: new Date(spotData.created_at),
-    nearbyCoinLockers: spotData.nearby_coin_lockers,
-    parkingInfo: spotData.parking_info,
-    paymentMethods: spotData.payment_methods,
-    closedDays: spotData.closed_days,
-    reservationURL: spotData.reservation_url,
+  // Cast dynamic data to internal interfaces for property access
+  const spot = spotData as unknown as {
+    id: number;
+    name: string;
+    catchphrase?: string;
+    distance_from_transit?: string;
+    stay_duration?: string;
+    fukureko_comment?: string;
+    address: string;
+    business_hours?: string;
+    phone_number?: string;
+    nearest_station?: string;
+    website_url?: string;
+    average_budget?: string | number;
+    place_type: string;
+    pricing?: Record<string, unknown>;
+    facilities?: Record<string, unknown>;
+    updated_at: string;
+    created_at: string;
+    nearby_coin_lockers?: string;
+    parking_info?: string;
+    payment_methods?: string[];
+    closed_days?: string;
+    reservation_url?: string;
+    remarks?: string;
   };
 
-  const assetMap = assetData.reduce((acc, asset) => {
+  const restaurant: Restaurant = {
+    id: spot.id,
+    name: spot.name,
+    catchphrase: spot.catchphrase,
+    distanceFromTransit: spot.distance_from_transit,
+    stayDuration: spot.stay_duration,
+    fukurekoComment: spot.fukureko_comment,
+    address: spot.address,
+    businessHours: spot.business_hours,
+    phoneNumber: spot.phone_number,
+    nearestStation: spot.nearest_station,
+    websiteUrl: spot.website_url,
+    averageBudget: spot.average_budget,
+    placeType: spot.place_type,
+    pricing: spot.pricing || {},
+    facilities: spot.facilities || {},
+    updatedAt: new Date(spot.updated_at),
+    createdAt: new Date(spot.created_at),
+    nearbyCoinLockers: spot.nearby_coin_lockers,
+    parkingInfo: spot.parking_info,
+    paymentMethods: spot.payment_methods,
+    closedDays: spot.closed_days,
+    reservationURL: spot.reservation_url,
+    remarks: spot.remarks,
+  };
+
+  const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;
     return acc;
   }, {} as Record<number, string>);
 
-  const menus: Menu[] = menuData.map(m => ({
+  const menus: Menu[] = (menuData as unknown as { spot_id: number, name: string, price: number, detail: string, asset_id: number, is_recommend: boolean }[]).map(m => ({
     spotId: m.spot_id,
     name: m.name,
     price: m.price,
@@ -133,19 +166,11 @@ export default function RestaurantDetailPage({ params }: Props) {
   const recommendMenus = menus.filter(m => m.isRecommend);
   const generalMenus = menus.filter(m => !m.isRecommend);
   const photoUrls = assetData
-    ? assetData
-        .filter((a: any) => a.is_photo_gallery === true)
-        .sort((a: any, b: any) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
-        .map((a: any) => a.url || a.URL)
+    ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])
+        .filter((a) => a.is_photo_gallery === true)
+        .sort((a, b) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
+        .map((a) => a.url)
     : [];
-
-  const handleAction = () => {
-    if (restaurant.reservationURL) {
-      window.open(restaurant.reservationURL, '_blank', 'noopener,noreferrer');
-    } else if (restaurant.phoneNumber) {
-      window.location.href = `tel:${restaurant.phoneNumber}`;
-    }
-  };
 
   return (
     <div className={styles.container}>

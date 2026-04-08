@@ -4,6 +4,21 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+interface SpotTag {
+    tags: {
+        detail: string;
+    } | null;
+}
+
+interface Spot {
+    id: number;
+    name: string;
+    pricing: Record<string, unknown> | null;
+    latitude: number | null;
+    longitude: number | null;
+    spot_tags: SpotTag[];
+}
+
 export async function GET(request: Request) {
     try {
         // supabaseクライアント
@@ -41,13 +56,13 @@ export async function GET(request: Request) {
             }
 
             // mapでjsonを展開
-            const formattedData = data.map((item: any) => ({
+            const formattedData = (data as unknown as Spot[]).map((item) => ({
                 id: item.id,
                 name: item.name,
                 pricing: item.pricing,
                 latitude: item.latitude,
                 longitude: item.longitude,
-                tags: item?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
+                tags: item.spot_tags?.map((st) => st.tags?.detail).filter((detail): detail is string => !!detail) || []
             }));
 
             return NextResponse.json(formattedData);
@@ -86,17 +101,17 @@ export async function GET(request: Request) {
             }
 
             // mapでjsonを展開
-            const formattedData = data.spot_tags
-                .filter((item: any) => item.spots !== null)
-                .map((item: any) => {
-                    const temp = item.spots;
+            const formattedData = (data as unknown as { spot_tags: { spots: Spot | null }[] }).spot_tags
+                .filter((item) => item.spots !== null)
+                .map((item) => {
+                    const temp = item.spots as Spot;
                     return {
-                        id: temp?.id,
-                        name: temp?.name,
-                        pricing: temp?.pricing,
-                        latitude: temp?.latitude,
-                        longitude: temp?.longitude,
-                        tags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
+                        id: temp.id,
+                        name: temp.name,
+                        pricing: temp.pricing,
+                        latitude: temp.latitude,
+                        longitude: temp.longitude,
+                        tags: temp.spot_tags?.map((st) => st.tags?.detail).filter((detail): detail is string => !!detail) || []
                     };
                 });
 

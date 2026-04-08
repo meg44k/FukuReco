@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useLIFF } from "@/providers/liff-providers";
 
@@ -8,24 +8,24 @@ export function useFavorites() {
   const { liff } = useLIFF();
   const [favorites, setFavorites] = useState<(number | string)[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lineId, setLineId] = useState<string | null>(null);
+  const [lineId, setLineId] = useState<string | null>(() => {
+    // Initial state from environment variable if available
+    if (typeof window !== "undefined") {
+      const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID;
+      if (debugId) {
+        console.log("Using Debug LINE ID:", debugId);
+        return debugId;
+      }
+    }
+    return null;
+  });
 
   useEffect(() => {
-    // Debug mode: Use static ID if provided in .env.local
-    const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID;
-    if (debugId) {
-      console.log("Using Debug LINE ID:", debugId);
-      setLineId(debugId);
-      setLoading(false);
-      return;
-    }
-
-    if (!liff) return;
+    if (lineId || !liff) return;
 
     const getProfile = async () => {
       try {
         if (!liff.isLoggedIn()) {
-          // liff.login(); // Don't force login here, let the page handle it if needed
           setLoading(false);
           return;
         }
@@ -38,32 +38,43 @@ export function useFavorites() {
     };
 
     getProfile();
-  }, [liff]);
-
-  const fetchFavorites = useCallback(async () => {
-    if (!lineId) return;
-
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("favorites")
-      .select("spot_id")
-      .eq("user_id", lineId);
-
-    if (error) {
-      console.error("Error fetching favorites:", error);
-    } else {
-      setFavorites(data.map((f: any) => f.spot_id));
-    }
-    setLoading(false);
-  }, [lineId]);
+  }, [liff, lineId]);
 
   useEffect(() => {
-    if (lineId) {
-      fetchFavorites();
-    } else if (liff && !liff.isLoggedIn()) {
+    let ignore = false;
+
+    const fetchData = async () => {
+      if (!lineId) return;
+
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("spot_id")
+        .eq("user_id", lineId);
+
+      if (!ignore) {
+        if (error) {
+          console.error("Error fetching favorites:", error);
+        } else if (data) {
+          setFavorites(data.map((f: { spot_id: number | string }) => f.spot_id));
+        }
         setLoading(false);
+      }
+    };
+
+    if (lineId) {
+      fetchData();
+    } else if (liff && !liff.isLoggedIn()) {
+      // Use a microtask to avoid synchronous state update in effect body warning
+      Promise.resolve().then(() => {
+        if (!ignore) setLoading(false);
+      });
     }
-  }, [lineId, fetchFavorites, liff]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [lineId, liff]);
 
   const toggleFavorite = async (spotId: number | string) => {
     if (!lineId) {

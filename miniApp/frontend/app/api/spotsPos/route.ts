@@ -26,12 +26,12 @@ export async function GET() {
 
         // フロントエンドの MinimalSpotData 形式に合わせて変換
         // place_type に基づいて pin画像 を決定するロジック（修正必須）
-        const formattedData = data.map((spot: any) => {
+        const formattedData = (data as { id: number, latitude: number, longitude: number, place_type: string }[]).map((spot) => {
             let pinKind = "/FoodPin.svg"; // デフォルト
             
-            if (spot.placeType === "Cafe") pinKind = "/ChairPin.svg";
-            else if (spot.placeType === "Sightseeing") pinKind = "/CameraPin.svg";
-            else if (spot.placeType === "Shop") pinKind = "/GiftPin.svg";
+            if (spot.place_type === "Cafe") pinKind = "/ChairPin.svg";
+            else if (spot.place_type === "Sightseeing") pinKind = "/CameraPin.svg";
+            else if (spot.place_type === "Shop") pinKind = "/GiftPin.svg";
             
             return {
                 id: spot.id,

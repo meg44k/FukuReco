@@ -23,9 +23,11 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
     const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
     // 画像リストが変わった際にインデックスをリセットする
-    useEffect(() => {
+    const [prevImages, setPrevImages] = useState(headerImages);
+    if (headerImages !== prevImages) {
+        setPrevImages(headerImages);
         setCurrentImgIndex(0);
-    }, [headerImages]);
+    }
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 

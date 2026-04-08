@@ -56,6 +56,7 @@ type Props = {
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
     isFavorite?: boolean; // お気に入りかどうか
+    updatedAt?: Date; // 更新日
     onRouteClick: () => void;   // ルート検索ボタンの動作
     onDetailClick: () => void;  // もっと詳しくボタンの動作
     onCloseClick: () => void;   // 閉じるボタンの動作
@@ -68,10 +69,10 @@ export const SpotCard = ({
     isOpen,
     imageSrc,
     spotTags,
-    detailURL,
     price1,
     price2,
     isFavorite,
+    updatedAt,
     onRouteClick,
     onDetailClick,
     onCloseClick,
