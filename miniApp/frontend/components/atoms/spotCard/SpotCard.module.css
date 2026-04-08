@@ -43,13 +43,24 @@
     color: #c3c3c3;
 }
 
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5%;
+    margin-right: auto;
+    padding: 2px 0px;
+}
+
 .title {
     font-size: clamp(1.0rem, 0.25rem + 4.5vw, 2.25rem);
     font-weight: 700;
     color: #1E1E1E;
-    padding: 2px 0px;
-    margin-left: 5%;
-    margin-right: auto;
+}
+
+.updatedDate {
+    font-size: clamp(0.6rem, 0.3rem + 1.2vw, 0.9rem);
+    color: #666;
+    margin-top: -2px;
 }
 
 .statusBadge {

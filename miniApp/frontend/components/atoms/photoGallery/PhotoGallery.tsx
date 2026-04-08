@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import styles from "./PhotoGallery.module.css";
 import Image from "next/image";
 import {
@@ -12,13 +12,20 @@ interface PhotoGalleryProps {
 }
 
 export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
-    const headerImages = images.length > 0 ? images : [
-        "/ramen.jpg",
-        "/tonkotsu.jpg",
-        "/ramen.jpg", // 仮の3枚目
-    ];
+    const headerImages = useMemo(() => {
+        return images && images.length > 0 ? images : [
+            "/ramen.jpg",
+            "/tonkotsu.jpg",
+            "/ramen.jpg", // 仮の3枚目
+        ];
+    }, [images]);
 
     const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+    // 画像リストが変わった際にインデックスをリセットする
+    useEffect(() => {
+        setCurrentImgIndex(0);
+    }, [headerImages]);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
