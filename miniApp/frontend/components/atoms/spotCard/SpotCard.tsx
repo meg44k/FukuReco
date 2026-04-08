@@ -55,11 +55,7 @@ type Props = {
     detailURL: string; // 詳細のURL
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
-<<<<<<< HEAD
     isFavorite?: boolean; // お気に入りかどうか
-=======
-    updatedAt?: Date;   // 更新日時
->>>>>>> 341c60c35fc69a0d6658f4d3f2414f79c43324e8
     onRouteClick: () => void;   // ルート検索ボタンの動作
     onDetailClick: () => void;  // もっと詳しくボタンの動作
     onCloseClick: () => void;   // 閉じるボタンの動作
