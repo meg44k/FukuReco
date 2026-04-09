@@ -4,7 +4,7 @@ export type MapSpotData = {
   spotKind: "shop" | "spot";
   pinKind: string;             // 例: "/FoodPin.svg"
   spotName: string;
-  isOpen: boolean;             // 営業時間から計算済みのフラグ
+  isOpen: boolean;             // google map apiで取得  
   imageSrc: string;
   spotTags: string[];
   detailURL: string;

@@ -56,7 +56,9 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
     );
   }, []);
 
-  // ピンクリック時に詳細データを取得（現在はモックで対応）
+  const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(false);
+
+  // ピンクリック時に詳細データを取得
   const handlePinClick = async (minimalSpot: MinimalSpotData) => {
     if (selectedSpot?.id === minimalSpot.id) {
       setSelectedSpot(null);
@@ -67,23 +69,27 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
     const alreadyFetched = searchResults.find(s => s.id === minimalSpot.id);
     if (alreadyFetched) {
       setSelectedSpot(alreadyFetched);
-    } else {
-      // 将来的にはここで fetch(`/api/spots/${minimalSpot.id}`) などを行う
-      // 今回はテストとしてデータを生成してセット
-      const mockDetail: MapSpotData = {
-        ...minimalSpot,
-        spotKind: "shop",
-        spotName: `店舗 ${minimalSpot.id} (詳細フェッチ後)`,
-        isOpen: true,
-        imageSrc: "/sampleImage.png",
-        spotTags: ["タグ1", "タグ2"],
-        detailURL: `/spots/restaurant/${minimalSpot.id}`,
-        price1: "¥1,000〜",
-        updatedAt: new Date(),
-      };
-
-      setSelectedSpot(mockDetail);
+      setDirections(null);
+      setShowRoute(false);
+      return;
     }
+
+    // 2. なければ詳細をフェッチする
+    setIsLoadingDetail(true);
+    try {
+      const response = await fetch(`/api/spotcard?id=${minimalSpot.id}`);
+      if (!response.ok) {
+        throw new Error("詳細データの取得に失敗しました");
+      }
+      const detailData: MapSpotData = await response.json();
+      setSelectedSpot(detailData);
+    } catch (error) {
+      console.error(error);
+      // エラー時のフォールバックとして最小限の情報を表示するか、エラーメッセージを表示する処理を入れることも可能
+    } finally {
+      setIsLoadingDetail(false);
+    }
+
     setDirections(null);
     setShowRoute(false);
   };

@@ -1,31 +1,42 @@
 import { MapComponent } from "@/components/organisms/map/MapComponent";
 import { MapSpotData, MinimalSpotData } from "@/types/map";
+import { createClient } from '@/lib/supabase/server';
 
-export default function MapPage() {
-  // 1. 検索結果（例：もつ鍋で検索してヒットした数件）
-  const searchResults: MapSpotData[] = [
-    {
-      id: 1,
-      spotKind: "shop",
-      pinKind: "/FoodPin.svg",
-      spotName: "なんとかラーメン (検索結果)",
-      isOpen: true,
-      imageSrc: "/sampleImage.png",
-      spotTags: ["ラーメン", "豚骨", "待ち時間少", "禁煙"],
-      detailURL: "/spots/restaurant/1",
-      price1: "￥1,000〜2,000",
-      position: { lat: 33.5905, lng: 130.3817 },
-      updatedAt: new Date(),
-    }
-  ];
+export default async function MapPage() {
+  // 1. 検索結果（例：もつ鍋で検索してヒットした数件）※現状はモックデータ
+  const searchResults: MapSpotData[] = [];
 
-  // 2. 初期表示用の全店舗データ（100〜1000件規模を想定）
-  const initialSpots: MinimalSpotData[] = [
-    { id: 1, position: { lat: 33.5905, lng: 130.3817 }, pinKind: "/FoodPin.svg" },
-    { id: 2, position: { lat: 33.5900, lng: 130.3998 }, pinKind: "/ChairPin.svg" },
-    { id: 3, position: { lat: 33.5905, lng: 130.3857 }, pinKind: "/CameraPin.svg" },
-    { id: 4, position: { lat: 33.5900, lng: 130.3958 }, pinKind: "/GiftPin.svg" },
-  ];
+  // 2. DBから初期表示用の全店舗データ（最小限）を取得
+  const supabase = await createClient();
+  const { data, error } = await supabase
+      .from('spots')
+      .select(`
+          id,
+          latitude,
+          longitude,
+          place_type
+      `);
+
+  if (error) {
+      console.error("マップ初期データの取得に失敗しました", error);
+  }
+
+  // 取得したデータを MinimalSpotData 型にマッピング
+  const initialSpots: MinimalSpotData[] = (data || []).map((spot: any) => {
+      let pinKind = "/FoodPin.svg"; // 今後デフォルトのピンに変更
+      
+      // 仮のピン画像割り当てロジック
+      if (spot.place_type === "restaurant") pinKind = "/FoodPin.svg";
+      else if (spot.place_type === "sightseeing_spot") pinKind = "/CameraPin.svg";
+      else if (spot.place_type === "resting_spot") pinKind = "/ChairPin.svg";
+      else if (spot.place_type === "gift_spot") pinKind = "/GiftPin.svg";
+      
+      return {
+          id: spot.id,
+          position: { lat: parseFloat(spot.latitude), lng: parseFloat(spot.longitude) },
+          pinKind: pinKind
+      };
+  });
 
   return <MapComponent searchResults={searchResults} initialSpots={initialSpots} />;
 }
