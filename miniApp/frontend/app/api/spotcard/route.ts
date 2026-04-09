@@ -64,8 +64,8 @@ export async function GET(request: Request) {
             detailURL: `/spots/restaurant/${data.id}`,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
             position: {
-                lat: data.latitude,
-                lng: data.longitude
+                lat: parseFloat(data.latitude),
+                lng: parseFloat(data.longitude)
             },
             updatedAt: new Date(data.updated_at)
         };

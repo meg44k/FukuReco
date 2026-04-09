@@ -45,8 +45,8 @@ export async function GET(request: Request) {
                 id: item.id,
                 name: item.name,
                 pricing: item.pricing,
-                latitude: item.latitude,
-                longitude: item.longitude,
+                latitude: parseFloat(item.latitude),
+                longitude: parseFloat(item.longitude),
                 tags: item?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
             }));
 
@@ -94,8 +94,8 @@ export async function GET(request: Request) {
                         id: temp?.id,
                         name: temp?.name,
                         pricing: temp?.pricing,
-                        latitude: temp?.latitude,
-                        longitude: temp?.longitude,
+                        latitude: parseFloat(temp?.latitude),
+                        longitude: parseFloat(temp?.longitude),
                         tags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
                     };
                 });
