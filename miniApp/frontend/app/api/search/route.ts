@@ -25,13 +25,19 @@ export async function GET(request: Request) {
                 .select(`
                     id,
                     name,
+                    place_type,
                     pricing,
                     latitude,
                     longitude,
+                    updated_at,
                     spot_tags (
                         tags (
                             detail 
                         )
+                    ),
+                    assets (
+                        url,
+                        is_cardthumbnail
                     )
                 `)
                 .or(`name.ilike.%${keyword}%,catchphrase.ilike.%${keyword}%,fukureko_comment.ilike.%${keyword}%`);
@@ -41,14 +47,27 @@ export async function GET(request: Request) {
             }
 
             // mapでjsonを展開
-            const formattedData = data.map((item: any) => ({
-                id: item.id,
-                name: item.name,
-                pricing: item.pricing,
-                latitude: parseFloat(item.latitude),
-                longitude: parseFloat(item.longitude),
-                tags: item?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
-            }));
+            const formattedData = data.map((item: any) => {
+                // サムネイル画像を取得
+                const thumbnail = item.assets?.find((a: any) => a.is_cardthumbnail === true);
+                const imageSrc = thumbnail?.url || "/sampleImage.png";
+
+                return {
+                    id: item.id,
+                    spotKind: item.place_type,
+                    pinKind: item.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
+                    spotName: item.name,
+                    imageSrc: imageSrc,
+                    spotTags: item.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+                    detailURL: `/spots/restaurant/${item.id}`,
+                    price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
+                    position: {
+                        lat: parseFloat(item.latitude),
+                        lng: parseFloat(item.longitude)
+                    },
+                    updatedAt: new Date(item.updated_at)
+                };
+            });
 
             return NextResponse.json(formattedData);
 
@@ -62,13 +81,19 @@ export async function GET(request: Request) {
                         spots (
                             id,
                             name,
+                            place_type,
                             pricing,
                             latitude,
                             longitude,
+                            updated_at,
                             spot_tags (
                                 tags (
                                     detail 
                                 )
+                            ),
+                            assets (
+                                url,
+                                is_cardthumbnail
                             )
                         )
                     )
@@ -90,13 +115,24 @@ export async function GET(request: Request) {
                 .filter((item: any) => item.spots !== null)
                 .map((item: any) => {
                     const temp = item.spots;
+                    // サムネイル画像を取得
+                    const thumbnail = temp.assets?.find((a: any) => a.is_cardthumbnail === true);
+                    const imageSrc = thumbnail?.url || "/sampleImage.png";
+
                     return {
                         id: temp?.id,
-                        name: temp?.name,
-                        pricing: temp?.pricing,
-                        latitude: parseFloat(temp?.latitude),
-                        longitude: parseFloat(temp?.longitude),
-                        tags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || []
+                        spotKind: temp?.place_type,
+                        pinKind: temp?.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
+                        spotName: temp?.name,
+                        imageSrc: imageSrc,
+                        spotTags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+                        detailURL: `/spots/restaurant/${temp?.id}`,
+                        price1: typeof temp?.pricing === 'string' ? temp?.pricing : "価格情報なし",
+                        position: {
+                            lat: parseFloat(temp?.latitude),
+                            lng: parseFloat(temp?.longitude)
+                        },
+                        updatedAt: new Date(temp?.updated_at)
                     };
                 });
 

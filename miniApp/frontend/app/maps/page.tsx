@@ -1,10 +1,41 @@
 import { MapComponent } from "@/components/organisms/map/MapComponent";
 import { MapSpotData, MinimalSpotData } from "@/types/map";
 import { createClient } from '@/lib/supabase/server';
+import { headers } from 'next/headers';
 
-export default async function MapPage() {
-  // 1. 検索結果（例：もつ鍋で検索してヒットした数件）※現状はモックデータ
-  const searchResults: MapSpotData[] = [];
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function MapPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const keyword = typeof params?.keyword === 'string' ? params.keyword : undefined;
+  const options = typeof params?.options === 'string' ? params.options : undefined;
+
+  // 1. 検索結果
+  let searchResults: MapSpotData[] = [];
+
+  if (keyword || options) {
+    const headersList = await headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = headersList.get('x-forwarded-proto') || 'http';
+    const baseUrl = `${protocol}://${host}`;
+    
+    const url = new URL(`${baseUrl}/api/search`);
+    if (keyword) url.searchParams.append('keyword', keyword);
+    if (options) url.searchParams.append('options', options);
+
+    try {
+      const res = await fetch(url.toString());
+      if (res.ok) {
+        searchResults = await res.json();
+      } else {
+        console.error("検索結果の取得に失敗しました", res.statusText);
+      }
+    } catch (error) {
+      console.error("検索API呼び出しエラー:", error);
+    }
+  }
 
   // 2. DBから初期表示用の全店舗データ（最小限）を取得
   const supabase = await createClient();

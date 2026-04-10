@@ -13,6 +13,7 @@ import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { MapSpotData, MinimalSpotData } from "@/types/map";
+import { panMapToSpot } from "@/lib/map/mapUtils";
 
 const containerStyle = {
   width: "100%",
@@ -41,6 +42,13 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [showRoute, setShowRoute] = useState<boolean>(false);
+
+  // 検索結果がある場合、最初のスポットを選択状態にしてカードを表示する
+  useEffect(() => {
+    if (searchResults && searchResults.length > 0) {
+      setSelectedSpot(searchResults[0]);
+    }
+  }, [searchResults]);
 
   const options: google.maps.MapOptions = {
     mapId: "2180f9c8f0d419cfa3681583",
@@ -94,17 +102,9 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
     setShowRoute(false);
   };
 
-  const calculateOffsetByZoom = (zoom: number) => 0.00018 * Math.pow(2, 20 - zoom);
-
   useEffect(() => {
     if (!selectedSpot || !mapRef.current) return;
-    const map = mapRef.current;
-    const offsetLat = calculateOffsetByZoom(map.getZoom() ?? 15);
-    map.panTo(selectedSpot.position);
-    map.panTo({
-      lat: selectedSpot.position.lat - offsetLat,
-      lng: selectedSpot.position.lng,
-    });
+    panMapToSpot(mapRef.current, selectedSpot.position);
   }, [selectedSpot]);
 
   const directionsCallBack = (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
@@ -127,7 +127,12 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
         center={initCenter}
         zoom={14}
         options={options}
-        onLoad={(map) => { mapRef.current = map; }}
+        onLoad={(map) => {
+          mapRef.current = map;
+          if (selectedSpot) {
+            panMapToSpot(map, selectedSpot.position);
+          }
+        }}
         onClick={() => setSelectedSpot(null)}
       >
         {currentPos && selectedSpot && showRoute && !directions && (
