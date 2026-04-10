@@ -192,7 +192,12 @@ export const SpotCard = ({
                     <Button onClick={onDetailClick} variant="contained" href={detailURL}>
                     もっと詳しく
                     </Button>
-                    <Button onClick={onRouteClick} variant="outlined">
+                    <Button 
+                        variant="outlined" 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spotName)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                     ルートを見る
                     </Button>
                 </div>
