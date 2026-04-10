@@ -20,21 +20,45 @@
 /* カード表示領域（ピン選択時） */
 .cardWrapper {
   position: absolute;
-  left: 50%;
+  left: 0;
   bottom: 18px;
-  transform: translateX(-50%);
-  width: 95%;
-  max-width: 600px;
+  width: 100%;
   z-index: 10;
-
   transition: all 0.3s ease;
+}
+
+/* カードのリスト（横スクロール用） */
+.cardListContainer {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  padding: 0 2.5%; /* カード幅95%に合わせて中央寄せになるよう調整 */
+  scrollbar-width: none; /* Firefox用スクロールバー非表示 */
+  -ms-overflow-style: none; /* IE用スクロールバー非表示 */
+}
+.cardListContainer::-webkit-scrollbar {
+  display: none; /* Chrome/Safari用スクロールバー非表示 */
+}
+
+/* 各カードのラッパー */
+.cardItem {
+  flex: 0 0 100%; /* コンテナのpadding(左右2.5%ずつ)を除いた残り100%を使用し、画面幅95%を実現 */
+  max-width: 600px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+/* 1枚のみの場合は中央寄せにする */
+.cardItem:only-child {
+  margin: 0 auto;
 }
 
 /* カードが非表示の場合 */
 .cardHidden {
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, 20px);
+  transform: translateY(20px);
 }
 
 /* 現在地に戻るボタン */

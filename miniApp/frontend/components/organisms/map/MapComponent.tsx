@@ -43,12 +43,73 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [showRoute, setShowRoute] = useState<boolean>(false);
 
-  // 検索結果がある場合、最初のスポットを選択状態にしてカードを表示する
+  // カード表示用リスト
+  const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
+  const cardListRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const isScrollingByCode = useRef<boolean>(false); // プログラムによるスクロール中かどうかのフラグ
+
+  // 検索結果がある場合、最初のスポットを選択状態にしてリストをセットする
   useEffect(() => {
     if (searchResults && searchResults.length > 0) {
+      setDisplayCards(searchResults);
       setSelectedSpot(searchResults[0]);
     }
   }, [searchResults]);
+
+  // 交差オブザーバーでスクロール中のカードを検知し、マップを連動させる
+  useEffect(() => {
+    if (!cardListRef.current || displayCards.length <= 1) return;
+
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      if (isScrollingByCode.current) return; // プログラムによるスクロール中は無視
+
+      // 画面中央付近で最も交差しているカードを見つける
+      for (const entry of entries) {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          const spotIdAttr = entry.target.getAttribute('data-spot-id');
+          if (spotIdAttr) {
+            const spotId = Number(spotIdAttr);
+            if (selectedSpot?.id !== spotId) {
+              const nextSpot = displayCards.find(s => s.id === spotId);
+              if (nextSpot) {
+                setSelectedSpot(nextSpot);
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      root: cardListRef.current,
+      rootMargin: "0px -10% 0px -10%", // 画面中央付近を判定エリアにする
+      threshold: 0.5, // 半分以上見えたら交差と判定
+    });
+
+    Object.values(cardRefs.current).forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [displayCards, selectedSpot]);
+
+  // selectedSpot が変わったら（ピンタップ等）、該当のカードまでスクロールする
+  useEffect(() => {
+    if (!selectedSpot || !cardRefs.current[selectedSpot.id] || !cardListRef.current) return;
+
+    // 現在見えているカードと選択されたカードが違えばスクロール
+    const el = cardRefs.current[selectedSpot.id];
+    if (el) {
+      isScrollingByCode.current = true;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      
+      // スクロール完了後にフラグを戻す（簡易的なタイマー）
+      setTimeout(() => {
+        isScrollingByCode.current = false;
+      }, 500); 
+    }
+  }, [selectedSpot]);
 
   const options: google.maps.MapOptions = {
     mapId: "2180f9c8f0d419cfa3681583",
@@ -68,13 +129,8 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
 
   // ピンクリック時に詳細データを取得
   const handlePinClick = async (minimalSpot: MinimalSpotData) => {
-    if (selectedSpot?.id === minimalSpot.id) {
-      setSelectedSpot(null);
-      return;
-    }
-
-    // 1. すでに検索結果(searchResults)の中に詳細データがあれば、それを使う
-    const alreadyFetched = searchResults.find(s => s.id === minimalSpot.id);
+    // 1. すでに検索結果(displayCards)の中に詳細データがあれば、それを使う
+    const alreadyFetched = displayCards.find(s => s.id === minimalSpot.id);
     if (alreadyFetched) {
       setSelectedSpot(alreadyFetched);
       setDirections(null);
@@ -90,6 +146,9 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
         throw new Error("詳細データの取得に失敗しました");
       }
       const detailData: MapSpotData = await response.json();
+      
+      // フェッチした単一のスポットをカードリストにセットして表示
+      setDisplayCards([detailData]);
       setSelectedSpot(detailData);
     } catch (error) {
       console.error(error);
@@ -133,7 +192,10 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
             panMapToSpot(map, selectedSpot.position);
           }
         }}
-        onClick={() => setSelectedSpot(null)}
+        onClick={() => {
+          setSelectedSpot(null);
+          setDisplayCards([]);
+        }}
       >
         {currentPos && selectedSpot && showRoute && !directions && (
           <DirectionsService
@@ -180,28 +242,49 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
 
         <div className={selectedSpot ? styles.cardWrapper : `${styles.cardWrapper} ${styles.cardHidden}`}>
           {selectedSpot && (
-            <div className={styles.cardWrapper}>
-              <SpotCard
-                spotKind={selectedSpot.spotKind}
-                spotName={selectedSpot.spotName}
-                isOpen={selectedSpot.isOpen}
-                imageSrc={selectedSpot.imageSrc}
-                spotTags={selectedSpot.spotTags}
-                detailURL={selectedSpot.detailURL}
-                price1={selectedSpot.price1}
-                price2={selectedSpot.price2}
-                updatedAt={selectedSpot.updatedAt}
-                onCloseClick={() => setSelectedSpot(null)}
-                onDetailClick={() => {}}
-                onRouteClick={() => setShowRoute(true)}
-              />
+            <div
+              className={styles.cardListContainer}
+              ref={cardListRef}
+            >
+              {displayCards.map((spot) => (
+                <div 
+                  key={spot.id} 
+                  className={styles.cardItem}
+                  data-spot-id={spot.id}
+                  ref={(el) => {
+                    cardRefs.current[spot.id] = el;
+                  }}
+                >
+                  <SpotCard
+                    spotKind={spot.spotKind}
+                    spotName={spot.spotName}
+                    isOpen={spot.isOpen}
+                    imageSrc={spot.imageSrc}
+                    spotTags={spot.spotTags}
+                    detailURL={spot.detailURL}
+                    price1={spot.price1}
+                    price2={spot.price2}
+                    updatedAt={spot.updatedAt}
+                    onCloseClick={() => {
+                      setSelectedSpot(null);
+                      setDisplayCards([]);
+                    }}
+                    onDetailClick={() => {}}
+                    onRouteClick={() => setShowRoute(true)}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        <div className={styles.backToCurrentBtn}>
-          {!selectedSpot && <IconButton onClick={handleBackToCurrent}><LocateFixed /></IconButton>}
-        </div>
+        {!selectedSpot && (
+          <div className={styles.backToCurrentBtn}>
+            <IconButton onClick={handleBackToCurrent}>
+              <LocateFixed />
+            </IconButton>
+          </div>
+        )}
       </GoogleMap>
     </div>
   );
