@@ -75,8 +75,6 @@ type Props = {
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
     updatedAt?: Date | string;   // 更新日時
-    onRouteClick: () => void;   // ルート検索ボタンの動作
-    onDetailClick: () => void;  // もっと詳しくボタンの動作
     onCloseClick: () => void;   // 閉じるボタンの動作
 };
 
@@ -90,8 +88,6 @@ export const SpotCard = ({
     price1,
     price2,
     updatedAt,
-    onRouteClick,
-    onDetailClick,
     onCloseClick,
 }: Props) => {
 
@@ -189,7 +185,7 @@ export const SpotCard = ({
                 </div>
 
                 <div className={styles.cardFooter}>
-                    <Button onClick={onDetailClick} variant="contained" href={detailURL}>
+                    <Button variant="contained" href={detailURL}>
                     もっと詳しく
                     </Button>
                     <Button 

@@ -6,8 +6,6 @@ import {
   GoogleMap,
   Marker,
   useJsApiLoader,
-  DirectionsService,
-  DirectionsRenderer,
 } from '@react-google-maps/api'
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
@@ -40,63 +38,68 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
   const mapRef = useRef<google.maps.Map | null>(null);
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
-  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
-  const [showRoute, setShowRoute] = useState<boolean>(false);
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
   const cardListRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const isScrollingByCode = useRef<boolean>(false); // プログラムによるスクロール中かどうかのフラグ
+  const lastSelectedSource = useRef<'map' | 'scroll'>('map'); // 選択元の判定用フラグ
 
   // 検索結果がある場合、最初のスポットを選択状態にしてリストをセットする
   useEffect(() => {
     if (searchResults && searchResults.length > 0) {
+      lastSelectedSource.current = 'map';
       setDisplayCards(searchResults);
       setSelectedSpot(searchResults[0]);
     }
   }, [searchResults]);
 
-  // 交差オブザーバーでスクロール中のカードを検知し、マップを連動させる
-  useEffect(() => {
-    if (!cardListRef.current || displayCards.length <= 1) return;
+  // スクロール中のカードを検知し、マップを連動させる
+  const handleScroll = () => {
+    if (isScrollingByCode.current || !cardListRef.current || displayCards.length <= 1) return;
+    
+    const container = cardListRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
 
-    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-      if (isScrollingByCode.current) return; // プログラムによるスクロール中は無視
+    let closestSpotId: number | null = null;
+    let minDistance = Infinity;
 
-      // 画面中央付近で最も交差しているカードを見つける
-      for (const entry of entries) {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          const spotIdAttr = entry.target.getAttribute('data-spot-id');
-          if (spotIdAttr) {
-            const spotId = Number(spotIdAttr);
-            if (selectedSpot?.id !== spotId) {
-              const nextSpot = displayCards.find(s => s.id === spotId);
-              if (nextSpot) {
-                setSelectedSpot(nextSpot);
-              }
-            }
-          }
+    Object.entries(cardRefs.current).forEach(([id, el]) => {
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const elCenter = rect.left + rect.width / 2;
+        const distance = Math.abs(containerCenter - elCenter);
+        // コンテナの中央に最も近いカードを探す
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestSpotId = Number(id);
         }
       }
-    };
-
-    const observer = new IntersectionObserver(handleIntersect, {
-      root: cardListRef.current,
-      rootMargin: "0px -10% 0px -10%", // 画面中央付近を判定エリアにする
-      threshold: 0.5, // 半分以上見えたら交差と判定
     });
 
-    Object.values(cardRefs.current).forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [displayCards, selectedSpot]);
+    if (closestSpotId !== null) {
+      setSelectedSpot((prev) => {
+        if (prev?.id !== closestSpotId) {
+          const nextSpot = displayCards.find(s => s.id === closestSpotId);
+          if (nextSpot) {
+            lastSelectedSource.current = 'scroll';
+            return nextSpot;
+          }
+        }
+        return prev;
+      });
+    }
+  };
 
   // selectedSpot が変わったら（ピンタップ等）、該当のカードまでスクロールする
   useEffect(() => {
     if (!selectedSpot || !cardRefs.current[selectedSpot.id] || !cardListRef.current) return;
+
+    if (lastSelectedSource.current === 'scroll') {
+      return; // ユーザーのスクロールによって選択された場合はスクロール処理をスキップ
+    }
 
     // 現在見えているカードと選択されたカードが違えばスクロール
     const el = cardRefs.current[selectedSpot.id];
@@ -132,9 +135,8 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
     // 1. すでに検索結果(displayCards)の中に詳細データがあれば、それを使う
     const alreadyFetched = displayCards.find(s => s.id === minimalSpot.id);
     if (alreadyFetched) {
+      lastSelectedSource.current = 'map';
       setSelectedSpot(alreadyFetched);
-      setDirections(null);
-      setShowRoute(false);
       return;
     }
 
@@ -148,6 +150,7 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
       const detailData: MapSpotData = await response.json();
       
       // フェッチした単一のスポットをカードリストにセットして表示
+      lastSelectedSource.current = 'map';
       setDisplayCards([detailData]);
       setSelectedSpot(detailData);
     } catch (error) {
@@ -156,19 +159,12 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
     } finally {
       setIsLoadingDetail(false);
     }
-
-    setDirections(null);
-    setShowRoute(false);
   };
 
   useEffect(() => {
     if (!selectedSpot || !mapRef.current) return;
     panMapToSpot(mapRef.current, selectedSpot.position);
   }, [selectedSpot]);
-
-  const directionsCallBack = (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
-    if (result !== null && status === "OK") setDirections(result);
-  }
 
   const handleBackToCurrent = () => {
     if (mapRef.current && currentPos) {
@@ -197,19 +193,6 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
           setDisplayCards([]);
         }}
       >
-        {currentPos && selectedSpot && showRoute && !directions && (
-          <DirectionsService
-            options={{
-              origin: currentPos,
-              destination: selectedSpot.position,
-              travelMode: google.maps.TravelMode.TRANSIT,
-            }}
-            callback={directionsCallBack}
-          />
-        )}
-
-        {directions && <DirectionsRenderer options={{ directions, suppressMarkers: false }} />}
-
         {currentPos && (
           <Marker
             position={currentPos}
@@ -245,6 +228,7 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
             <div
               className={styles.cardListContainer}
               ref={cardListRef}
+              onScroll={handleScroll}
             >
               {displayCards.map((spot) => (
                 <div 
@@ -269,8 +253,6 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
                       setSelectedSpot(null);
                       setDisplayCards([]);
                     }}
-                    onDetailClick={() => {}}
-                    onRouteClick={() => setShowRoute(true)}
                   />
                 </div>
               ))}
