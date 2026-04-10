@@ -1,10 +1,11 @@
+import { ReactNode } from 'react';
 import { Button, IconButton, ThemeProvider, createTheme } from '@mui/material';
-import { X, Sun, Moon, User, Baby } from 'lucide-react';
+import { X, Sun, Moon, User, Baby, Banknote } from 'lucide-react';
 import styles from './SpotCard.module.css';
 import Image from "next/image"
 
 // 将来的にtypesディレクトリに移動
-type SpotKinds = "shop" | "spot";
+type SpotKinds = "restaurant" | "sightseeing_spot" | "gift_spot" | "resting_spot" | string;
 const MAX_TAGS = 4;
 
 // メインカラー
@@ -29,19 +30,37 @@ const theme = createTheme({
 })
 
 // アイコンのオブジェクト化
-const iconConfig = {
-  shop: {
+const iconConfig: Record<string, { icon1: ReactNode; icon2: ReactNode | null; bg1: string; bg2: string }> = {
+  restaurant: {
     icon1: <Sun />,
     icon2: <Moon />,
     bg1: "#efab58",
     bg2: "#5C6BC0",
   },
-  spot: {
+  sightseeing_spot: {
     icon1: <User />,
     icon2: <Baby />,
     bg1: "#26A69A",
     bg2: "#EF5350",
   },
+  gift_spot: {
+    icon1: <Banknote />,
+    icon2: null,
+    bg1: "#efab58",
+    bg2: "transparent",
+  },
+  resting_spot: {
+    icon1: <Banknote />,
+    icon2: null,
+    bg1: "#efab58",
+    bg2: "transparent",
+  },
+  default: {
+    icon1: <Sun />,
+    icon2: <Moon />,
+    bg1: "#B0B0B0",
+    bg2: "#9E9E9E",
+  }
   // アイコンの追加はここに
 };
 
@@ -55,7 +74,7 @@ type Props = {
     detailURL: string; // 詳細のURL
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
-    updatedAt?: Date;   // 更新日時
+    updatedAt?: Date | string;   // 更新日時
     onRouteClick: () => void;   // ルート検索ボタンの動作
     onDetailClick: () => void;  // もっと詳しくボタンの動作
     onCloseClick: () => void;   // 閉じるボタンの動作
@@ -76,7 +95,7 @@ export const SpotCard = ({
     onCloseClick,
 }: Props) => {
 
-    const config = iconConfig[spotKind];
+    const config = iconConfig[spotKind] || iconConfig.default;
     // タグを最大4つに
     const limitedTags = spotTags.slice(0, MAX_TAGS);
     // タグを2つに分割
@@ -90,11 +109,6 @@ export const SpotCard = ({
                 <div className={styles.cardHeader}>
                     <div className={styles.titleContainer}>
                         <div className={styles.title}>{spotName}</div>
-                        {updatedAt && (
-                            <div className={styles.updatedDate}>
-                                更新日: {updatedAt.toLocaleDateString('ja-JP')}
-                            </div>
-                        )}
                     </div>
 
                     {typeof isOpen === 'boolean' && (
@@ -138,15 +152,17 @@ export const SpotCard = ({
                             ))}
                         </div>
 
-                        <div className={styles.pieceRange}>
-                            <span
-                            className={styles.icon}
-                            style={{ backgroundColor: config.bg1 }}
-                            >
-                            {config.icon1}
-                            </span>
-                            {price1 || "-"}
-                        </div>
+                        {config.icon1 && (
+                            <div className={styles.pieceRange}>
+                                <span
+                                className={styles.icon}
+                                style={{ backgroundColor: config.bg1 }}
+                                >
+                                {config.icon1}
+                                </span>
+                                {price1 || "-"}
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.row}>
@@ -158,15 +174,17 @@ export const SpotCard = ({
                             ))}
                         </div>
 
-                        <div className={styles.pieceRange}>
-                            <span
-                            className={styles.icon}
-                            style={{ backgroundColor: config.bg2 }}
-                            >
-                            {config.icon2}
-                            </span>
-                            {price2 || "-"}
-                        </div>
+                        {config.icon2 && (
+                            <div className={styles.pieceRange}>
+                                <span
+                                className={styles.icon}
+                                style={{ backgroundColor: config.bg2 }}
+                                >
+                                {config.icon2}
+                                </span>
+                                {price2 || "-"}
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -128,12 +128,16 @@
     display: flex;
     flex-wrap: wrap;
     gap: clamp(6px, 1vw, 10px);
+    /* font-sizeの1.5倍程度の高さを指定し、2行目以降（入り切らないタグ）を非表示にする */
+    height: clamp(1.125rem, 0.5625rem + 2.7vw, 1.6875rem);
+    overflow: hidden;
 }
 
 .tag {
     font-size: clamp(0.75rem, 0.375rem + 1.8vw, 1.125rem);
     font-weight: 550;
     color: #3F7D58;
+    white-space: nowrap;
 }
 
 
@@ -160,6 +164,7 @@
     height: clamp(1rem, 0.75rem + 2.0vw, 2.0rem);
 
     border-radius: 20%;
+    color: white;
 }
 
 .icon svg {
