@@ -10,7 +10,7 @@ import {
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
-import { MapSpotData, MinimalSpotData } from "@/types/map";
+import { MapSpotData, MinimalSpotData, HAKATA_STATION } from "@/types/map";
 import { panMapToSpot } from "@/lib/map/mapUtils";
 
 const containerStyle = {
@@ -18,18 +18,19 @@ const containerStyle = {
   height: "100vh",
 };
 
-// マップ表示時の中心
+// マップ表示時の初期中心（天神付近）
 const initCenter = {
   lat: 33.5902,
   lng: 130.4017,
 };
 
 type Props = {
-  searchResults: MapSpotData[]; // 検索結果（詳細データあり）
   initialSpots: MinimalSpotData[]; // 初期表示は最小限のデータ配列を受け取る
+  keyword?: string; // 検索キーワード
+  options?: string; // 検索タグ
 }
 
-export const MapComponent = ({ searchResults, initialSpots }: Props) => {
+export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: Props) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
@@ -38,6 +39,7 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
   const mapRef = useRef<google.maps.Map | null>(null);
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
@@ -46,14 +48,57 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   const isScrollingByCode = useRef<boolean>(false); // プログラムによるスクロール中かどうかのフラグ
   const lastSelectedSource = useRef<'map' | 'scroll'>('map'); // 選択元の判定用フラグ
 
-  // 検索結果がある場合、最初のスポットを選択状態にしてリストをセットする
+  // 位置情報を取得する
   useEffect(() => {
-    if (searchResults && searchResults.length > 0) {
-      lastSelectedSource.current = 'map';
-      setDisplayCards(searchResults);
-      setSelectedSpot(searchResults[0]);
-    }
-  }, [searchResults]);
+    if (typeof navigator === 'undefined') return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+        setCurrentPos(pos);
+        setLocationStatus('allowed');
+      },
+      (error) => {
+        console.warn("位置情報取得失敗、デフォルト（博多駅）を使用します", error);
+        setCurrentPos(HAKATA_STATION);
+        setLocationStatus('denied');
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  }, []);
+
+  // 現在地（またはデフォルト）が確定したらAPIから5件取得する
+  useEffect(() => {
+    if (locationStatus === 'loading' || !currentPos) return;
+
+    const fetchTop5 = async () => {
+      const url = new URL(window.location.origin + '/api/search');
+      if (keyword) url.searchParams.append('keyword', keyword);
+      if (searchOptions) url.searchParams.append('options', searchOptions);
+      
+      // 現在地情報を渡すことでサーバー側で5件に絞り込む
+      url.searchParams.append('lat', currentPos.lat.toString());
+      url.searchParams.append('lng', currentPos.lng.toString());
+
+      try {
+        const res = await fetch(url.toString());
+        if (res.ok) {
+          const data: MapSpotData[] = await res.json();
+          setDisplayCards(data);
+          
+          // 最初の1件を選択状態にする
+          if (data.length > 0) {
+            lastSelectedSource.current = 'map';
+            setSelectedSpot(data[0]);
+          }
+        }
+      } catch (error) {
+        console.error("検索API呼び出しエラー:", error);
+      }
+    };
+
+    fetchTop5();
+  }, [locationStatus, currentPos, keyword, searchOptions]);
 
   // スクロール中のカードを検知し、マップを連動させる
   const handleScroll = () => {
@@ -71,7 +116,6 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
         const rect = el.getBoundingClientRect();
         const elCenter = rect.left + rect.width / 2;
         const distance = Math.abs(containerCenter - elCenter);
-        // コンテナの中央に最も近いカードを探す
         if (distance < minDistance) {
           minDistance = distance;
           closestSpotId = Number(id);
@@ -97,69 +141,17 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
   useEffect(() => {
     if (!selectedSpot || !cardRefs.current[selectedSpot.id] || !cardListRef.current) return;
 
-    if (lastSelectedSource.current === 'scroll') {
-      return; // ユーザーのスクロールによって選択された場合はスクロール処理をスキップ
-    }
+    if (lastSelectedSource.current === 'scroll') return;
 
-    // 現在見えているカードと選択されたカードが違えばスクロール
     const el = cardRefs.current[selectedSpot.id];
     if (el) {
       isScrollingByCode.current = true;
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      
-      // スクロール完了後にフラグを戻す（簡易的なタイマー）
       setTimeout(() => {
         isScrollingByCode.current = false;
       }, 500); 
     }
   }, [selectedSpot]);
-
-  const options: google.maps.MapOptions = {
-    mapId: "2180f9c8f0d419cfa3681583",
-    disableDefaultUI: true,
-  };
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCurrentPos({ lat: position.coords.latitude, lng: position.coords.longitude });
-      },
-      (error) => console.error("位置情報取得失敗", error)
-    );
-  }, []);
-
-  const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(false);
-
-  // ピンクリック時に詳細データを取得
-  const handlePinClick = async (minimalSpot: MinimalSpotData) => {
-    // 1. すでに検索結果(displayCards)の中に詳細データがあれば、それを使う
-    const alreadyFetched = displayCards.find(s => s.id === minimalSpot.id);
-    if (alreadyFetched) {
-      lastSelectedSource.current = 'map';
-      setSelectedSpot(alreadyFetched);
-      return;
-    }
-
-    // 2. なければ詳細をフェッチする
-    setIsLoadingDetail(true);
-    try {
-      const response = await fetch(`/api/spotcard?id=${minimalSpot.id}`);
-      if (!response.ok) {
-        throw new Error("詳細データの取得に失敗しました");
-      }
-      const detailData: MapSpotData = await response.json();
-      
-      // フェッチした単一のスポットをカードリストにセットして表示
-      lastSelectedSource.current = 'map';
-      setDisplayCards([detailData]);
-      setSelectedSpot(detailData);
-    } catch (error) {
-      console.error(error);
-      // エラー時のフォールバックとして最小限の情報を表示するか、エラーメッセージを表示する処理を入れることも可能
-    } finally {
-      setIsLoadingDetail(false);
-    }
-  };
 
   useEffect(() => {
     if (!selectedSpot || !mapRef.current) return;
@@ -181,7 +173,10 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
         mapContainerStyle={containerStyle}
         center={initCenter}
         zoom={14}
-        options={options}
+        options={{
+          mapId: "2180f9c8f0d419cfa3681583",
+          disableDefaultUI: true,
+        }}
         onLoad={(map) => {
           mapRef.current = map;
           if (selectedSpot) {
@@ -193,7 +188,7 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
           setDisplayCards([]);
         }}
       >
-        {currentPos && (
+        {locationStatus === 'allowed' && currentPos && (
           <Marker
             position={currentPos}
             icon={{
@@ -207,12 +202,27 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
           />
         )}
 
-        {/* 最小限のデータ(initialSpots)でピンを大量に描画 */}
         {initialSpots.map((spot) => (
           <Marker
             key={spot.id}
             position={spot.position}
-            onClick={() => handlePinClick(spot)}
+            onClick={async () => {
+              // ピン選択時はその詳細を別途取得するロジックが必要（以前の実装を流用可能）
+              const alreadyFetched = displayCards.find(s => s.id === spot.id);
+              if (alreadyFetched) {
+                setSelectedSpot(alreadyFetched);
+                return;
+              }
+              // APIから詳細を取得
+              try {
+                const response = await fetch(`/api/spotcard?id=${spot.id}`);
+                if (response.ok) {
+                  const detailData: MapSpotData = await response.json();
+                  setDisplayCards([detailData]); // リストを上書きして選択状態にする
+                  setSelectedSpot(detailData);
+                }
+              } catch (e) { console.error(e); }
+            }}
             icon={{
               url: spot.pinKind,
               scaledSize: new google.maps.Size(
@@ -225,19 +235,13 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
 
         <div className={selectedSpot ? styles.cardWrapper : `${styles.cardWrapper} ${styles.cardHidden}`}>
           {selectedSpot && (
-            <div
-              className={styles.cardListContainer}
-              ref={cardListRef}
-              onScroll={handleScroll}
-            >
+            <div className={styles.cardListContainer} ref={cardListRef} onScroll={handleScroll}>
               {displayCards.map((spot) => (
                 <div 
                   key={spot.id} 
-                  className={styles.cardItem}
+                  className={styles.cardItem} 
                   data-spot-id={spot.id}
-                  ref={(el) => {
-                    cardRefs.current[spot.id] = el;
-                  }}
+                  ref={(el) => { cardRefs.current[spot.id] = el; }}
                 >
                   <SpotCard
                     spotKind={spot.spotKind}
@@ -248,7 +252,6 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
                     detailURL={spot.detailURL}
                     price1={spot.price1}
                     price2={spot.price2}
-                    updatedAt={spot.updatedAt}
                     onCloseClick={() => {
                       setSelectedSpot(null);
                       setDisplayCards([]);
@@ -260,7 +263,7 @@ export const MapComponent = ({ searchResults, initialSpots }: Props) => {
           )}
         </div>
 
-        {!selectedSpot && (
+        {locationStatus === 'allowed' && !selectedSpot && (
           <div className={styles.backToCurrentBtn}>
             <IconButton onClick={handleBackToCurrent}>
               <LocateFixed />

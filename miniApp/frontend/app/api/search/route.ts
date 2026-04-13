@@ -12,14 +12,31 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const options = searchParams.get('options');
         const keyword = searchParams.get('keyword');
+        const lat = searchParams.get('lat');
+        const lng = searchParams.get('lng');
+
+        // 距離計算用関数 (Haversine formula)
+        const getDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        };
 
         // バリデーション
         if (!options && !keyword) {
             return NextResponse.json([], { status: 200 });
         }
 
+        let rawData: any[] = [];
+
         if (keyword) {
-            // キーワード検索（店舗名、キャッチフレーズ、フクレココメントに対して部分一致検索を行う）
+            // キーワード検索
             const { data, error } = await supabase
                 .from('spots')
                 .select(`
@@ -42,39 +59,12 @@ export async function GET(request: Request) {
                 `)
                 .or(`name.ilike.%${keyword}%,catchphrase.ilike.%${keyword}%,fukureko_comment.ilike.%${keyword}%`);
 
-            if (error) {
-                return NextResponse.json({ error: error.message }, { status: 500 });
-            }
-
-            // mapでjsonを展開
-            const formattedData = data.map((item: any) => {
-                // サムネイル画像を取得
-                const thumbnail = item.assets?.find((a: any) => a.is_cardthumbnail === true);
-                const imageSrc = thumbnail?.url || "/sampleImage.png";
-
-                return {
-                    id: item.id,
-                    spotKind: item.place_type,
-                    pinKind: item.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
-                    spotName: item.name,
-                    imageSrc: imageSrc,
-                    spotTags: item.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
-                    detailURL: `/spots/restaurant/${item.id}`,
-                    price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
-                    position: {
-                        lat: parseFloat(item.latitude),
-                        lng: parseFloat(item.longitude)
-                    },
-                    updatedAt: new Date(item.updated_at)
-                };
-            });
-
-            return NextResponse.json(formattedData);
+            if (error) throw error;
+            rawData = data || [];
 
         } else if (options) {
             // タグによる完全一致検索
             const { data, error } = await supabase
-                // 将来的にはSupabase CLI(または別ファイル)でテーブル名,カラム名を管理
                 .from('tags')
                 .select(`
                     spot_tags (
@@ -102,42 +92,49 @@ export async function GET(request: Request) {
                 .single();
 
             if (error) {
-                // タグがヒットしなかった場合、空配列を返す
-                if (error.code === 'PGRST116') {
-                    return NextResponse.json([]);
-                }
-
-                return NextResponse.json({ error: error.message }, { status: 500 });
+                if (error.code === 'PGRST116') return NextResponse.json([]);
+                throw error;
             }
-
-            // mapでjsonを展開
-            const formattedData = data.spot_tags
-                .filter((item: any) => item.spots !== null)
-                .map((item: any) => {
-                    const temp = item.spots;
-                    // サムネイル画像を取得
-                    const thumbnail = temp.assets?.find((a: any) => a.is_cardthumbnail === true);
-                    const imageSrc = thumbnail?.url || "/sampleImage.png";
-
-                    return {
-                        id: temp?.id,
-                        spotKind: temp?.place_type,
-                        pinKind: temp?.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
-                        spotName: temp?.name,
-                        imageSrc: imageSrc,
-                        spotTags: temp?.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
-                        detailURL: `/spots/restaurant/${temp?.id}`,
-                        price1: typeof temp?.pricing === 'string' ? temp?.pricing : "価格情報なし",
-                        position: {
-                            lat: parseFloat(temp?.latitude),
-                            lng: parseFloat(temp?.longitude)
-                        },
-                        updatedAt: new Date(temp?.updated_at)
-                    };
-                });
-
-            return NextResponse.json(formattedData);
+            rawData = data.spot_tags.map((item: any) => item.spots).filter(Boolean);
         }
+
+        // フォーマットとソート
+        let formattedData = rawData.map((item: any) => {
+            const thumbnail = item.assets?.find((a: any) => a.is_cardthumbnail === true);
+            const imageSrc = thumbnail?.url || "/sampleImage.png";
+
+            return {
+                id: item.id,
+                spotKind: item.place_type,
+                pinKind: item.place_type === "restaurant" ? "/FoodPin.svg" : 
+                         item.place_type === "sightseeing_spot" ? "/CameraPin.svg" : 
+                         item.place_type === "resting_spot" ? "/ChairPin.svg" : "/GiftPin.svg",
+                spotName: item.name,
+                imageSrc: imageSrc,
+                spotTags: item.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+                detailURL: `/spots/restaurant/${item.id}`,
+                price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
+                position: {
+                    lat: parseFloat(item.latitude),
+                    lng: parseFloat(item.longitude)
+                },
+                updatedAt: new Date(item.updated_at)
+            };
+        });
+
+        // 現在地が渡されている場合は距離でソートし、5件に絞る
+        if (lat && lng) {
+            const userLat = parseFloat(lat);
+            const userLng = parseFloat(lng);
+            formattedData.sort((a, b) => {
+                const distA = getDistance(userLat, userLng, a.position.lat, a.position.lng);
+                const distB = getDistance(userLat, userLng, b.position.lat, b.position.lng);
+                return distA - distB;
+            });
+            formattedData = formattedData.slice(0, 5);
+        }
+
+        return NextResponse.json(formattedData);
 
     } catch (err) {
         console.error('Unexpected Error:', err);

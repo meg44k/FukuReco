@@ -1,7 +1,6 @@
 import { MapComponent } from "@/components/organisms/map/MapComponent";
-import { MapSpotData, MinimalSpotData } from "@/types/map";
+import { MinimalSpotData } from "@/types/map";
 import { createClient } from '@/lib/supabase/server';
-import { headers } from 'next/headers';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -12,32 +11,8 @@ export default async function MapPage({ searchParams }: Props) {
   const keyword = typeof params?.keyword === 'string' ? params.keyword : undefined;
   const options = typeof params?.options === 'string' ? params.options : undefined;
 
-  // 1. 検索結果
-  let searchResults: MapSpotData[] = [];
-
-  if (keyword || options) {
-    const headersList = await headers();
-    const host = headersList.get('host') || 'localhost:3000';
-    const protocol = headersList.get('x-forwarded-proto') || 'http';
-    const baseUrl = `${protocol}://${host}`;
-    
-    const url = new URL(`${baseUrl}/api/search`);
-    if (keyword) url.searchParams.append('keyword', keyword);
-    if (options) url.searchParams.append('options', options);
-
-    try {
-      const res = await fetch(url.toString());
-      if (res.ok) {
-        searchResults = await res.json();
-      } else {
-        console.error("検索結果の取得に失敗しました", res.statusText);
-      }
-    } catch (error) {
-      console.error("検索API呼び出しエラー:", error);
-    }
-  }
-
-  // 2. DBから初期表示用の全店舗データ（最小限）を取得
+  // DBから初期表示用の全店舗データ（最小限のピン情報）のみを取得
+  // これにより、カードが表示される前でもマップ上にピンが表示される
   const supabase = await createClient();
   const { data, error } = await supabase
       .from('spots')
@@ -52,11 +27,8 @@ export default async function MapPage({ searchParams }: Props) {
       console.error("マップ初期データの取得に失敗しました", error);
   }
 
-  // 取得したデータを MinimalSpotData 型にマッピング
   const initialSpots: MinimalSpotData[] = (data || []).map((spot: any) => {
-      let pinKind = "/FoodPin.svg"; // 今後デフォルトのピンに変更
-      
-      // 仮のピン画像割り当てロジック
+      let pinKind = "/FoodPin.svg";
       if (spot.place_type === "restaurant") pinKind = "/FoodPin.svg";
       else if (spot.place_type === "sightseeing_spot") pinKind = "/CameraPin.svg";
       else if (spot.place_type === "resting_spot") pinKind = "/ChairPin.svg";
@@ -69,5 +41,7 @@ export default async function MapPage({ searchParams }: Props) {
       };
   });
 
-  return <MapComponent searchResults={searchResults} initialSpots={initialSpots} />;
+  // 検索条件 (keyword, options) をそのままクライアントコンポーネントに渡す
+  // クライアント側で位置情報が確定した瞬間に、これらを使ってAPIを叩く
+  return <MapComponent initialSpots={initialSpots} keyword={keyword} options={options} />;
 }

@@ -20,3 +20,10 @@ export type MinimalSpotData = {
   position: google.maps.LatLngLiteral;
   pinKind: string;             // アイコンの種類（種類によってピンを変えるため保持）
 };
+
+// デフォルトの座標（位置情報が拒否された場合などのフォールバック）
+// 博多駅付近
+export const HAKATA_STATION: google.maps.LatLngLiteral = {
+  lat: 33.5897,
+  lng: 130.4208,
+};
