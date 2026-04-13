@@ -206,6 +206,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
           <Marker
             key={spot.id}
             position={spot.position}
+            zIndex={selectedSpot?.id === spot.id ? 1000 : 1}
             onClick={async () => {
               // ピン選択時はその詳細を別途取得するロジックが必要（以前の実装を流用可能）
               const alreadyFetched = displayCards.find(s => s.id === spot.id);

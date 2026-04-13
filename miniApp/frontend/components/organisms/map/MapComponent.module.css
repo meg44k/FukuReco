@@ -32,8 +32,7 @@
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 16px;
-  padding: 0 2.5%; /* カード幅95%に合わせて中央寄せになるよう調整 */
+  padding: 0;
   scrollbar-width: none; /* Firefox用スクロールバー非表示 */
   -ms-overflow-style: none; /* IE用スクロールバー非表示 */
 }
@@ -43,15 +42,18 @@
 
 /* 各カードのラッパー */
 .cardItem {
-  flex: 0 0 100%; /* コンテナのpadding(左右2.5%ずつ)を除いた残り100%を使用し、画面幅95%を実現 */
-  max-width: 600px;
+  flex: 0 0 100%; /* 1つのアイテムが画面全幅を占有 */
   scroll-snap-align: center;
   scroll-snap-stop: always;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* 1枚のみの場合は中央寄せにする */
-.cardItem:only-child {
-  margin: 0 auto;
+/* カード自体の横幅制御（モバイルでの余白確保） */
+.cardItem > div {
+  width: 95%; 
+  max-width: 600px;
 }
 
 /* カードが非表示の場合 */
