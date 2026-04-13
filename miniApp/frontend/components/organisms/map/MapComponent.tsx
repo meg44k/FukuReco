@@ -274,7 +274,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
           )}
         </div>
 
-        {locationStatus === 'allowed' && !selectedSpot && (
+        {!selectedSpot && locationStatus === 'allowed' && currentPos && (
           <div className={styles.backToCurrentBtn}>
             <IconButton onClick={handleBackToCurrent}>
               <LocateFixed />
