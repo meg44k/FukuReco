@@ -236,13 +236,21 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
         <div className={selectedSpot ? styles.cardWrapper : `${styles.cardWrapper} ${styles.cardHidden}`}>
           {selectedSpot && (
-            <div className={styles.cardListContainer} ref={cardListRef} onScroll={handleScroll}>
+            <div
+              className={styles.cardListContainer}
+              ref={cardListRef}
+              onScroll={handleScroll}
+            >
+              {/* 最初と最後のカードも中央に来るようにスペーサーを配置 */}
+              <div className={styles.spacer} />
               {displayCards.map((spot) => (
                 <div 
                   key={spot.id} 
-                  className={styles.cardItem} 
+                  className={styles.cardItem}
                   data-spot-id={spot.id}
-                  ref={(el) => { cardRefs.current[spot.id] = el; }}
+                  ref={(el) => {
+                    cardRefs.current[spot.id] = el;
+                  }}
                 >
                   <SpotCard
                     spotKind={spot.spotKind}
@@ -253,6 +261,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                     detailURL={spot.detailURL}
                     price1={spot.price1}
                     price2={spot.price2}
+                    updatedAt={spot.updatedAt}
                     onCloseClick={() => {
                       setSelectedSpot(null);
                       setDisplayCards([]);
@@ -260,6 +269,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                   />
                 </div>
               ))}
+              <div className={styles.spacer} />
             </div>
           )}
         </div>
