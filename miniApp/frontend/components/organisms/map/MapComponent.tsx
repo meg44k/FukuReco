@@ -2,6 +2,7 @@
 
 import styles from "./MapComponent.module.css"
 import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   GoogleMap,
   Marker,
@@ -35,6 +36,11 @@ type Props = {
 }
 
 export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: Props) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const hasInitializedFromUrl = useRef(false);
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
@@ -54,6 +60,28 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const isScrollingByCode = useRef<boolean>(false); // プログラムによるスクロール中かどうかのフラグ
   const lastSelectedSource = useRef<'map' | 'scroll'>('map'); // 選択元の判定用フラグ
+
+  // 選択中のスポットが変わったらURLのクエリパラメータを更新する
+  useEffect(() => {
+    if (!hasInitializedFromUrl.current) return;
+
+    // window.location.searchを使用して無限ループを防ぐ
+    const params = new URLSearchParams(window.location.search);
+    const currentId = params.get('selectedId');
+    const newId = selectedSpot?.id.toString() || null;
+
+    if (newId) {
+      if (currentId !== newId) {
+        params.set('selectedId', newId);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    } else {
+      if (currentId) {
+        params.delete('selectedId');
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }
+  }, [selectedSpot?.id, pathname, router]);
 
   // 位置情報を取得する
   useEffect(() => {
@@ -91,6 +119,34 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         const res = await fetch(url.toString());
         if (res.ok) {
           const data: MapSpotData[] = await res.json();
+          
+          if (!hasInitializedFromUrl.current) {
+            hasInitializedFromUrl.current = true;
+            const initialSelectedId = searchParams.get('selectedId');
+            if (initialSelectedId) {
+              const targetSpot = data.find(s => s.id.toString() === initialSelectedId);
+              if (targetSpot) {
+                setDisplayCards(data);
+                lastSelectedSource.current = 'map';
+                setSelectedSpot(targetSpot);
+                return;
+              } else {
+                try {
+                  const detailRes = await fetch(`/api/spotcard?id=${initialSelectedId}`);
+                  if (detailRes.ok) {
+                    const detailData: MapSpotData = await detailRes.json();
+                    setDisplayCards([detailData]);
+                    lastSelectedSource.current = 'map';
+                    setSelectedSpot(detailData);
+                    return;
+                  }
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            }
+          }
+
           setDisplayCards(data);
           
           // 最初の1件を選択状態にする
@@ -107,6 +163,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     };
 
     fetchTop5();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationStatus, currentPos, activeKeyword, searchOptions]);
 
   // スクロール中のカードを検知し、マップを連動させる

@@ -36,8 +36,8 @@ export async function GET() {
             return {
                 id: spot.id,
                 position: {
-                    lat: parseFloat(spot.latitude),
-                    lng: parseFloat(spot.longitude)
+                    lat: Number(spot.latitude),
+                    lng: Number(spot.longitude)
                 },
                 pinKind: pinKind
             };
