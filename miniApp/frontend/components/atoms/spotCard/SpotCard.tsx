@@ -130,7 +130,6 @@ export const SpotCard = ({
                         alt="画像なし" 
                         fill 
                         style={{ objectFit: "cover" }}
-                        unoptimized={imageSrc.startsWith('http')}
                     />
                     ) : (
                     <div className={styles.noImagePlaceholder}>

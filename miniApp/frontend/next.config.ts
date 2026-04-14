@@ -7,12 +7,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'fukureco.jp',
+        hostname: '**.fukureco.jp',
         pathname: '/**',
       },
       {
         protocol: 'http',
-        hostname: 'fukureco.jp',
+        hostname: '**.fukureco.jp',
         pathname: '/**',
       },
       {
