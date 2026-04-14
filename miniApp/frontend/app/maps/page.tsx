@@ -14,6 +14,7 @@ import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/atoms/loading/Loading";
 
 // 将来的に、typesディレクトリに移動
 type SpotKinds = "shop" | "spot";
@@ -183,7 +184,7 @@ export default function Map() {
   };
 
   // スクリプトが読み込まれるまで待つ
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) return <Loading />;
 
   return (
     <div className={styles.mapPage}>
