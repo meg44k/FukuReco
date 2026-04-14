@@ -49,7 +49,7 @@ export async function GET(request: Request) {
         }
 
         // サムネイル画像を取得（is_cardthumbnailがtrueのもの）
-        const thumbnail = data.assets?.find((a: any) => a.is_cardthumbnail === true);
+        const thumbnail = (data.assets as { url: string; is_cardthumbnail: boolean }[] | null)?.find((a) => a.is_cardthumbnail === true);
         const imageSrc = thumbnail?.url || "/sampleImage.png"; // 見つからなければデフォルト画像
 
         // MapSpotData (UI用) の形式に整形
@@ -60,7 +60,11 @@ export async function GET(request: Request) {
             pinKind: data.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
             spotName: data.name,
             imageSrc: imageSrc,
-            spotTags: data.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+            spotTags: (data.spot_tags as unknown as { tags: { detail: string }[] | { detail: string } | null }[] | null)?.map((st) => {
+                const tags = st.tags;
+                if (Array.isArray(tags)) return tags[0]?.detail;
+                return (tags as { detail: string } | null)?.detail;
+            }).filter(Boolean) || [],
             detailURL: `/spots/restaurant/${data.id}`,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
             position: {

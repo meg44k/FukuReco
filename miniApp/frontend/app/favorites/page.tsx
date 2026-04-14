@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-import { Button, CircularProgress } from "@mui/material";
+import { Button } from "@mui/material";
+import Loading from "@/components/atoms/loading/Loading";
 import { createClient } from "@/lib/supabase/client";
 import { useLIFF } from "@/providers/liff-providers";
 
@@ -97,11 +98,7 @@ const FavoritesPage = () => {
   }, [liff]);
 
   if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <CircularProgress color="inherit" />
-      </div>
-    );
+    return <Loading />;
   }
 
   const restaurants = favorites.filter((f) => f.placeType === "restaurant" || f.placeType === "飲食店");
