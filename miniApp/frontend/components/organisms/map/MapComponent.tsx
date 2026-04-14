@@ -12,6 +12,7 @@ import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
 import { MenuButton } from "@/components/atoms/menuButton/MenuButton";
+import { MenuDrawer } from "@/components/organisms/menuDrawer/MenuDrawer";
 import { MapSpotData, MinimalSpotData, HAKATA_STATION } from "@/types/map";
 import { panMapToSpot } from "@/lib/map/mapUtils";
 
@@ -43,6 +44,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
   const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
   const [activeKeyword, setActiveKeyword] = useState<string | undefined>(keyword); // 現在の検索キーワード
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューの開閉状態
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
@@ -176,8 +178,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     <div className={styles.mapPage}>
       <div className={styles.topBar}>
         <SearchTextField onSearch={(val) => setActiveKeyword(val)} label="行きたい場所を検索" />
-        <MenuButton onClick={() => alert("メニューを開きます")} />
+        <MenuButton onClick={() => setIsMenuOpen(true)} />
       </div>
+
+      <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
       <GoogleMap
         mapContainerStyle={containerStyle}
