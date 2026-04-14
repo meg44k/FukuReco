@@ -134,6 +134,58 @@ export async function GET(request: Request) {
             formattedData = formattedData.slice(0, 5);
         }
 
+        // 各スポットの営業状況を Google Places API (New) から取得 (上位のみ)
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        if (apiKey && formattedData.length > 0) {
+            // 通信量とクォータを考慮し、既に絞り込まれた上位数件のみ取得
+            // 距離ソートされていない場合（現在地なし）でも、念のため最初の5件に制限
+            const targetData = formattedData.slice(0, 5);
+            
+            const resultsWithOpenStatus = await Promise.all(targetData.map(async (spot) => {
+                let isOpen: boolean | null = null;
+                
+                // resting_spot 以外の場合のみ営業状況を取得
+                if (spot.spotKind !== 'resting_spot') {
+                    isOpen = false;
+                    try {
+                        const placesResponse = await fetch('https://places.googleapis.com/v1/places:searchText', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Goog-Api-Key': apiKey,
+                                'X-Goog-FieldMask': 'places.currentOpeningHours.openNow',
+                            },
+                            body: JSON.stringify({
+                                textQuery: spot.spotName,
+                                locationBias: {
+                                    circle: {
+                                        center: {
+                                            latitude: spot.position.lat,
+                                            longitude: spot.position.lng,
+                                        },
+                                        radius: 500.0,
+                                    },
+                                },
+                                maxResultCount: 1,
+                            }),
+                        });
+
+                        if (placesResponse.ok) {
+                            const placesData = await placesResponse.json();
+                            if (placesData.places && placesData.places.length > 0) {
+                                isOpen = placesData.places[0].currentOpeningHours?.openNow ?? false;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Places API failed for ${spot.spotName}:`, e);
+                    }
+                }
+                return { ...spot, isOpen };
+            }));
+
+            return NextResponse.json(resultsWithOpenStatus);
+        }
+
         return NextResponse.json(formattedData);
 
     } catch (err) {

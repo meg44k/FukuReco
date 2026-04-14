@@ -68,7 +68,7 @@ const iconConfig: Record<string, { icon1: ReactNode; icon2: ReactNode | null; bg
 type Props = {
     spotKind: SpotKinds;   // 観光地の種類
     spotName: string;   // 店舗(観光地)名
-    isOpen?: boolean;   // 営業中かどうか
+    isOpen?: boolean | null;   // 営業中かどうか
     imageSrc: string;   // 画像URL
     spotTags: string[]; // タグの配列
     detailURL: string; // 詳細のURL
