@@ -18,6 +18,7 @@ import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
+import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -94,7 +95,9 @@ export default function RestaurantDetailPage({ params }: Props) {
     notFound();
   }
 
-  if (loading || !spotData) return null;
+  if (loading || !spotData) {
+    return <SpotDetailSkeleton />;
+  }
 
   // Cast dynamic data to internal interfaces for property access
   const spot = spotData as unknown as {

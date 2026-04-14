@@ -1,0 +1,127 @@
+.skeleton {
+    background-color: #e0e0e0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.container {
+    width: 100%;
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+/* ヘッダー画像部分 */
+.headerSkeleton {
+    width: 100%;
+    height: 250px; /* PhotoGalleryの高さに合わせる */
+    border-radius: 0;
+}
+
+/* コンテンツ部分 */
+.content {
+    padding: 20px 5%;
+}
+
+.catchphraseSkeleton {
+    width: 80%;
+    height: 16px;
+    margin-bottom: 12px;
+}
+
+.titleSkeleton {
+    width: 60%;
+    height: 32px;
+    margin-bottom: 12px;
+}
+
+.tagsSkeleton {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tagItem {
+    width: 60px;
+    height: 24px;
+    border-radius: 999px;
+}
+
+/* セクション共通 */
+.section {
+    padding: 20px 5%;
+}
+
+.sectionHeader {
+    width: 120px;
+    height: 24px;
+    margin-bottom: 16px;
+}
+
+/* グリッド状のカード部分 */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cardSkeleton {
+    height: 80px;
+    border-radius: 12px;
+}
+
+/* メニュー項目 */
+.menuItem {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 12px;
+    border-radius: 16px;
+}
+
+/* 固定フッター */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: white;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid #eee;
+}
+
+.footerBtn {
+    flex: 1;
+    height: 48px;
+    border-radius: 999px;
+}
+
+.footerCircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
