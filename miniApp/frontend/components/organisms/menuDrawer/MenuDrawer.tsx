@@ -53,10 +53,7 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ padding: "16px 16px 24px" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "#3F7D58" }}>
-            FukuReco
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            福岡をもっと楽しもう
+            フクレコ
           </Typography>
         </Box>
 
