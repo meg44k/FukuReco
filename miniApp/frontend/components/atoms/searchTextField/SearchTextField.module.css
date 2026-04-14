@@ -2,29 +2,29 @@
 .searchField :global(.MuiOutlinedInput-root) {
     border-radius: 15px;
     height: 56px;
+    background-color: #ffffff !important; /* 背景を白に */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* 枠線が白なので影で輪郭を出す */
 }
 
 /* 文字サイズ調整 */
 .searchField :global(.MuiOutlinedInput-input) {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 /* 通常枠線 */
 .searchField :global(.MuiOutlinedInput-notchedOutline) {
-    border-color: var(--primary-color);
-    border-width: 3px;
+    border-color: #ffffff !important; /* 枠線を白に */
+    border-width: 1px !important;
 }
 
 /* hover */
 .searchField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-    border-color: var(--primary-color);
-    border-width: 3px;
+    border-color: #ffffff !important;
 }
 
 /* focus */
 .searchField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
-    border-color: var(--primary-color);
-    border-width: 3px;
+    border-color: #ffffff !important;
 }
 
 /* アイコン色 */

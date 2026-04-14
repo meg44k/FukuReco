@@ -10,6 +10,8 @@ import {
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
+import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
+import { MenuButton } from "@/components/atoms/menuButton/MenuButton";
 import { MapSpotData, MinimalSpotData, HAKATA_STATION } from "@/types/map";
 import { panMapToSpot } from "@/lib/map/mapUtils";
 
@@ -26,8 +28,8 @@ const initCenter = {
 
 type Props = {
   initialSpots: MinimalSpotData[]; // 初期表示は最小限のデータ配列を受け取る
-  keyword?: string; // 検索キーワード
-  options?: string; // 検索タグ
+  keyword?: string; // 検索キーワード（URL等から）
+  options?: string; // 検索タグ（URL等から）
 }
 
 export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: Props) => {
@@ -40,6 +42,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const mapRef = useRef<google.maps.Map | null>(null);
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
   const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
+  const [activeKeyword, setActiveKeyword] = useState<string | undefined>(keyword); // 現在の検索キーワード
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
@@ -73,7 +76,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
     const fetchTop5 = async () => {
       const url = new URL(window.location.origin + '/api/search');
-      if (keyword) url.searchParams.append('keyword', keyword);
+      if (activeKeyword) url.searchParams.append('keyword', activeKeyword);
       if (searchOptions) url.searchParams.append('options', searchOptions);
       
       // 現在地情報を渡すことでサーバー側で5件に絞り込む
@@ -90,6 +93,8 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
           if (data.length > 0) {
             lastSelectedSource.current = 'map';
             setSelectedSpot(data[0]);
+          } else {
+            setSelectedSpot(null);
           }
         }
       } catch (error) {
@@ -98,7 +103,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     };
 
     fetchTop5();
-  }, [locationStatus, currentPos, keyword, searchOptions]);
+  }, [locationStatus, currentPos, activeKeyword, searchOptions]);
 
   // スクロール中のカードを検知し、マップを連動させる
   const handleScroll = () => {
@@ -169,6 +174,11 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   return (
     <div className={styles.mapPage}>
+      <div className={styles.topBar}>
+        <SearchTextField onSearch={(val) => setActiveKeyword(val)} label="行きたい場所を検索" />
+        <MenuButton onClick={() => alert("メニューを開きます")} />
+      </div>
+
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={initCenter}

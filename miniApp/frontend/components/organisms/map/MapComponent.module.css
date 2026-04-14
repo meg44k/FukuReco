@@ -9,6 +9,20 @@
   box-sizing: border-box;
 }
 
+/* 検索バーとメニューボタンのコンテナ */
+.topBar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 600px;
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 /* マップ全体 */
 .mapContainer {
   flex: 1; /* 残り全部をマップに */
