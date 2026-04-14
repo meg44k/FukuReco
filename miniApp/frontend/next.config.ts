@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ['fukureco.jp'],
+    domains: ['fukureco.jp', 'localhost'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'fukureco.jp',
         pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
+        pathname: '/uploads/**',
       }
     ],
   },

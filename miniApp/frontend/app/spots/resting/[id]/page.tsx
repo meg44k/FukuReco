@@ -14,6 +14,7 @@ import { RestingSpot } from '@/types/spot'
 
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
+import { useFavorites } from '@/hooks/useFavorites';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,14 +23,16 @@ interface Props {
 export default function RestingDetailPage({ params }: Props) {
   const { id } = use(params);
   const router = useRouter();
-  const [spotData, setSpotData] = useState<any>(null);
-  const [assetData, setAssetData] = useState<any[]>([]);
+  const [spotData, setSpotData] = useState<Record<string, unknown> | null>(null);
+  const [assetData, setAssetData] = useState<Record<string, unknown>[]>([]);
   const [tagData, setTagData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +54,13 @@ export default function RestingDetailPage({ params }: Props) {
       setSpotData(spotRes.data);
       setAssetData(assetRes.data || []);
 
-      const tags = (tagRes.data as any[])?.map((item: any) => item.tags?.detail).filter(Boolean) || [];
+      const rawTags = tagRes.data as unknown as { tags: { detail: string } | { detail: string }[] | null }[];
+      const tags = rawTags?.map((item) => {
+        if (Array.isArray(item.tags)) {
+          return item.tags[0]?.detail;
+        }
+        return item.tags?.detail;
+      }).filter((detail): detail is string => !!detail) || [];
       setTagData(tags);
 
       setLoading(false);
@@ -79,38 +88,66 @@ export default function RestingDetailPage({ params }: Props) {
     notFound();
   }
 
-  if (loading) return null;
+  if (loading || !spotData) return null;
+
+  // Cast dynamic data to internal interfaces for property access
+  const spotRaw = spotData as unknown as {
+    id: number;
+    name: string;
+    catchphrase?: string;
+    distance_from_transit?: string;
+    stay_duration?: string;
+    fukureko_comment?: string;
+    address: string;
+    business_hours?: string;
+    phone_number?: string;
+    nearest_station?: string;
+    website_url?: string;
+    average_budget?: string | number;
+    place_type: string;
+    pricing?: Record<string, unknown>;
+    facilities?: Record<string, unknown>;
+    updated_at: string;
+    created_at: string;
+    nearby_coin_lockers?: string;
+    parking_info?: string;
+    payment_methods?: string[];
+    closed_days?: string;
+    seating_info?: string;
+    remarks?: string;
+  };
 
   const spot: RestingSpot = {
-    id: spotData.id,
-    name: spotData.name,
-    catchphrase: spotData.catchphrase,
-    distanceFromTransit: spotData.distance_from_transit,
-    stayDuration: spotData.stay_duration,
-    fukurekoComment: spotData.fukureko_comment,
-    address: spotData.address,
-    businessHours: spotData.business_hours,
-    phoneNumber: spotData.phone_number,
-    nearestStation: spotData.nearest_station,
-    websiteUrl: spotData.website_url,
-    averageBudget: spotData.average_budget,
-    placeType: spotData.place_type,
-    pricing: spotData.pricing || {},
-    facilities: spotData.facilities || {},
-    updatedAt: new Date(spotData.updated_at),
-    createdAt: new Date(spotData.created_at),
-    nearbyCoinLockers: spotData.nearby_coin_lockers,
-    parkingInfo: spotData.parking_info,
-    paymentMethods: spotData.payment_methods,
-    closedDays: spotData.closed_days,
-    seatingInfo: spotData.seating_info,
+    id: spotRaw.id,
+    name: spotRaw.name,
+    catchphrase: spotRaw.catchphrase,
+    distanceFromTransit: spotRaw.distance_from_transit,
+    stayDuration: spotRaw.stay_duration,
+    fukurekoComment: spotRaw.fukureko_comment,
+    address: spotRaw.address,
+    businessHours: spotRaw.business_hours,
+    phoneNumber: spotRaw.phone_number,
+    nearestStation: spotRaw.nearest_station,
+    websiteUrl: spotRaw.website_url,
+    averageBudget: spotRaw.average_budget,
+    placeType: spotRaw.place_type,
+    pricing: spotRaw.pricing || {},
+    facilities: spotRaw.facilities || {},
+    updatedAt: new Date(spotRaw.updated_at),
+    createdAt: new Date(spotRaw.created_at),
+    nearbyCoinLockers: spotRaw.nearby_coin_lockers,
+    parkingInfo: spotRaw.parking_info,
+    paymentMethods: spotRaw.payment_methods,
+    closedDays: spotRaw.closed_days,
+    seatingInfo: spotRaw.seating_info,
+    remarks: spotRaw.remarks,
   };
 
   const photoUrls = assetData
-    ? assetData
-        .filter((a: any) => a.is_photo_gallery === true)
-        .sort((a: any, b: any) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
-        .map((a: any) => a.url || a.URL)
+    ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])
+        .filter((a) => a.is_photo_gallery === true)
+        .sort((a, b) => (a.gallery_order ?? Infinity) - (b.gallery_order ?? Infinity))
+        .map((a) => a.url)
     : [];
 
   return (
@@ -218,8 +255,15 @@ export default function RestingDetailPage({ params }: Props) {
         <button className={styles.routeBtn} style={{ flex: 2 }}>
           ルートを見る <ExternalLink size={18} />
         </button>
-        <button className={styles.heartBtn}>
-          <Heart size={24} />
+        <button 
+          className={styles.heartBtn}
+          onClick={() => toggleFavorite(!isNaN(Number(id)) ? Number(id) : id)}
+        >
+          <Heart 
+            size={24} 
+            fill={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "none"} 
+            color={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "currentColor"}
+          />
         </button>
       </div>
     </div>

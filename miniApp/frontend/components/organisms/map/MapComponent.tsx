@@ -13,6 +13,7 @@ import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
 import { MenuButton } from "@/components/atoms/menuButton/MenuButton";
 import { MenuDrawer } from "@/components/organisms/menuDrawer/MenuDrawer";
+import { TagSearchButtons } from "@/components/organisms/tagSearchButtons/TagSearchButtons";
 import { MapSpotData, MinimalSpotData, HAKATA_STATION } from "@/types/map";
 import { panMapToSpot } from "@/lib/map/mapUtils";
 
@@ -45,6 +46,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
   const [activeKeyword, setActiveKeyword] = useState<string | undefined>(keyword); // 現在の検索キーワード
   const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューの開閉状態
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // 検索バーのフォーカス状態
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
@@ -177,8 +179,17 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   return (
     <div className={styles.mapPage}>
       <div className={styles.topBar}>
-        <SearchTextField onSearch={(val) => setActiveKeyword(val)} label="行きたい場所を検索" />
+        <SearchTextField 
+          onSearch={(val) => setActiveKeyword(val)} 
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // ボタンクリックを可能にするためディレイを設ける
+          label="行きたい場所を検索" 
+        />
         <MenuButton onClick={() => setIsMenuOpen(true)} />
+      </div>
+
+      <div className={`${styles.tagSearchContainer} ${isSearchFocused ? styles.tagSearchVisible : styles.tagSearchHidden}`}>
+        <TagSearchButtons />
       </div>
 
       <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

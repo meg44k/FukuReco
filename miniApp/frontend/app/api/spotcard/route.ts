@@ -49,7 +49,7 @@ export async function GET(request: Request) {
         }
 
         // サムネイル画像を取得（is_cardthumbnailがtrueのもの）
-        const thumbnail = data.assets?.find((a: any) => a.is_cardthumbnail === true);
+        const thumbnail = (data.assets as { url: string; is_cardthumbnail: boolean }[] | null)?.find((a) => a.is_cardthumbnail === true);
         const imageSrc = thumbnail?.url || "/sampleImage.png"; // 見つからなければデフォルト画像
 
         // Google Places API (New) から営業状況を取得 (resting_spot 以外)
@@ -102,7 +102,11 @@ export async function GET(request: Request) {
             spotName: data.name,
             isOpen: isOpen,
             imageSrc: imageSrc,
-            spotTags: data.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+            spotTags: (data.spot_tags as unknown as { tags: { detail: string }[] | { detail: string } | null }[] | null)?.map((st) => {
+                const tags = st.tags;
+                if (Array.isArray(tags)) return tags[0]?.detail;
+                return (tags as { detail: string } | null)?.detail;
+            }).filter(Boolean) || [],
             detailURL: `/spots/restaurant/${data.id}`,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
             position: {

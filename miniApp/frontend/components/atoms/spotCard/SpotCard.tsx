@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Button, IconButton, ThemeProvider, createTheme } from '@mui/material';
-import { X, Sun, Moon, User, Baby, Banknote } from 'lucide-react';
+import { X, Sun, Moon, User, Baby, Banknote, Heart } from 'lucide-react';
 import styles from './SpotCard.module.css';
 import Image from "next/image"
 
@@ -9,7 +9,6 @@ type SpotKinds = "restaurant" | "sightseeing_spot" | "gift_spot" | "resting_spot
 const MAX_TAGS = 4;
 
 // メインカラー
-// 将来的には別の定数フォルダに移動、もしくはpage.tsxでプロバイダで包む
 const theme = createTheme({
     palette: {
         primary: {
@@ -61,7 +60,6 @@ const iconConfig: Record<string, { icon1: ReactNode; icon2: ReactNode | null; bg
     bg1: "#B0B0B0",
     bg2: "#9E9E9E",
   }
-  // アイコンの追加はここに
 };
 
 
@@ -74,8 +72,10 @@ type Props = {
     detailURL: string; // 詳細のURL
     price1?: string;    // 飲食店: ランチ価格帯     観光地: 大人入場料
     price2?: string;    // 飲食店: ディナー価格帯   観光地: 小学生以下入場料
+    isFavorite?: boolean; // お気に入りかどうか
     updatedAt?: Date | string;   // 更新日時
     onCloseClick: () => void;   // 閉じるボタンの動作
+    onFavoriteToggle?: () => void; // お気に入りボタンの動作
 };
 
 export const SpotCard = ({
@@ -87,8 +87,9 @@ export const SpotCard = ({
     detailURL,
     price1,
     price2,
-    updatedAt,
+    isFavorite,
     onCloseClick,
+    onFavoriteToggle,
 }: Props) => {
 
     const config = iconConfig[spotKind] || iconConfig.default;
@@ -117,9 +118,17 @@ export const SpotCard = ({
                     </div>
                     )}
 
-                    <IconButton onClick={onCloseClick} size="small">
-                    <X />
-                    </IconButton>
+                    <div className={styles.headerButtons}>
+                        <IconButton onClick={onFavoriteToggle} size="small" className={styles.favoriteButton}>
+                            <Heart 
+                                fill={isFavorite ? "#EF5350" : "none"} 
+                                color={isFavorite ? "#EF5350" : "currentColor"} 
+                            />
+                        </IconButton>
+                        <IconButton onClick={onCloseClick} size="small">
+                            <X />
+                        </IconButton>
+                    </div>
                 </div>
 
                 <div className={styles.cardImage}>
