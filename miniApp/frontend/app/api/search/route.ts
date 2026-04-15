@@ -74,7 +74,7 @@ export async function GET(request: Request) {
                 .or(`name.ilike.%${keyword}%,catchphrase.ilike.%${keyword}%,fukureko_comment.ilike.%${keyword}%`);
 
             if (error) throw error;
-            rawData = data || [];
+            rawData = (data as unknown as RawSpot[]) || [];
 
         } else if (options) {
             // タグによる完全一致検索
@@ -109,7 +109,7 @@ export async function GET(request: Request) {
                 if (error.code === 'PGRST116') return NextResponse.json([]);
                 throw error;
             }
-            rawData = data.spot_tags.map((item: { spots: RawSpot }) => item.spots).filter(Boolean);
+            rawData = (data.spot_tags as unknown as { spots: RawSpot }[]).map((item) => item.spots).filter(Boolean);
         }
 
         // フォーマットとソート
