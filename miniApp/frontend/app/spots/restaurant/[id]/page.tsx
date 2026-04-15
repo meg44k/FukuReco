@@ -9,6 +9,8 @@ import {
   Heart,
   ChevronLeft,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Restaurant } from '@/types/spot'
 import { Menu } from '@/types/menu'
@@ -45,7 +47,7 @@ export default function RestaurantDetailPage({ params }: Props) {
       const spotId = !isNaN(Number(id)) ? Number(id) : id;
 
       const [spotRes, menuRes, assetRes, tagRes] = await Promise.all([
-        supabase.from('spots').select('*').eq('id', spotId).single(),
+        supabase.from('spots').select('*, restaurants(*)').eq('id', spotId).single(),
         supabase.from('menus').select('*').eq('spot_id', spotId),
         supabase.from('assets').select('*').eq('spot_id', spotId),
         supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
@@ -57,7 +59,15 @@ export default function RestaurantDetailPage({ params }: Props) {
         return;
       }
 
-      setSpotData(spotRes.data);
+      // restaurantsテーブルのデータを取り出す（1対1または1対多の配列を想定）
+      const restaurantDetail = Array.isArray(spotRes.data.restaurants) 
+        ? spotRes.data.restaurants[0] 
+        : spotRes.data.restaurants;
+
+      setSpotData({
+        ...spotRes.data,
+        ...restaurantDetail
+      });
       setMenuData(menuRes.data || []);
       setAssetData(assetRes.data || []);
 
@@ -124,6 +134,8 @@ export default function RestaurantDetailPage({ params }: Props) {
     closed_days?: string;
     reservation_url?: string;
     remarks?: string;
+    avg_lunch_budget?: string;
+    avg_dinner_budget?: string;
   };
 
   const restaurant: Restaurant = {
@@ -150,6 +162,8 @@ export default function RestaurantDetailPage({ params }: Props) {
     closedDays: spot.closed_days,
     reservationURL: spot.reservation_url,
     remarks: spot.remarks,
+    avgLunchBudget: spot.avg_lunch_budget,
+    avgDinnerBudget: spot.avg_dinner_budget,
   };
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
@@ -283,7 +297,16 @@ export default function RestaurantDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>平均予算</div>
-            <div className={styles.infoValue}>{restaurant.averageBudget || "情報なし"}</div>
+            <div className={styles.infoValue}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sun size={16} color="#efab58" />
+                <span>{restaurant.avgLunchBudget || restaurant.averageBudget || '情報なし'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                <Moon size={16} color="#5C6BC0" />
+                <span>{restaurant.avgDinnerBudget || '情報なし'}</span>
+              </div>
+            </div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>支払方法</div>

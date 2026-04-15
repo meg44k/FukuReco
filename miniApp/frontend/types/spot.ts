@@ -44,8 +44,8 @@ export interface FacilityInfo {
 
 export interface Restaurant extends Spot {
   restaurantComment?: string;
-  avgLunchBudget?: number;
-  avgDinnerBudget?: number;
+  avgLunchBudget?: string;
+  avgDinnerBudget?: string;
   seatingInfo?: number;
   avgWaitTime?: string;
 }
