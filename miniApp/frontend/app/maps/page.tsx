@@ -36,7 +36,10 @@ export default async function MapPage({ searchParams }: Props) {
       
       return {
           id: spot.id,
-          position: { lat: parseFloat(spot.latitude), lng: parseFloat(spot.longitude) },
+          position: { 
+              lat: typeof spot.latitude === 'string' ? parseFloat(spot.latitude) : spot.latitude, 
+              lng: typeof spot.longitude === 'string' ? parseFloat(spot.longitude) : spot.longitude 
+          },
           pinKind: pinKind
       };
   });
