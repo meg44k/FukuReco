@@ -11,12 +11,14 @@ import {
   Divider,
   Box,
   Typography,
+  IconButton,
 } from "@mui/material";
 import {
   Heart,
   Bell,
   HelpCircle,
   MessageCircle,
+  X,
 } from "lucide-react";
 
 type Props = {
@@ -51,10 +53,13 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ padding: "16px 16px 24px" }}>
+        <Box sx={{ padding: "16px 16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "#3F7D58" }}>
-            フクレコ
+            メニュー
           </Typography>
+          <IconButton onClick={onClose} sx={{ color: "#3F7D58" }} size="small">
+            <X size={24} />
+          </IconButton>
         </Box>
 
         <List>

@@ -8,7 +8,7 @@ import {
   Marker,
   useJsApiLoader,
 } from '@react-google-maps/api'
-import { LocateFixed } from "lucide-react";
+import { LocateFixed, X } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
@@ -242,7 +242,16 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
           onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // ボタンクリックを可能にするためディレイを設ける
           label="行きたい場所を検索" 
         />
-        <MenuButton onClick={() => setIsMenuOpen(true)} />
+        <MenuButton 
+          onClick={() => {
+            if (isSearchFocused) {
+              setIsSearchFocused(false);
+            } else {
+              setIsMenuOpen(true);
+            }
+          }}
+          isClose={isSearchFocused}
+        />
       </div>
 
       <div className={`${styles.tagSearchContainer} ${isSearchFocused ? styles.tagSearchVisible : styles.tagSearchHidden}`}>
