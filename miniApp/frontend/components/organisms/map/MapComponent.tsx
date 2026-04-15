@@ -8,7 +8,7 @@ import {
   Marker,
   useJsApiLoader,
 } from '@react-google-maps/api'
-import { LocateFixed, X } from "lucide-react";
+import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";

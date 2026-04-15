@@ -27,7 +27,7 @@ export default async function MapPage({ searchParams }: Props) {
       console.error("マップ初期データの取得に失敗しました", error);
   }
 
-  const initialSpots: MinimalSpotData[] = (data || []).map((spot: any) => {
+  const initialSpots: MinimalSpotData[] = (data || []).map((spot: { id: number; latitude: number | string; longitude: number | string; place_type: string }) => {
       let pinKind = "/FoodPin.svg";
       if (spot.place_type === "restaurant") pinKind = "/FoodPin.svg";
       else if (spot.place_type === "sightseeing_spot") pinKind = "/CameraPin.svg";

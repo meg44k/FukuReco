@@ -33,7 +33,21 @@ export async function GET(request: Request) {
             return NextResponse.json([], { status: 200 });
         }
 
-        let rawData: any[] = [];
+        type SpotAsset = { url: string; is_cardthumbnail: boolean };
+        type SpotTag = { tags: { detail: string } };
+        type RawSpot = {
+            id: number;
+            name: string;
+            place_type: string;
+            pricing?: string | null;
+            latitude: number | string;
+            longitude: number | string;
+            updated_at: string;
+            spot_tags?: SpotTag[];
+            assets?: SpotAsset[];
+        };
+
+        let rawData: RawSpot[] = [];
 
         if (keyword) {
             // キーワード検索
@@ -95,12 +109,12 @@ export async function GET(request: Request) {
                 if (error.code === 'PGRST116') return NextResponse.json([]);
                 throw error;
             }
-            rawData = data.spot_tags.map((item: any) => item.spots).filter(Boolean);
+            rawData = data.spot_tags.map((item: { spots: RawSpot }) => item.spots).filter(Boolean);
         }
 
         // フォーマットとソート
-        let formattedData = rawData.map((item: any) => {
-            const thumbnail = item.assets?.find((a: any) => a.is_cardthumbnail === true);
+        let formattedData = rawData.map((item: RawSpot) => {
+            const thumbnail = item.assets?.find((a: SpotAsset) => a.is_cardthumbnail === true);
             const imageSrc = thumbnail?.url || "/sampleImage.png";
 
             return {
@@ -111,7 +125,7 @@ export async function GET(request: Request) {
                          item.place_type === "resting_spot" ? "/ChairPin.svg" : "/GiftPin.svg",
                 spotName: item.name,
                 imageSrc: imageSrc,
-                spotTags: item.spot_tags?.map((st: any) => st.tags?.detail).filter(Boolean) || [],
+                spotTags: item.spot_tags?.map((st: SpotTag) => st.tags?.detail).filter(Boolean) || [],
                 detailURL: `/spots/restaurant/${item.id}`,
                 price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
                 position: {
