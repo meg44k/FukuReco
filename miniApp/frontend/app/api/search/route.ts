@@ -129,8 +129,8 @@ export async function GET(request: Request) {
                 detailURL: `/spots/restaurant/${item.id}`,
                 price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
                 position: {
-                    lat: parseFloat(item.latitude),
-                    lng: parseFloat(item.longitude)
+                    lat: typeof item.latitude === 'string' ? parseFloat(item.latitude) : item.latitude,
+                    lng: typeof item.longitude === 'string' ? parseFloat(item.longitude) : item.longitude
                 },
                 updatedAt: new Date(item.updated_at)
             };
