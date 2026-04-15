@@ -6,7 +6,7 @@ export type FilterGroup = {
 // 表示するタイトルとボタン
 export const FILTER_GROUPS: FilterGroup[] = [
     {
-        title: "ジャンルから絞る",
+        title: "ジャンル",
         options: [
             "もつ鍋", "ラーメン",
             "水炊き", "居酒屋",
@@ -18,11 +18,11 @@ export const FILTER_GROUPS: FilterGroup[] = [
         ],
     },
     {
-        title: "人数から絞る",
+        title: "シーン",
         options: ["ひとりで", "家族", "友人", "恋人"],
     },
     {
-        title: "値段・場所から絞る",
+        title: "値段・場所",
         options: ["高級", "落ち着き", "アクセス", "安い"],
     },
 ];

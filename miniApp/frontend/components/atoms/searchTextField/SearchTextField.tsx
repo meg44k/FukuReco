@@ -9,10 +9,12 @@ import styles from "./SearchTextField.module.css";
 
 type Props = {
   onSearch: (keyword: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   label?: string;
 };
 
-export const SearchTextField = ({ onSearch, label = "検索" }: Props) => {
+export const SearchTextField = ({ onSearch, onFocus, onBlur, label = "検索" }: Props) => {
   const [value, setValue] = useState("");
 
   const handleSearch = () => {
@@ -37,6 +39,8 @@ export const SearchTextField = ({ onSearch, label = "検索" }: Props) => {
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={handleKeyDown}
+      onFocus={onFocus}
+      onBlur={onBlur}
       className={styles.searchField}
       slotProps={{
         input: {

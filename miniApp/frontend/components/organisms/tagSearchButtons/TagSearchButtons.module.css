@@ -1,12 +1,15 @@
 .section {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 .sectionTitle {
-    font-size: var(--subtitle-size);
+    font-size: 1.1rem;
     font-weight: bold;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     margin-top: 0;
+    color: var(--text-black);
+    padding-left: 4px;
+    border-left: 4px solid var(--primary-color);
 }
 
 .buttonGrid {

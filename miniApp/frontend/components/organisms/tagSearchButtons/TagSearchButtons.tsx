@@ -1,11 +1,17 @@
 'use client';
 
 import { Button } from "@mui/material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./TagSearchButtons.module.css";
 import { FILTER_GROUPS } from "@/types/search";
 
 export const TagSearchButtons = () => {
+    const router = useRouter();
+
+    const handleSearch = (option: string) => {
+        router.push(`/maps?options=${encodeURIComponent(option)}`);
+    };
+
     return (
         <div>
             {FILTER_GROUPS.map((group) => (
@@ -23,8 +29,7 @@ export const TagSearchButtons = () => {
                                     variant="contained"
                                     disableElevation
                                     className={`${styles.customButton} ${buttonClass}`}
-                                    component={Link} 
-                                    href={`/maps?options=${encodeURIComponent(option)}`} 
+                                    onClick={() => handleSearch(option)}
                                 >
                                     {option}
                                 </Button>

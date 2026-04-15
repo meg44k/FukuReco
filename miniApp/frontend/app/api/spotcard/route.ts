@@ -52,13 +52,55 @@ export async function GET(request: Request) {
         const thumbnail = (data.assets as { url: string; is_cardthumbnail: boolean }[] | null)?.find((a) => a.is_cardthumbnail === true);
         const imageSrc = thumbnail?.url || "/sampleImage.png"; // 見つからなければデフォルト画像
 
+        // Google Places API (New) から営業状況を取得 (resting_spot 以外)
+        let isOpen: boolean | null = null;
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+        if (apiKey && data.name && data.latitude && data.longitude && data.place_type !== 'resting_spot') {
+            isOpen = false; // API取得前のデフォルトをfalseに設定
+            try {
+                const placesResponse = await fetch('https://places.googleapis.com/v1/places:searchText', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': apiKey,
+                        'X-Goog-FieldMask': 'places.id,places.currentOpeningHours.openNow',
+                    },
+                    body: JSON.stringify({
+                        textQuery: data.name,
+                        locationBias: {
+                            circle: {
+                                center: {
+                                    latitude: parseFloat(data.latitude),
+                                    longitude: parseFloat(data.longitude),
+                                },
+                                radius: 500.0,
+                            },
+                        },
+                        maxResultCount: 1,
+                    }),
+                });
+
+                if (placesResponse.ok) {
+                    const placesData = await placesResponse.json();
+                    if (placesData.places && placesData.places.length > 0) {
+                        // currentOpeningHours.openNow があればそれを使用、なければデフォルトfalse
+                        isOpen = placesData.places[0].currentOpeningHours?.openNow ?? false;
+                    }
+                }
+            } catch (placesError) {
+                console.warn('Google Places API fetch failed:', placesError);
+            }
+        }
+
         // MapSpotData (UI用) の形式に整形
         const formattedData = {
             id: data.id,
             spotKind: data.place_type,
             // 本来はカテゴリ等から判定するが、一旦共通のパスをセット（フロントエンドで上書き可能）
-            pinKind: data.place_type === "Restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
+            pinKind: data.place_type === "restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
             spotName: data.name,
+            isOpen: isOpen,
             imageSrc: imageSrc,
             spotTags: (data.spot_tags as unknown as { tags: { detail: string }[] | { detail: string } | null }[] | null)?.map((st) => {
                 const tags = st.tags;
@@ -68,8 +110,8 @@ export async function GET(request: Request) {
             detailURL: `/spots/restaurant/${data.id}`,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
             position: {
-                lat: data.latitude,
-                lng: data.longitude
+                lat: parseFloat(data.latitude),
+                lng: parseFloat(data.longitude)
             },
             updatedAt: new Date(data.updated_at)
         };
