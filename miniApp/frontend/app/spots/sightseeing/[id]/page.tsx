@@ -46,7 +46,8 @@ export default function SightseeingDetailPage({ params }: Props) {
         supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
       ]);
 
-      if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'sightseeing_spot') {
+      const type = (spotRes.data.place_type || "").toLowerCase();
+      if (spotRes.error || !spotRes.data || (type !== 'sightseeing_spot' && type !== 'sightseeing')) {
         setHasError(true);
         setLoading(false);
         return;
