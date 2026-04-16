@@ -80,6 +80,8 @@ export function useFavorites() {
     if (!lineId) {
       if (liff && !liff.isLoggedIn()) {
         liff.login();
+      } else if (loading) {
+        console.warn("Favorite toggle called while loading profile.");
       }
       return;
     }
