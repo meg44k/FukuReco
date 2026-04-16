@@ -31,6 +31,10 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
           .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
           .then(() => {
             console.log("LIFF init succeeded.");
+            if (!liff.isLoggedIn()) {
+              console.log("Not logged in, calling liff.login()...");
+              liff.login();
+            }
             setLiffObject(liff);
           })
           .catch((error: Error) => {
