@@ -49,7 +49,8 @@ export default function ShopDetailPage({ params }: Props) {
         supabase.from('spot_tags').select('tags(detail)').eq('spot_id', spotId)
       ]);
 
-      if (spotRes.error || !spotRes.data || spotRes.data.place_type !== 'shop') {
+      const type = (spotRes.data.place_type || "").toLowerCase();
+      if (spotRes.error || !spotRes.data || (type !== 'shop' && type !== 'gift_spot')) {
         setHasError(true);
         setLoading(false);
         return;

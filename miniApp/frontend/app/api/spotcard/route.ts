@@ -93,12 +93,27 @@ export async function GET(request: Request) {
             }
         }
 
+        // place_type に基づいて pin画像 と 詳細URL を決定
+        const type = data.place_type.toLowerCase();
+        let pinKind = "/FoodPin.svg";
+        let detailURL = `/spots/restaurant/${data.id}`;
+
+        if (type === "cafe" || type === "resting_spot") {
+            pinKind = "/ChairPin.svg";
+            detailURL = type === "cafe" ? `/spots/restaurant/${data.id}` : `/spots/resting/${data.id}`;
+        } else if (type === "sightseeing" || type === "sightseeing_spot") {
+            pinKind = "/CameraPin.svg";
+            detailURL = `/spots/sightseeing/${data.id}`;
+        } else if (type === "shop" || type === "gift_spot") {
+            pinKind = "/GiftPin.svg";
+            detailURL = `/spots/shop/${data.id}`;
+        }
+
         // MapSpotData (UI用) の形式に整形
         const formattedData = {
             id: data.id,
             spotKind: data.place_type,
-            // 本来はカテゴリ等から判定するが、一旦共通のパスをセット（フロントエンドで上書き可能）
-            pinKind: data.place_type === "restaurant" ? "/FoodPin.svg" : "/CameraPin.svg",
+            pinKind: pinKind,
             spotName: data.name,
             isOpen: isOpen,
             imageSrc: imageSrc,
@@ -107,7 +122,7 @@ export async function GET(request: Request) {
                 if (Array.isArray(tags)) return tags[0]?.detail;
                 return (tags as { detail: string } | null)?.detail;
             }).filter(Boolean) || [],
-            detailURL: `/spots/restaurant/${data.id}`,
+            detailURL: detailURL,
             price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
             position: {
                 lat: parseFloat(data.latitude),

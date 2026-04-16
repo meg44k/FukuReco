@@ -29,18 +29,23 @@ export default async function MapPage({ searchParams }: Props) {
 
   const initialSpots: MinimalSpotData[] = (data || []).map((spot: { id: number; latitude: number | string; longitude: number | string; place_type: string }) => {
       let pinKind = "/FoodPin.svg";
-      if (spot.place_type === "restaurant") pinKind = "/FoodPin.svg";
-      else if (spot.place_type === "sightseeing_spot") pinKind = "/CameraPin.svg";
-      else if (spot.place_type === "resting_spot") pinKind = "/ChairPin.svg";
-      else if (spot.place_type === "gift_spot") pinKind = "/GiftPin.svg";
-      
+      const type = spot.place_type.toLowerCase();
+
+      if (type === "cafe" || type === "resting_spot") {
+        pinKind = "/ChairPin.svg";
+      } else if (type === "sightseeing" || type === "sightseeing_spot") {
+        pinKind = "/CameraPin.svg";
+      } else if (type === "shop" || type === "gift_spot") {
+        pinKind = "/GiftPin.svg";
+      }
+
       return {
           id: spot.id,
-          position: { 
-              lat: typeof spot.latitude === 'string' ? parseFloat(spot.latitude) : spot.latitude, 
-              lng: typeof spot.longitude === 'string' ? parseFloat(spot.longitude) : spot.longitude 
+          position: {
+              lat: typeof spot.latitude === 'string' ? parseFloat(spot.latitude) : spot.latitude,
+              lng: typeof spot.longitude === 'string' ? parseFloat(spot.longitude) : spot.longitude,
           },
-          pinKind: pinKind
+          pinKind: pinKind,
       };
   });
 

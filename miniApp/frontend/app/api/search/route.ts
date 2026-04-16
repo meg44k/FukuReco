@@ -117,16 +117,30 @@ export async function GET(request: Request) {
             const thumbnail = item.assets?.find((a: SpotAsset) => a.is_cardthumbnail === true);
             const imageSrc = thumbnail?.url || "/sampleImage.png";
 
+            // place_type に基づいて pin画像 と 詳細URL を決定
+            const type = item.place_type.toLowerCase();
+            let pinKind = "/FoodPin.svg";
+            let detailURL = `/spots/restaurant/${item.id}`;
+
+            if (type === "cafe" || type === "resting_spot") {
+                pinKind = "/ChairPin.svg";
+                detailURL = type === "cafe" ? `/spots/restaurant/${item.id}` : `/spots/resting/${item.id}`;
+            } else if (type === "sightseeing" || type === "sightseeing_spot") {
+                pinKind = "/CameraPin.svg";
+                detailURL = `/spots/sightseeing/${item.id}`;
+            } else if (type === "shop" || type === "gift_spot") {
+                pinKind = "/GiftPin.svg";
+                detailURL = `/spots/shop/${item.id}`;
+            }
+
             return {
                 id: item.id,
                 spotKind: item.place_type,
-                pinKind: item.place_type === "restaurant" ? "/FoodPin.svg" : 
-                         item.place_type === "sightseeing_spot" ? "/CameraPin.svg" : 
-                         item.place_type === "resting_spot" ? "/ChairPin.svg" : "/GiftPin.svg",
+                pinKind: pinKind,
                 spotName: item.name,
                 imageSrc: imageSrc,
                 spotTags: item.spot_tags?.map((st: SpotTag) => st.tags?.detail).filter(Boolean) || [],
-                detailURL: `/spots/restaurant/${item.id}`,
+                detailURL: detailURL,
                 price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
                 position: {
                     lat: typeof item.latitude === 'string' ? parseFloat(item.latitude) : item.latitude,
