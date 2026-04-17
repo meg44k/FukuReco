@@ -33,6 +33,7 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
             console.log("LIFF init succeeded.");
             setLiffObject(liff);
             
+            /*
             // ログイン状態の確認と自動ログイン
             if (!liff.isLoggedIn()) {
               console.log("Not logged in, initiating login...");
@@ -40,7 +41,7 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
               // ブラウザ環境ではリダイレクトが発生します
               liff.login();
             }
-          })
+            */          })
           .catch((error: Error) => {
             console.log("LIFF init failed.");
             setLiffError(error.toString());
