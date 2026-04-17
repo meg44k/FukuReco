@@ -11,21 +11,21 @@ export function useFavorites() {
   const [lineId, setLineId] = useState<string | null>(() => {
     // Initial state from environment variable if available
     if (typeof window !== "undefined") {
-      const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID;
-      if (debugId) {
-        console.log("Using Debug LINE ID:", debugId);
-        return debugId;
-      }
+      const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID || "GUEST_USER_ID"; // Temporary guest ID
+      console.log("Using Debug/Guest LINE ID:", debugId);
+      return debugId;
     }
     return null;
   });
 
   useEffect(() => {
-    if (lineId || !liff) return;
+    // If we have a lineId and it's NOT the guest ID, or if liff isn't ready, skip
+    if (!liff || (lineId && lineId !== "GUEST_USER_ID" && lineId !== process.env.NEXT_PUBLIC_DEBUG_LINE_ID)) return;
 
     const getProfile = async () => {
       try {
         if (!liff.isLoggedIn()) {
+          // If not logged in, keep the current lineId (Guest ID)
           setLoading(false);
           return;
         }
@@ -78,11 +78,7 @@ export function useFavorites() {
 
   const toggleFavorite = async (spotId: number | string) => {
     if (!lineId) {
-      if (liff && !liff.isLoggedIn()) {
-        liff.login();
-      } else if (loading) {
-        console.warn("Favorite toggle called while loading profile.");
-      }
+      console.warn("Cannot toggle favorite: User ID not found.");
       return;
     }
 

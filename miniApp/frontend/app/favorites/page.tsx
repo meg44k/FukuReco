@@ -23,22 +23,23 @@ const FavoritesPage = () => {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      // Use debug ID from env if available, otherwise get from LIFF
+      // Use debug ID from env if available, otherwise get from LIFF, finally fallback to GUEST_USER_ID
       let lineId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID || null;
 
       if (!lineId) {
-        if (!liff || !liff.isLoggedIn()) {
-          setLoading(false);
-          return;
+        if (liff && liff.isLoggedIn()) {
+          try {
+            const profile = await liff.getProfile();
+            lineId = profile.userId;
+          } catch (error) {
+            console.error("Error getting LIFF profile:", error);
+          }
         }
-        try {
-          const profile = await liff.getProfile();
-          lineId = profile.userId;
-        } catch (error) {
-          console.error("Error getting LIFF profile:", error);
-          setLoading(false);
-          return;
-        }
+      }
+
+      // Final fallback if not logged in or failed to get profile
+      if (!lineId) {
+        lineId = "GUEST_USER_ID";
       }
 
       try {
