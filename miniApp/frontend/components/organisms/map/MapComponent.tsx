@@ -19,6 +19,7 @@ import { MenuDrawer } from "@/components/organisms/menuDrawer/MenuDrawer";
 import { TagSearchButtons } from "@/components/organisms/tagSearchButtons/TagSearchButtons";
 import { MapSpotData, MinimalSpotData, HAKATA_STATION } from "@/types/map";
 import { panMapToSpot } from "@/lib/map/mapUtils";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const containerStyle = {
   width: "100%",
@@ -42,6 +43,8 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const hasInitializedFromUrl = useRef(false);
+
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -409,6 +412,23 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                       }}
                     />
                   )}
+                  <SpotCard
+                    spotKind={spot.spotKind}
+                    spotName={spot.spotName}
+                    isOpen={spot.isOpen}
+                    imageSrc={spot.imageSrc}
+                    spotTags={spot.spotTags}
+                    detailURL={spot.detailURL}
+                    price1={spot.price1}
+                    price2={spot.price2}
+                    updatedAt={spot.updatedAt}
+                    isFavorite={isFavorite(spot.id)}
+                    onFavoriteToggle={() => toggleFavorite(spot.id)}
+                    onCloseClick={() => {
+                      setSelectedSpot(null);
+                      setDisplayCards([]);
+                    }}
+                  />
                 </div>
               ))}
               <div className={styles.spacer} />

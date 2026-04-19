@@ -23,22 +23,23 @@ const FavoritesPage = () => {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      // Use debug ID from env if available, otherwise get from LIFF
+      // Use debug ID from env if available, otherwise get from LIFF, finally fallback to GUEST_USER_ID
       let lineId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID || null;
 
       if (!lineId) {
-        if (!liff || !liff.isLoggedIn()) {
-          setLoading(false);
-          return;
+        if (liff && liff.isLoggedIn()) {
+          try {
+            const profile = await liff.getProfile();
+            lineId = profile.userId;
+          } catch (error) {
+            console.error("Error getting LIFF profile:", error);
+          }
         }
-        try {
-          const profile = await liff.getProfile();
-          lineId = profile.userId;
-        } catch (error) {
-          console.error("Error getting LIFF profile:", error);
-          setLoading(false);
-          return;
-        }
+      }
+
+      // Final fallback if not logged in or failed to get profile
+      if (!lineId) {
+        lineId = "GUEST_USER_ID";
       }
 
       try {
@@ -101,8 +102,30 @@ const FavoritesPage = () => {
     return <Loading />;
   }
 
-  const restaurants = favorites.filter((f) => f.placeType === "restaurant" || f.placeType === "飲食店");
-  const otherSpots = favorites.filter((f) => f.placeType !== "restaurant" && f.placeType !== "飲食店");
+  const getDetailPath = (placeType: string, id: number) => {
+    const type = placeType.toLowerCase();
+    if (type === "restaurant" || type === "cafe" || type === "飲食店") {
+      return `/spots/restaurant/${id}`;
+    }
+    if (type === "sightseeing" || type === "sightseeing_spot") {
+      return `/spots/sightseeing/${id}`;
+    }
+    if (type === "shop" || type === "gift_spot") {
+      return `/spots/shop/${id}`;
+    }
+    if (type === "resting_spot") {
+      return `/spots/resting/${id}`;
+    }
+    return `/spots/sightseeing/${id}`; // デフォルト
+  };
+
+  const isRestaurant = (placeType: string) => {
+    const type = placeType.toLowerCase();
+    return type === "restaurant" || type === "cafe" || type === "飲食店";
+  };
+
+  const restaurants = favorites.filter((f) => isRestaurant(f.placeType));
+  const otherSpots = favorites.filter((f) => !isRestaurant(f.placeType));
 
   return (
     <div className={styles.container}>
@@ -126,7 +149,7 @@ const FavoritesPage = () => {
                     <span className={styles.cardName}>{item.name}</span>
                   </div>
                   <div className={styles.cardFooter}>
-                    <Link href={`/spots/restaurant/${item.id}`} passHref>
+                    <Link href={getDetailPath(item.placeType, item.id)} passHref>
                       <Button
                         variant="contained"
                         className={styles.detailButton}
@@ -164,7 +187,7 @@ const FavoritesPage = () => {
                     <span className={styles.cardName}>{item.name}</span>
                   </div>
                   <div className={styles.cardFooter}>
-                    <Link href={`/spots/sightseeing/${item.id}`} passHref>
+                    <Link href={getDetailPath(item.placeType, item.id)} passHref>
                       <Button
                         variant="contained"
                         className={styles.detailButton}
