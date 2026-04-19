@@ -110,6 +110,22 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     if (locationStatus === 'loading' || !currentPos) return;
 
     const fetchTop5 = async () => {
+      setIsCardLoading(true);
+      const dummySpot: MapSpotData = {
+        id: -1,
+        position: currentPos,
+        pinKind: "",
+        spotKind: "spot",
+        spotName: "",
+        isOpen: false,
+        imageSrc: "",
+        spotTags: [],
+        detailURL: "",
+        updatedAt: new Date()
+      };
+      setDisplayCards([dummySpot]);
+      setSelectedSpot(dummySpot);
+
       const url = new URL(window.location.origin + '/api/search');
       if (activeKeyword) url.searchParams.append('keyword', activeKeyword);
       if (searchOptions) url.searchParams.append('options', searchOptions);
@@ -162,6 +178,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         }
       } catch (error) {
         console.error("検索API呼び出しエラー:", error);
+        setSelectedSpot(null);
+        setDisplayCards([]);
+      } finally {
+        setIsCardLoading(false);
       }
     };
 
