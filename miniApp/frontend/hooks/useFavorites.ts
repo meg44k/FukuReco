@@ -8,24 +8,34 @@ export function useFavorites() {
   const { liff } = useLIFF();
   const [favorites, setFavorites] = useState<(number | string)[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lineId, setLineId] = useState<string | null>(() => {
-    // Initial state from environment variable if available
-    if (typeof window !== "undefined") {
-      const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID || "GUEST_USER_ID"; // Temporary guest ID
-      console.log("Using Debug/Guest LINE ID:", debugId);
-      return debugId;
-    }
-    return null;
-  });
+  const [lineId, setLineId] = useState<string | null>(null);
 
   useEffect(() => {
-    // If we have a lineId and it's NOT the guest ID, or if liff isn't ready, skip
-    if (!liff || (lineId && lineId !== "GUEST_USER_ID" && lineId !== process.env.NEXT_PUBLIC_DEBUG_LINE_ID)) return;
+    // クライアントサイドでのみ実行される初期化
+    const debugId = process.env.NEXT_PUBLIC_DEBUG_LINE_ID || "GUEST_USER_ID";
+    
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("Using Debug/Guest LINE ID:", debugId);
+    }
+    
+    // 同期的なsetStateを避けるためマイクロタスクで実行
+    Promise.resolve().then(() => {
+      setLineId(debugId);
+    });
+  }, []);
+
+  useEffect(() => {
+    // lineIdが未設定、またはLIFFが未準備なら何もしない
+    if (!liff || !lineId) return;
+
+    // すでに本物のLINE ID（デバッグ/ゲスト用以外）が設定されている場合はスキップ
+    const isTemporaryId = lineId === "GUEST_USER_ID" || lineId === process.env.NEXT_PUBLIC_DEBUG_LINE_ID;
+    if (!isTemporaryId) return;
 
     const getProfile = async () => {
       try {
         if (!liff.isLoggedIn()) {
-          // If not logged in, keep the current lineId (Guest ID)
+          // ログインしていない場合は現在のID（ゲストID）を維持
           setLoading(false);
           return;
         }
