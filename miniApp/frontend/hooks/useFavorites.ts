@@ -18,7 +18,10 @@ export function useFavorites() {
       console.log("Using Debug/Guest LINE ID:", debugId);
     }
     
-    setLineId(debugId);
+    // 同期的なsetStateを避けるためマイクロタスクで実行
+    Promise.resolve().then(() => {
+      setLineId(debugId);
+    });
   }, []);
 
   useEffect(() => {
