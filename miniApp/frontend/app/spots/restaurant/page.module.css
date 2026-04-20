@@ -247,6 +247,33 @@
   line-height: 1.6;
 }
 
+.budgetRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budgetRow + .budgetRow {
+  margin-top: 6px;
+}
+
+.budgetIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 20%;
+  color: white;
+}
+
+.budgetIcon svg {
+  stroke: white;
+  stroke-width: 2;
+  width: 60%;
+  height: 60%;
+}
+
 .link {
   color: var(--primary-color);
   text-decoration: underline;
