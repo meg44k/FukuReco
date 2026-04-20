@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/client';
 import { notFound, useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import styles from '../page.module.css'; 
+import btnStyles from '@/styles/common-buttons.module.css';
 import {
   Clock,
   ExternalLink,
@@ -348,38 +349,37 @@ export default function RestaurantDetailPage({ params }: Props) {
             href={restaurant.reservationURL}
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.reserveBtn}
-            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            className={btnStyles.reserveBtn}
           >
             予約する
           </a>
         ) : restaurant.phoneNumber ? (
           <a 
             href={`tel:${restaurant.phoneNumber}`}
-            className={styles.reserveBtn}
-            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            className={btnStyles.reserveBtn}
           >
             電話する
           </a>
         ) : (
-          <button className={styles.reserveBtn} disabled>
+          <button className={btnStyles.reserveBtn} disabled>
             予約不可
           </button>
         )}
-        <button className={styles.routeBtn}>
+        <button className={btnStyles.routeBtn} style={{ flex: 1.5 }}>
           ルートを見る <ExternalLink size={18} />
         </button>
         <button 
-          className={styles.heartBtn}
-          onClick={() => toggleFavorite(!isNaN(Number(id)) ? Number(id) : id)}
+          className={btnStyles.heartBtn}
+          onClick={() => toggleFavorite(id)}
         >
           <Heart 
             size={24} 
-            fill={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "none"} 
-            color={isFavorite(!isNaN(Number(id)) ? Number(id) : id) ? "#EF5350" : "currentColor"}
+            fill={isFavorite(id) ? "#EF5350" : "none"} 
+            color={isFavorite(id) ? "#EF5350" : "currentColor"}
           />
         </button>
       </div>
     </div>
   );
 }
+

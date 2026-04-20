@@ -76,7 +76,12 @@ export function useFavorites() {
     };
   }, [lineId, liff]);
 
-  const toggleFavorite = async (spotId: number | string) => {
+  const normalizeId = (id: number | string) => {
+    return !isNaN(Number(id)) ? Number(id) : id;
+  };
+
+  const toggleFavorite = async (rawSpotId: number | string) => {
+    const spotId = normalizeId(rawSpotId);
     if (!lineId) {
       console.warn("Cannot toggle favorite: User ID not found.");
       return;
@@ -110,5 +115,10 @@ export function useFavorites() {
     }
   };
 
-  return { favorites, loading, toggleFavorite, isFavorite: (spotId: number | string) => favorites.includes(spotId) };
+  return { 
+    favorites, 
+    loading, 
+    toggleFavorite, 
+    isFavorite: (rawSpotId: number | string) => favorites.includes(normalizeId(rawSpotId)) 
+  };
 }
