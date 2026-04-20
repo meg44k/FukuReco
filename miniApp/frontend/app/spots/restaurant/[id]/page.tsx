@@ -300,12 +300,16 @@ export default function RestaurantDetailPage({ params }: Props) {
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>平均予算</div>
             <div className={styles.infoValue}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Sun size={16} color="#efab58" />
+              <div className={styles.budgetRow}>
+                <span className={styles.budgetIcon} style={{ backgroundColor: "#efab58" }}>
+                  <Sun />
+                </span>
                 <span>{restaurant.avgLunchBudget || restaurant.averageBudget || '情報なし'}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <Moon size={16} color="#5C6BC0" />
+              <div className={styles.budgetRow}>
+                <span className={styles.budgetIcon} style={{ backgroundColor: "#5C6BC0" }}>
+                  <Moon />
+                </span>
                 <span>{restaurant.avgDinnerBudget || '情報なし'}</span>
               </div>
             </div>
