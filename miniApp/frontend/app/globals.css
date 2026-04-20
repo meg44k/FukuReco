@@ -30,7 +30,8 @@ h1, h2{
 
   /* Font sizes */
   --title-size: 2rem;
-  --subtitle-size:1.2rem;
+  --subtitle-size: 1.2rem;
+  --btn-font-size: clamp(0.8rem, 2.5vw, 1.25rem);
 }
 
 .lucide{

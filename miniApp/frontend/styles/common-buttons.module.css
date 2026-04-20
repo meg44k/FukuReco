@@ -1,0 +1,46 @@
+.actionBtnBase {
+  flex: 1;
+  font-size: var(--btn-font-size);
+  padding: 14px 8px;
+  border-radius: 30px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  min-width: 0;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.actionBtnBase:hover {
+  opacity: 0.8;
+}
+
+.reserveBtn {
+  composes: actionBtnBase;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.routeBtn {
+  composes: actionBtnBase;
+  background-color: white;
+  color: var(--primary-color);
+  border: 1.5px solid var(--primary-color);
+}
+
+.heartBtn {
+  composes: actionBtnBase;
+  flex: 0 0 48px; /* Fixed size, not growing like other buttons */
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary-color);
+  background-color: white;
+  color: var(--primary-color);
+  padding: 0;
+}
