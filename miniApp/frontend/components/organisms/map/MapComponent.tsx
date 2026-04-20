@@ -406,29 +406,14 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                       price1={spot.price1}
                       price2={spot.price2}
                       updatedAt={spot.updatedAt}
+                      isFavorite={isFavorite(spot.id)}
+                      onFavoriteToggle={() => toggleFavorite(spot.id)}
                       onCloseClick={() => {
                         setSelectedSpot(null);
                         setDisplayCards([]);
                       }}
                     />
                   )}
-                  <SpotCard
-                    spotKind={spot.spotKind}
-                    spotName={spot.spotName}
-                    isOpen={spot.isOpen}
-                    imageSrc={spot.imageSrc}
-                    spotTags={spot.spotTags}
-                    detailURL={spot.detailURL}
-                    price1={spot.price1}
-                    price2={spot.price2}
-                    updatedAt={spot.updatedAt}
-                    isFavorite={isFavorite(spot.id)}
-                    onFavoriteToggle={() => toggleFavorite(spot.id)}
-                    onCloseClick={() => {
-                      setSelectedSpot(null);
-                      setDisplayCards([]);
-                    }}
-                  />
                 </div>
               ))}
               <div className={styles.spacer} />
