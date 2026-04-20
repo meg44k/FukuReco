@@ -164,6 +164,9 @@ export async function GET(request: Request) {
 
         // 各スポットの営業状況を Google Places API (New) から取得 (上位のみ)
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        // リクエストURLからリファラーのオリジンを取得 (localhost や app.fukureco.jp)
+        const referer = new URL(request.url).origin;
+
         if (apiKey && formattedData.length > 0) {
             // 通信量とクォータを考慮し、既に絞り込まれた上位数件のみ取得
             // 距離ソートされていない場合（現在地なし）でも、念のため最初の5件に制限
@@ -182,6 +185,7 @@ export async function GET(request: Request) {
                                 'Content-Type': 'application/json',
                                 'X-Goog-Api-Key': apiKey,
                                 'X-Goog-FieldMask': 'places.currentOpeningHours.openNow',
+                                'Referer': referer, // APIキーの制限を通過するためにリファラーを明示的に付与
                             },
                             body: JSON.stringify({
                                 textQuery: spot.spotName,
