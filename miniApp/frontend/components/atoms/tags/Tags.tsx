@@ -19,7 +19,7 @@ export default function Tags ({ tags = [] }: TagsProps) {
 
     return (
        <div>
-        <div className={styles.chips}>
+        <div className={styles.chips} style={{ marginBottom: showAllTags ? '8px' : '0.8rem' }}>
           {tags.slice(0, 3).map((tag, index) => (
             <Chip key={index} label={tag} variant="outlined" size="small" className={styles.chip} />
           ))}
@@ -28,7 +28,7 @@ export default function Tags ({ tags = [] }: TagsProps) {
         {tags.length > 3 && (
           <>
             <Collapse in={showAllTags}>
-              <div className={styles.chips} style={{ marginTop: '8px' }}>
+              <div className={styles.chips}>
                 {tags.slice(3).map((tag, index) => (
                   <Chip key={index + 3} label={tag} variant="outlined" size="small" className={styles.chip} />
                 ))}
