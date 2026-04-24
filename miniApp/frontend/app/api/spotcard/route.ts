@@ -55,6 +55,7 @@ export async function GET(request: Request) {
         // Google Places API (New) から営業状況を取得 (resting_spot 以外)
         let isOpen: boolean | null = null;
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        const referer = new URL(request.url).origin;
 
         if (apiKey && data.name && data.latitude && data.longitude && data.place_type !== 'resting_spot') {
             isOpen = false; // API取得前のデフォルトをfalseに設定
@@ -65,6 +66,7 @@ export async function GET(request: Request) {
                         'Content-Type': 'application/json',
                         'X-Goog-Api-Key': apiKey,
                         'X-Goog-FieldMask': 'places.id,places.currentOpeningHours.openNow',
+                        'Referer': referer,
                     },
                     body: JSON.stringify({
                         textQuery: data.name,
@@ -82,8 +84,8 @@ export async function GET(request: Request) {
                 });
 
                 if (placesResponse.ok) {
-                    const placesData = await placesResponse.json();
-                    if (placesData.places && placesData.places.length > 0) {
+                    const placesData = await placesResponse.ok ? await placesResponse.json() : null;
+                    if (placesData && placesData.places && placesData.places.length > 0) {
                         // currentOpeningHours.openNow があればそれを使用、なければデフォルトfalse
                         isOpen = placesData.places[0].currentOpeningHours?.openNow ?? false;
                     }

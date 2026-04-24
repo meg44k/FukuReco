@@ -11,6 +11,8 @@ import {
 import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
+import { SpotCardSkeleton } from "@/components/atoms/spotCard/SpotCardSkeleton";
+import Loading from "@/components/atoms/loading/Loading";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
 import { MenuButton } from "@/components/atoms/menuButton/MenuButton";
 import { MenuDrawer } from "@/components/organisms/menuDrawer/MenuDrawer";
@@ -50,6 +52,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   // state管理
   const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
+  const [isCardLoading, setIsCardLoading] = useState(false); // カードのロード状態
   const mapRef = useRef<google.maps.Map | null>(null);
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
   const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
@@ -110,6 +113,22 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     if (locationStatus === 'loading' || !currentPos) return;
 
     const fetchTop5 = async () => {
+      setIsCardLoading(true);
+      const dummySpot: MapSpotData = {
+        id: -1,
+        position: currentPos,
+        pinKind: "",
+        spotKind: "spot",
+        spotName: "",
+        isOpen: false,
+        imageSrc: "",
+        spotTags: [],
+        detailURL: "",
+        updatedAt: new Date()
+      };
+      setDisplayCards([dummySpot]);
+      setSelectedSpot(dummySpot);
+
       const url = new URL(window.location.origin + '/api/search');
       if (activeKeyword) url.searchParams.append('keyword', activeKeyword);
       if (searchOptions) url.searchParams.append('options', searchOptions);
@@ -162,6 +181,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         }
       } catch (error) {
         console.error("検索API呼び出しエラー:", error);
+        setSelectedSpot(null);
+        setDisplayCards([]);
+      } finally {
+        setIsCardLoading(false);
       }
     };
 
@@ -234,7 +257,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     }
   };
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) return <Loading />;
 
   return (
     <div className={styles.mapPage}>
@@ -308,6 +331,24 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                 setSelectedSpot(alreadyFetched);
                 return;
               }
+              
+              setIsCardLoading(true);
+              // スケルトン表示用のダミーデータをセット
+              const dummySpot: MapSpotData = {
+                id: spot.id,
+                position: spot.position,
+                pinKind: spot.pinKind,
+                spotKind: "spot",
+                spotName: "",
+                isOpen: false,
+                imageSrc: "",
+                spotTags: [],
+                detailURL: "",
+                updatedAt: new Date()
+              };
+              setDisplayCards([dummySpot]);
+              setSelectedSpot(dummySpot);
+
               // APIから詳細を取得
               try {
                 const response = await fetch(`/api/spotcard?id=${spot.id}`);
@@ -316,7 +357,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                   setDisplayCards([detailData]); // リストを上書きして選択状態にする
                   setSelectedSpot(detailData);
                 }
-              } catch (e) { console.error(e); }
+              } catch (e) { 
+                console.error(e); 
+                setSelectedSpot(null);
+                setDisplayCards([]);
+              } finally {
+                setIsCardLoading(false);
+              }
             }}
             icon={{
               url: spot.pinKind,
@@ -346,23 +393,27 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                     cardRefs.current[spot.id] = el;
                   }}
                 >
-                  <SpotCard
-                    spotKind={spot.spotKind}
-                    spotName={spot.spotName}
-                    isOpen={spot.isOpen}
-                    imageSrc={spot.imageSrc}
-                    spotTags={spot.spotTags}
-                    detailURL={spot.detailURL}
-                    price1={spot.price1}
-                    price2={spot.price2}
-                    updatedAt={spot.updatedAt}
-                    isFavorite={isFavorite(spot.id)}
-                    onFavoriteToggle={() => toggleFavorite(spot.id)}
-                    onCloseClick={() => {
-                      setSelectedSpot(null);
-                      setDisplayCards([]);
-                    }}
-                  />
+                  {isCardLoading && selectedSpot?.id === spot.id ? (
+                    <SpotCardSkeleton />
+                  ) : (
+                    <SpotCard
+                      spotKind={spot.spotKind}
+                      spotName={spot.spotName}
+                      isOpen={spot.isOpen}
+                      imageSrc={spot.imageSrc}
+                      spotTags={spot.spotTags}
+                      detailURL={spot.detailURL}
+                      price1={spot.price1}
+                      price2={spot.price2}
+                      updatedAt={spot.updatedAt}
+                      isFavorite={isFavorite(spot.id)}
+                      onFavoriteToggle={() => toggleFavorite(spot.id)}
+                      onCloseClick={() => {
+                        setSelectedSpot(null);
+                        setDisplayCards([]);
+                      }}
+                    />
+                  )}
                 </div>
               ))}
               <div className={styles.spacer} />
