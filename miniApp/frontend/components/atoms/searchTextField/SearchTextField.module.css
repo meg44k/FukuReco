@@ -40,6 +40,26 @@
     transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
+/* ラベルの色の調整 */
+.searchField :global(.MuiInputLabel-root) {
+    color: #999999 !important; /* 灰色に固定 */
+}
+
+/* フォーカス時のラベルの色も灰色を維持 */
+.searchField :global(.MuiInputLabel-root.Mui-focused) {
+    color: #999999 !important;
+}
+
+/* ラベルが浮き上がらない（shrink: false）際の位置調整 */
+.searchField :global(.MuiInputLabel-root) {
+    transform: translate(14px, 16px) scale(1);
+}
+
+/* 入力がある時にラベルを消すための補助設定（JS側でも空文字にしていますが念のため） */
+.searchField :global(.MuiInputLabel-root.MuiInputLabel-shrink) {
+    display: none;
+}
+
 /* ホバー時 */
 .searchButton:hover {
     background-color: rgba(0, 0, 0, 0.08);
