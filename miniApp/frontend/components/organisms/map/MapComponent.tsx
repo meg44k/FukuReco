@@ -89,6 +89,24 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     }
   }, [selectedSpot?.id, pathname, router]);
 
+  // iOS等のソフトウェアキーボード表示時の高さを取得してCSS変数にセットする
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      const handleResize = () => {
+        // innerHeightとvisualViewport.heightの差分をキーボードの高さ（＋アルファ）として取得
+        const offset = window.innerHeight - window.visualViewport!.height;
+        document.documentElement.style.setProperty('--keyboard-offset', `${offset}px`);
+      };
+
+      window.visualViewport.addEventListener('resize', handleResize);
+      handleResize();
+
+      return () => {
+        window.visualViewport?.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
+
   // 位置情報を取得する
   useEffect(() => {
     if (typeof navigator === 'undefined') return;
