@@ -252,11 +252,16 @@ export default function RestingDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Action Footer */}
       <div className={styles.actionFooter}>
-        <button className={btnStyles.routeBtn} style={{ flex: 1.5 }}>
+        <a 
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={btnStyles.routeBtn}
+          style={{ flex: 1.5 }}
+        >
           ルートを見る <ExternalLink size={18} />
-        </button>
+        </a>
         <button 
           className={btnStyles.heartBtn}
           onClick={() => toggleFavorite(id)}

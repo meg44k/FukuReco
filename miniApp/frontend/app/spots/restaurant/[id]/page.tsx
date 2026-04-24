@@ -369,9 +369,15 @@ export default function RestaurantDetailPage({ params }: Props) {
             予約不可
           </button>
         )}
-        <button className={btnStyles.routeBtn} style={{ flex: 1.5 }}>
+        <a 
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${restaurant.name} ${restaurant.address}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={btnStyles.routeBtn}
+          style={{ flex: 1.5 }}
+        >
           ルートを見る <ExternalLink size={18} />
-        </button>
+        </a>
         <button 
           className={btnStyles.heartBtn}
           onClick={() => toggleFavorite(id)}
