@@ -1,0 +1,86 @@
+.container {
+  padding: 1.5rem 1.2rem;
+  background-color: white;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.bar {
+  width: 5px;
+  height: 24px;
+  background-color: var(--primary-color, #3F7D58);
+  border-radius: 2px;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.scrollContainer {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* スクロールバー非表示（任意） */
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  min-width: 160px;
+  width: 160px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.cardInfo {
+  padding: 8px;
+}
+
+.spotName {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.7rem;
+  color: #3F7D58;
+}
+
+.loading {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
+}

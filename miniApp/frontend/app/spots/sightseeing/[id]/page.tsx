@@ -16,6 +16,7 @@ import { SightseeingSpot } from '@/types/spot'
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
+import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -120,6 +121,8 @@ export default function SightseeingDetailPage({ params }: Props) {
     closed_days?: string;
     avg_wait_time?: string;
     remarks?: string;
+    latitude: string;
+    longitude: string;
   };
 
   const spot: SightseeingSpot = {
@@ -262,6 +265,15 @@ export default function SightseeingDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Nearby Spots Section */}
+      {typeof spot.latitude === 'number' && typeof spot.longitude === 'number' && !isNaN(spot.latitude) && !isNaN(spot.longitude) && (
+        <NearbySpots 
+          lat={spot.latitude} 
+          lng={spot.longitude} 
+          currentId={spot.id} 
+        />
+      )}
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>
