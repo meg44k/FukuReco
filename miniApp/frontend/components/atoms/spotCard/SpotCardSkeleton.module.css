@@ -65,7 +65,7 @@
 .titleSkeleton {
     width: 65%;
     font-size: clamp(1.0rem, 0.25rem + 4.5vw, 2.25rem);
-    height: 1.5em; 
+    height: 1em; 
     border-radius: 4px;
 }
 
