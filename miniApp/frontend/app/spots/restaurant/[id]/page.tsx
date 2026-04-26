@@ -22,6 +22,7 @@ import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
+import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -138,6 +139,8 @@ export default function RestaurantDetailPage({ params }: Props) {
     remarks?: string;
     avg_lunch_budget?: string;
     avg_dinner_budget?: string;
+    latitude: string;
+    longitude: string;
   };
 
   const restaurant: Restaurant = {
@@ -166,6 +169,8 @@ export default function RestaurantDetailPage({ params }: Props) {
     remarks: spot.remarks,
     avgLunchBudget: spot.avg_lunch_budget,
     avgDinnerBudget: spot.avg_dinner_budget,
+    latitude: parseFloat(spot.latitude),
+    longitude: parseFloat(spot.longitude),
   };
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
@@ -346,6 +351,15 @@ export default function RestaurantDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {/* Nearby Spots Section */}
+      {typeof restaurant.latitude === 'number' && typeof restaurant.longitude === 'number' && !isNaN(restaurant.latitude) && !isNaN(restaurant.longitude) && (
+        <NearbySpots 
+          lat={restaurant.latitude} 
+          lng={restaurant.longitude} 
+          currentId={restaurant.id} 
+        />
+      )}
+
       {/* Action Footer */}
       <div className={styles.actionFooter}>
         {restaurant.reservationURL ? (
@@ -369,9 +383,15 @@ export default function RestaurantDetailPage({ params }: Props) {
             予約不可
           </button>
         )}
-        <button className={btnStyles.routeBtn} style={{ flex: 1.5 }}>
+        <a 
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${restaurant.name} ${restaurant.address}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={btnStyles.routeBtn}
+          style={{ flex: 1.5 }}
+        >
           ルートを見る <ExternalLink size={18} />
-        </button>
+        </a>
         <button 
           className={btnStyles.heartBtn}
           onClick={() => toggleFavorite(id)}

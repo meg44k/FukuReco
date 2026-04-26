@@ -18,6 +18,7 @@ import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
+import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -291,11 +292,26 @@ export default function ShopDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {/* Nearby Spots Section */}
+      {typeof spot.latitude === 'number' && typeof spot.longitude === 'number' && !isNaN(spot.latitude) && !isNaN(spot.longitude) && (
+        <NearbySpots 
+          lat={spot.latitude} 
+          lng={spot.longitude} 
+          currentId={spot.id} 
+        />
+      )}
+
       {/* Action Footer */}
       <div className={styles.actionFooter}>
-        <button className={btnStyles.routeBtn} style={{ flex: 1.5 }}>
+        <a 
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={btnStyles.routeBtn}
+          style={{ flex: 1.5 }}
+        >
           ルートを見る <ExternalLink size={18} />
-        </button>
+        </a>
         <button 
           className={btnStyles.heartBtn}
           onClick={() => toggleFavorite(id)}
