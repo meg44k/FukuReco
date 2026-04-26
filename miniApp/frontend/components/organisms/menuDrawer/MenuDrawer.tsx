@@ -114,7 +114,7 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
           </Typography>
         </Box>
         <Typography variant="caption" sx={{ color: "#ccc", fontSize: "0.7rem" }}>
-          &copy; 2026 FukuReco
+          &copy; 2026 フクレコ
         </Typography>
       </Box>
     </Drawer>
