@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { Shop } from '@/types/spot'
 import { Menu } from '@/types/menu'
 
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
@@ -20,6 +19,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { mapToShop } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -99,58 +99,7 @@ export default function ShopDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  // Cast dynamic data to internal interfaces for property access
-  const spotRaw = spotData as unknown as {
-    id: number;
-    name: string;
-    catchphrase?: string;
-    distance_from_transit?: string;
-    stay_duration?: string;
-    fukureko_comment?: string;
-    address: string;
-    business_hours?: string;
-    phone_number?: string;
-    nearest_station?: string;
-    website_url?: string;
-    average_budget?: string | number;
-    place_type: string;
-    pricing?: Record<string, unknown>;
-    facilities?: Record<string, unknown>;
-    updated_at: string;
-    created_at: string;
-    nearby_coin_lockers?: string;
-    parking_info?: string;
-    payment_methods?: string[];
-    closed_days?: string;
-    shop_comment?: string;
-    remarks?: string;
-  };
-
-  const spot: Shop = {
-    id: spotRaw.id,
-    name: spotRaw.name,
-    catchphrase: spotRaw.catchphrase,
-    distanceFromTransit: spotRaw.distance_from_transit,
-    stayDuration: spotRaw.stay_duration,
-    fukurekoComment: spotRaw.fukureko_comment,
-    address: spotRaw.address,
-    businessHours: spotRaw.business_hours,
-    phoneNumber: spotRaw.phone_number,
-    nearestStation: spotRaw.nearest_station,
-    websiteUrl: spotRaw.website_url,
-    averageBudget: spotRaw.average_budget,
-    placeType: spotRaw.place_type,
-    pricing: spotRaw.pricing || {},
-    facilities: spotRaw.facilities || {},
-    updatedAt: new Date(spotRaw.updated_at),
-    createdAt: new Date(spotRaw.created_at),
-    nearbyCoinLockers: spotRaw.nearby_coin_lockers,
-    parkingInfo: spotRaw.parking_info,
-    paymentMethods: spotRaw.payment_methods,
-    closedDays: spotRaw.closed_days,
-    shopComment: spotRaw.shop_comment,
-    remarks: spotRaw.remarks,
-  };
+  const spot = mapToShop(spotData);
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;
@@ -253,10 +202,11 @@ export default function ShopDetailPage({ params }: Props) {
         <SpotInfoTable 
           items={[
             { label: "住所", value: spot.address },
-            { label: "営業時間", value: spot.businessHours || '情報なし' },
-            { label: "電話番号", value: spot.phoneNumber || '情報なし' },
+            { label: "営業時間", value: spot.businessHours || "情報なし" },
+            { label: "電話番号", value: spot.phoneNumber || "情報なし" },
             { label: "定休日", value: spot.closedDays || "情報なし" },
             { label: "支払方法", value: spot.paymentMethods || "情報なし" },
+            { label: "駐車場", value: spot.parkingInfo || "情報なし" },
             { 
               label: "ウェブサイト", 
               value: spot.websiteUrl ? (

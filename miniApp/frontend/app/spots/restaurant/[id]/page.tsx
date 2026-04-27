@@ -13,7 +13,6 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { Restaurant } from '@/types/spot'
 import { Menu } from '@/types/menu'
 
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
@@ -24,6 +23,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink, BudgetRow } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { mapToRestaurant } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -113,66 +113,7 @@ export default function RestaurantDetailPage({ params }: Props) {
     return <SpotDetailSkeleton />;
   }
 
-  // Cast dynamic data to internal interfaces for property access
-  const spot = spotData as unknown as {
-    id: number;
-    name: string;
-    catchphrase?: string;
-    distance_from_transit?: string;
-    stay_duration?: string;
-    fukureko_comment?: string;
-    address: string;
-    business_hours?: string;
-    phone_number?: string;
-    nearest_station?: string;
-    website_url?: string;
-    average_budget?: string | number;
-    place_type: string;
-    pricing?: Record<string, unknown>;
-    facilities?: Record<string, unknown>;
-    updated_at: string;
-    created_at: string;
-    nearby_coin_lockers?: string;
-    parking_info?: string;
-    payment_methods?: string[];
-    closed_days?: string;
-    reservation_url?: string;
-    remarks?: string;
-    avg_lunch_budget?: string;
-    avg_dinner_budget?: string;
-    latitude: string;
-    longitude: string;
-  };
-
-  const restaurant: Restaurant = {
-    id: spot.id,
-    name: spot.name,
-    catchphrase: spot.catchphrase,
-    distanceFromTransit: spot.distance_from_transit,
-    stayDuration: spot.stay_duration,
-    fukurekoComment: spot.fukureko_comment,
-    address: spot.address,
-    businessHours: spot.business_hours,
-    phoneNumber: spot.phone_number,
-    nearestStation: spot.nearest_station,
-    websiteUrl: spot.website_url,
-    averageBudget: spot.average_budget,
-    placeType: spot.place_type,
-    pricing: spot.pricing || {},
-    facilities: spot.facilities || {},
-    updatedAt: new Date(spot.updated_at),
-    createdAt: new Date(spot.created_at),
-    nearbyCoinLockers: spot.nearby_coin_lockers,
-    parkingInfo: spot.parking_info,
-    paymentMethods: spot.payment_methods,
-    closedDays: spot.closed_days,
-    reservationURL: spot.reservation_url,
-    remarks: spot.remarks,
-    avgLunchBudget: spot.avg_lunch_budget,
-    avgDinnerBudget: spot.avg_dinner_budget,
-    latitude: parseFloat(spot.latitude),
-    longitude: parseFloat(spot.longitude),
-  };
+  const restaurant = mapToRestaurant(spotData);
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;
@@ -287,8 +228,8 @@ export default function RestaurantDetailPage({ params }: Props) {
         <SpotInfoTable 
           items={[
             { label: "住所", value: restaurant.address },
-            { label: "営業時間", value: restaurant.businessHours || '情報なし' },
-            { label: "電話番号", value: restaurant.phoneNumber || '情報なし' },
+            { label: "営業時間", value: restaurant.businessHours || "情報なし" },
+            { label: "電話番号", value: restaurant.phoneNumber || "情報なし" },
             { label: "定休日", value: restaurant.closedDays || "情報なし" },
             { 
               label: "平均予算", 
@@ -297,12 +238,12 @@ export default function RestaurantDetailPage({ params }: Props) {
                   <BudgetRow 
                     icon={<Sun />} 
                     iconBgColor="#efab58" 
-                    label={restaurant.avgLunchBudget || restaurant.averageBudget || '情報なし'} 
+                    label={restaurant.avgLunchBudget || restaurant.averageBudget || "情報なし"} 
                   />
                   <BudgetRow 
                     icon={<Moon />} 
                     iconBgColor="#5C6BC0" 
-                    label={restaurant.avgDinnerBudget || '情報なし'} 
+                    label={restaurant.avgDinnerBudget || "情報なし"} 
                   />
                 </>
               )

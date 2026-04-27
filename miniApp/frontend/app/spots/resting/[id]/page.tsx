@@ -11,13 +11,13 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { RestingSpot } from '@/types/spot'
 
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { mapToRestingSpot } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -94,58 +94,7 @@ export default function RestingDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  // Cast dynamic data to internal interfaces for property access
-  const spotRaw = spotData as unknown as {
-    id: number;
-    name: string;
-    catchphrase?: string;
-    distance_from_transit?: string;
-    stay_duration?: string;
-    fukureko_comment?: string;
-    address: string;
-    business_hours?: string;
-    phone_number?: string;
-    nearest_station?: string;
-    website_url?: string;
-    average_budget?: string | number;
-    place_type: string;
-    pricing?: Record<string, unknown>;
-    facilities?: Record<string, unknown>;
-    updated_at: string;
-    created_at: string;
-    nearby_coin_lockers?: string;
-    parking_info?: string;
-    payment_methods?: string[];
-    closed_days?: string;
-    seating_info?: string;
-    remarks?: string;
-  };
-
-  const spot: RestingSpot = {
-    id: spotRaw.id,
-    name: spotRaw.name,
-    catchphrase: spotRaw.catchphrase,
-    distanceFromTransit: spotRaw.distance_from_transit,
-    stayDuration: spotRaw.stay_duration,
-    fukurekoComment: spotRaw.fukureko_comment,
-    address: spotRaw.address,
-    businessHours: spotRaw.business_hours,
-    phoneNumber: spotRaw.phone_number,
-    nearestStation: spotRaw.nearest_station,
-    websiteUrl: spotRaw.website_url,
-    averageBudget: spotRaw.average_budget,
-    placeType: spotRaw.place_type,
-    pricing: spotRaw.pricing || {},
-    facilities: spotRaw.facilities || {},
-    updatedAt: new Date(spotRaw.updated_at),
-    createdAt: new Date(spotRaw.created_at),
-    nearbyCoinLockers: spotRaw.nearby_coin_lockers,
-    parkingInfo: spotRaw.parking_info,
-    paymentMethods: spotRaw.payment_methods,
-    closedDays: spotRaw.closed_days,
-    seatingInfo: spotRaw.seating_info,
-    remarks: spotRaw.remarks,
-  };
+  const spot = mapToRestingSpot(spotData);
 
   const photoUrls = assetData
     ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])
@@ -222,7 +171,9 @@ export default function RestingDetailPage({ params }: Props) {
         <SpotInfoTable 
           items={[
             { label: "住所", value: spot.address },
-            { label: "営業時間", value: spot.businessHours || '情報なし' },
+            { label: "営業時間", value: spot.businessHours || "情報なし" },
+            { label: "座席情報", value: spot.seatingInfo || "情報なし" },
+            { label: "駐車場", value: spot.parkingInfo || "情報なし" },
             { 
               label: "ウェブサイト", 
               value: spot.websiteUrl ? (
