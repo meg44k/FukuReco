@@ -1,25 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 0.8rem;
+  margin-bottom: 4px;
 }
 
 .chip {
   border-color: #EF633D !important;
   color: #EF633D !important;
-  background-color: rgba(239, 99, 61, 0.1) !important; /* Semi-transparent version of #EF633D */
+  background-color: rgba(239, 99, 61, 0.1) !important;
   font-weight: bold !important;
+  transition: opacity 0.3s ease !important;
 }
 
-.showMoreTags {
+.hiddenChip {
+  opacity: 0.4;
+}
+
+.showMoreButton {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   font-size: 0.9rem;
-  font-weight:500;
+  font-weight: 500;
+  margin-top: 4px;
   margin-bottom: 1.5rem;
   cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 4px 0;
+  width: fit-content;
+  align-self: center;
 }
 
+.showMoreButton:focus-visible {
+  outline: 2px solid #EF633D;
+  border-radius: 4px;
+}
