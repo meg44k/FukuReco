@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import styles from "./PhotoGallery.module.css";
 import Image from "next/image";
 import {
@@ -13,7 +13,13 @@ interface PhotoGalleryProps {
 
 export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
     const headerImages = images || [];
-    const [currentImgIndex, setCurrentImgIndex] = useState(0);
+    // クローンを追加した画像リストを作成
+    const extendedImages = headerImages.length > 1 
+        ? [headerImages[headerImages.length - 1], ...headerImages, headerImages[0]]
+        : headerImages;
+
+    const [currentImgIndex, setCurrentImgIndex] = useState(headerImages.length > 1 ? 1 : 0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -21,14 +27,39 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
     const minSwipeDistance = 50;
 
     const nextImage = useCallback(() => {
-        if (headerImages.length <= 1) return;
-        setCurrentImgIndex((prev) => (prev + 1) % headerImages.length);
-    }, [headerImages.length]);
+        if (headerImages.length <= 1 || isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentImgIndex((prev) => prev + 1);
+    }, [headerImages.length, isTransitioning]);
 
     const prevImage = useCallback(() => {
+        if (headerImages.length <= 1 || isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentImgIndex((prev) => prev - 1);
+    }, [headerImages.length, isTransitioning]);
+
+    const handleTransitionEnd = () => {
+        setIsTransitioning(false);
         if (headerImages.length <= 1) return;
-        setCurrentImgIndex((prev) => (prev - 1 + headerImages.length) % headerImages.length);
-    }, [headerImages.length]);
+
+        // クローンに到達した瞬間に、アニメーションなしで本物の位置へワープする
+        if (currentImgIndex === 0) {
+            // 先頭のクローン（最後の画像）にいる場合 -> 本物の最後へ
+            setCurrentImgIndex(headerImages.length);
+        } else if (currentImgIndex === headerImages.length + 1) {
+            // 末尾のクローン（最初の画像）にいる場合 -> 本物の最初へ
+            setCurrentImgIndex(1);
+        }
+    };
+
+    // インジケーター用の現在のアクティブなインデックス
+    const activeDotIndex = headerImages.length > 1 
+        ? (currentImgIndex === 0 
+            ? headerImages.length - 1 
+            : currentImgIndex === headerImages.length + 1 
+                ? 0 
+                : currentImgIndex - 1)
+        : 0;
 
     const onTouchStart = (e: React.TouchEvent) => {
         setTouchEnd(null);
@@ -58,16 +89,19 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
         return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
     };
 
-    // 自動スライドの設定
-    useEffect(() => {
-        if (headerImages.length <= 1) return;
+    // 表示するドットの範囲を計算（最大5個）
+    const getVisibleDotIndices = () => {
+        const maxVisible = 5;
+        if (headerImages.length <= maxVisible) return headerImages.map((_, i) => i);
+        
+        let start = Math.max(0, activeDotIndex - 2);
+        if (start + maxVisible > headerImages.length) {
+            start = headerImages.length - maxVisible;
+        }
+        return Array.from({ length: maxVisible }, (_, i) => start + i);
+    };
 
-        const interval = setInterval(() => {
-            nextImage();
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [nextImage, headerImages.length]);
+    const visibleDotIndices = getVisibleDotIndices();
 
     if (headerImages.length === 0) {
         return null;
@@ -83,9 +117,13 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
             >
                 <div 
                     className={styles.imageTrack} 
-                    style={{ transform: `translateX(-${currentImgIndex * 100}%)` }}
+                    style={{ 
+                        transform: `translateX(-${currentImgIndex * 100}%)`,
+                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none'
+                    }}
+                    onTransitionEnd={handleTransitionEnd}
                 >
-                {headerImages.map((src, index) => (
+                {extendedImages.map((src, index) => (
                     <div key={index} className={styles.imageContainer}>
                     {isVideo(src) ? (
                         <video 
@@ -102,7 +140,7 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
                             alt={`Spot Media ${index}`}
                             fill
                             className={styles.mainImage}
-                            priority={index === 0}
+                            priority={index === 1} // 本物の最初の画像にpriorityをつける
                             unoptimized={src.startsWith('http')}
                         />
                     )}
@@ -112,11 +150,33 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
                 {headerImages.length > 1 && (
                 <>
                     <div className={styles.carouselNav}>
-                    <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} />
-                    <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} />
+                    <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} aria-label="前の画像へ" />
+                    <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} aria-label="次の画像へ" />
                     </div>
-                    <div className={styles.carouselIndicator}>
-                    {currentImgIndex + 1}/{headerImages.length}
+                    <div 
+                        className={styles.carouselIndicator} 
+                        role="group" 
+                        aria-label="画像スライダーの進捗"
+                    >
+                    {visibleDotIndices.map((index, idx) => {
+                        const isActive = index === activeDotIndex;
+                        const isFirst = idx === 0;
+                        const isLast = idx === visibleDotIndices.length - 1;
+                        const hasMorePrev = isFirst && index > 0;
+                        const hasMoreNext = isLast && index < headerImages.length - 1;
+
+                        return (
+                            <div 
+                                key={index} 
+                                className={`
+                                    ${styles.dot} 
+                                    ${isActive ? styles.activeDot : ""} 
+                                    ${hasMorePrev || hasMoreNext ? styles.smallDot : ""}
+                                `}
+                                aria-current={isActive ? "true" : "false"}
+                            />
+                        );
+                    })}
                     </div>
                 </>
                 )}
