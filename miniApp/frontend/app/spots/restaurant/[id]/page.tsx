@@ -23,6 +23,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
+import { SpotInfoTable, InfoLink, BudgetRow } from "@/components/atoms/spotInfoTable/SpotInfoTable";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -283,70 +284,40 @@ export default function RestaurantDetailPage({ params }: Props) {
           <div className={styles.sectionBar}></div>
           <h2 className={styles.sectionTitle}>基本情報</h2>
         </div>
-        <div className={styles.infoTable}>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>住所</div>
-            <div className={styles.infoValue}>{restaurant.address}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>営業時間</div>
-            <div className={styles.infoValue}>{restaurant.businessHours || '情報なし'}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>電話番号</div>
-            <div className={styles.infoValue}>{restaurant.phoneNumber || '情報なし'}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>定休日</div>
-            <div className={styles.infoValue}>{restaurant.closedDays || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>平均予算</div>
-            <div className={styles.infoValue}>
-              <div className={styles.budgetRow}>
-                <span className={styles.budgetIcon} style={{ backgroundColor: "#efab58" }}>
-                  <Sun />
-                </span>
-                <span>{restaurant.avgLunchBudget || restaurant.averageBudget || '情報なし'}</span>
-              </div>
-              <div className={styles.budgetRow}>
-                <span className={styles.budgetIcon} style={{ backgroundColor: "#5C6BC0" }}>
-                  <Moon />
-                </span>
-                <span>{restaurant.avgDinnerBudget || '情報なし'}</span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>支払方法</div>
-            <div className={styles.infoValue}>{restaurant.paymentMethods || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>駐車場</div>
-            <div className={styles.infoValue}>{restaurant.parkingInfo || "情報なし"}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>ウェブサイト</div>
-            <div className={styles.infoValue}>
-              {restaurant.websiteUrl ? (
-                <a 
-                  href={restaurant.websiteUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={styles.link}
-                >
-                  {restaurant.websiteUrl}
-                </a>
-              ) : (
-                "情報なし"
-              )}
-            </div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>備考</div>
-            <div className={styles.infoValue}>{restaurant.remarks || "無し"}</div>
-          </div>
-        </div>
+        <SpotInfoTable 
+          items={[
+            { label: "住所", value: restaurant.address },
+            { label: "営業時間", value: restaurant.businessHours || '情報なし' },
+            { label: "電話番号", value: restaurant.phoneNumber || '情報なし' },
+            { label: "定休日", value: restaurant.closedDays || "情報なし" },
+            { 
+              label: "平均予算", 
+              value: (
+                <>
+                  <BudgetRow 
+                    icon={<Sun />} 
+                    iconBgColor="#efab58" 
+                    label={restaurant.avgLunchBudget || restaurant.averageBudget || '情報なし'} 
+                  />
+                  <BudgetRow 
+                    icon={<Moon />} 
+                    iconBgColor="#5C6BC0" 
+                    label={restaurant.avgDinnerBudget || '情報なし'} 
+                  />
+                </>
+              )
+            },
+            { label: "支払方法", value: restaurant.paymentMethods || "情報なし" },
+            { label: "駐車場", value: restaurant.parkingInfo || "情報なし" },
+            { 
+              label: "ウェブサイト", 
+              value: restaurant.websiteUrl ? (
+                <InfoLink href={restaurant.websiteUrl}>{restaurant.websiteUrl}</InfoLink>
+              ) : "情報なし"
+            },
+            { label: "備考", value: restaurant.remarks || "無し" },
+          ]}
+        />
       </div>
 
       {/* Nearby Spots Section */}
