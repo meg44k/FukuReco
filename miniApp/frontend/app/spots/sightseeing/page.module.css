@@ -43,13 +43,6 @@
   margin: 0 auto;
 }
 
-.header {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-}
-
 .content {
   background-color: white;
   padding: 1rem 1.2rem;

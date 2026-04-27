@@ -43,13 +43,6 @@
   margin: 0 auto;
 }
 
-.header {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden; /* Hide images outside the view */
-}
-
 .navIcon {
   cursor: pointer;
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));

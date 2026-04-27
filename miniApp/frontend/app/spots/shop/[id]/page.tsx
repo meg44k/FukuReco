@@ -186,9 +186,7 @@ export default function ShopDetailPage({ params }: Props) {
       </div>
 
       {/* Header Carousel */}
-      <div className={styles.header}>
-        <PhotoGallery images={photoUrls} />
-      </div>
+      <PhotoGallery key={id} images={photoUrls} />
 
       {/* Content Section */}
       <div className={styles.content}>

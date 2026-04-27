@@ -1,3 +1,10 @@
+.header {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden; /* Hide images outside the view */
+}
+
 .galleryContainer{
     position: relative; /* 子要素の absolute 配置の基準にする */
     width: 100%;
