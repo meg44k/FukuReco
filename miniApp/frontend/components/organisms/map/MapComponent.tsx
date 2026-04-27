@@ -46,9 +46,20 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   const { isFavorite, toggleFavorite } = useFavorites();
 
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
+
+  useEffect(() => {
+    console.log("Browser-side Map Load State changed:", { isLoaded, loadError });
+    if (window.google) {
+      console.log("Google object is available in window!");
+    }
+  }, [isLoaded, loadError]);
+
+  if (loadError) {
+    console.error("Google Maps API load error:", loadError);
+  }
 
   // state管理
   const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
