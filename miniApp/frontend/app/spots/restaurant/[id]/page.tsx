@@ -209,7 +209,7 @@ export default function RestaurantDetailPage({ params }: Props) {
       </div>
 
       {/* Header Carousel */}
-      <PhotoGallery images={photoUrls} />
+      <PhotoGallery key={id} images={photoUrls} />
 
       {/* Content Section */}
       <div className={styles.content}>

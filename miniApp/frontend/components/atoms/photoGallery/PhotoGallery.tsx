@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./PhotoGallery.module.css";
 import Image from "next/image";
 import {
@@ -12,22 +12,13 @@ interface PhotoGalleryProps {
 }
 
 export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
-    if (!images || images.length === 0) {
-        return null;
-    }
-
-    const headerImages = images;
+    const headerImages = images || [];
     const [currentImgIndex, setCurrentImgIndex] = useState(0);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
     // スワイプの最小距離（px）
     const minSwipeDistance = 50;
-
-    // 画像リストが変わった際にインデックスをリセットする
-    useEffect(() => {
-        setCurrentImgIndex(0);
-    }, [images]);
 
     const nextImage = useCallback(() => {
         if (headerImages.length <= 1) return;
@@ -77,6 +68,10 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
 
         return () => clearInterval(interval);
     }, [nextImage, headerImages.length]);
+
+    if (headerImages.length === 0) {
+        return null;
+    }
 
     return(
         <div className={styles.header}>
