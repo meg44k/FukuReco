@@ -165,7 +165,7 @@ export default function SightseeingDetailPage({ params }: Props) {
         <button className={styles.navButton} onClick={() => router.back()}>
           <ChevronLeft size={18} color="#3F7D58" />
         </button>
-        <button className={styles.navButton} onClick={() => router.push('/maps')}>
+        <button className={styles.navButton} onClick={() => router.push('/map')}>
           <X size={18} color="#3F7D58" />
         </button>
       </div>

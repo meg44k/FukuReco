@@ -9,7 +9,7 @@ export const TagSearchButtons = () => {
     const router = useRouter();
 
     const handleSearch = (option: string) => {
-        router.push(`/maps?options=${encodeURIComponent(option)}`);
+        router.push(`/map?options=${encodeURIComponent(option)}`);
     };
 
     return (
