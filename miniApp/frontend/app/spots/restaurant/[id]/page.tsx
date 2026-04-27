@@ -248,7 +248,16 @@ export default function RestaurantDetailPage({ params }: Props) {
                 </>
               )
             },
-            { label: "支払方法", value: restaurant.paymentMethods || "情報なし" },
+            { 
+              label: "支払方法", 
+              value: Array.isArray(restaurant.paymentMethods) ? (
+                restaurant.paymentMethods.map((method, idx) => (
+                  <div key={idx}>{method}</div>
+                ))
+              ) : (
+                restaurant.paymentMethods || "情報なし"
+              )
+            },
             { label: "駐車場", value: restaurant.parkingInfo || "情報なし" },
             { 
               label: "ウェブサイト", 
@@ -256,6 +265,7 @@ export default function RestaurantDetailPage({ params }: Props) {
                 <InfoLink href={restaurant.websiteUrl}>{restaurant.websiteUrl}</InfoLink>
               ) : "情報なし"
             },
+            { label: "施設コメント", value: restaurant.restaurantComment || "無し" },
             { label: "備考", value: restaurant.remarks || "無し" },
           ]}
         />

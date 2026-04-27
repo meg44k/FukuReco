@@ -36,6 +36,11 @@ export interface RawRestaurant extends RawSpot {
   seating_info?: number;
   avg_wait_time?: string;
   reservation_url?: string;
+  restaurant_comment?: string;
+}
+
+export interface RawShop extends RawSpot {
+  shop_comment?: string;
 }
 
 export interface RawRestingSpot extends RawSpot {
@@ -86,12 +91,14 @@ export function mapToRestaurant(raw: RawRestaurant): Restaurant {
     seatingInfo: raw.seating_info,
     avgWaitTime: raw.avg_wait_time,
     reservationURL: raw.reservation_url,
+    restaurantComment: raw.restaurant_comment,
   };
 }
 
-export function mapToShop(raw: RawSpot): Shop {
+export function mapToShop(raw: RawShop): Shop {
   return {
     ...mapBaseSpot(raw),
+    shopComment: raw.shop_comment,
   };
 }
 
