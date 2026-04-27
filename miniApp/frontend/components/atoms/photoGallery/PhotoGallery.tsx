@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import styles from "./PhotoGallery.module.css";
 import Image from "next/image";
 import {
@@ -58,16 +58,19 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
         return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
     };
 
-    // 自動スライドの設定
-    useEffect(() => {
-        if (headerImages.length <= 1) return;
+    // 表示するドットの範囲を計算（最大5個）
+    const getVisibleDotIndices = () => {
+        const maxVisible = 5;
+        if (headerImages.length <= maxVisible) return headerImages.map((_, i) => i);
+        
+        let start = Math.max(0, currentImgIndex - 2);
+        if (start + maxVisible > headerImages.length) {
+            start = headerImages.length - maxVisible;
+        }
+        return Array.from({ length: maxVisible }, (_, i) => start + i);
+    };
 
-        const interval = setInterval(() => {
-            nextImage();
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [nextImage, headerImages.length]);
+    const visibleDotIndices = getVisibleDotIndices();
 
     if (headerImages.length === 0) {
         return null;
@@ -112,11 +115,33 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
                 {headerImages.length > 1 && (
                 <>
                     <div className={styles.carouselNav}>
-                    <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} />
-                    <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} />
+                    <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} aria-label="前の画像へ" />
+                    <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} aria-label="次の画像へ" />
                     </div>
-                    <div className={styles.carouselIndicator}>
-                    {currentImgIndex + 1}/{headerImages.length}
+                    <div 
+                        className={styles.carouselIndicator} 
+                        role="group" 
+                        aria-label="画像スライダーの進捗"
+                    >
+                    {visibleDotIndices.map((index, idx) => {
+                        const isActive = index === currentImgIndex;
+                        const isFirst = idx === 0;
+                        const isLast = idx === visibleDotIndices.length - 1;
+                        const hasMorePrev = isFirst && index > 0;
+                        const hasMoreNext = isLast && index < headerImages.length - 1;
+
+                        return (
+                            <div 
+                                key={index} 
+                                className={`
+                                    ${styles.dot} 
+                                    ${isActive ? styles.activeDot : ""} 
+                                    ${hasMorePrev || hasMoreNext ? styles.smallDot : ""}
+                                `}
+                                aria-current={isActive ? "true" : "false"}
+                            />
+                        );
+                    })}
                     </div>
                 </>
                 )}
