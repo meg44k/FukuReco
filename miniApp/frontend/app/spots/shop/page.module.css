@@ -157,36 +157,6 @@
   color: #666;
 }
 
-.infoTable {
-  width: 100%;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.infoRow {
-  display: flex;
-  padding: 0.8rem;
-  border-bottom: 1px solid white;
-}
-
-.infoRow:last-child {
-  border-bottom: none;
-}
-
-.infoLabel {
-  width: 90px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: var(--text-black);
-}
-
-.infoValue {
-  flex: 1;
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
 .link {
   color: var(--primary-color);
   text-decoration: underline;

@@ -11,12 +11,13 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { RestingSpot } from '@/types/spot'
 
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
+import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { mapToRestingSpot, formatFacilities, RawRestingSpot } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -93,58 +94,7 @@ export default function RestingDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  // Cast dynamic data to internal interfaces for property access
-  const spotRaw = spotData as unknown as {
-    id: number;
-    name: string;
-    catchphrase?: string;
-    distance_from_transit?: string;
-    stay_duration?: string;
-    fukureko_comment?: string;
-    address: string;
-    business_hours?: string;
-    phone_number?: string;
-    nearest_station?: string;
-    website_url?: string;
-    average_budget?: string | number;
-    place_type: string;
-    pricing?: Record<string, unknown>;
-    facilities?: Record<string, unknown>;
-    updated_at: string;
-    created_at: string;
-    nearby_coin_lockers?: string;
-    parking_info?: string;
-    payment_methods?: string[];
-    closed_days?: string;
-    seating_info?: string;
-    remarks?: string;
-  };
-
-  const spot: RestingSpot = {
-    id: spotRaw.id,
-    name: spotRaw.name,
-    catchphrase: spotRaw.catchphrase,
-    distanceFromTransit: spotRaw.distance_from_transit,
-    stayDuration: spotRaw.stay_duration,
-    fukurekoComment: spotRaw.fukureko_comment,
-    address: spotRaw.address,
-    businessHours: spotRaw.business_hours,
-    phoneNumber: spotRaw.phone_number,
-    nearestStation: spotRaw.nearest_station,
-    websiteUrl: spotRaw.website_url,
-    averageBudget: spotRaw.average_budget,
-    placeType: spotRaw.place_type,
-    pricing: spotRaw.pricing || {},
-    facilities: spotRaw.facilities || {},
-    updatedAt: new Date(spotRaw.updated_at),
-    createdAt: new Date(spotRaw.created_at),
-    nearbyCoinLockers: spotRaw.nearby_coin_lockers,
-    parkingInfo: spotRaw.parking_info,
-    paymentMethods: spotRaw.payment_methods,
-    closedDays: spotRaw.closed_days,
-    seatingInfo: spotRaw.seating_info,
-    remarks: spotRaw.remarks,
-  };
+  const spot = mapToRestingSpot(spotData as unknown as RawRestingSpot);
 
   const photoUrls = assetData
     ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])
@@ -194,12 +144,14 @@ export default function RestingDetailPage({ params }: Props) {
         </div>
         <div className={styles.safetyGrid}>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>滞在目安</p>
-            <p className={styles.safetyValue}>{spot.stayDuration || '情報なし'}</p>
+            <p className={styles.safetyLabel}>座席情報</p>
+            <p className={styles.safetyValue}>{spot.seatingInfo || "情報なし"}</p>
           </div>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>座席情報</p>
-            <p className={styles.safetyValue}>{spot.seatingInfo || '情報なし'}</p>
+            <p className={styles.safetyLabel}>設備</p>
+            <p className={styles.safetyValue}>
+              {formatFacilities(spot.facilities).join("、") || "情報なし"}
+            </p>
           </div>
         </div>
       </div>
@@ -218,37 +170,23 @@ export default function RestingDetailPage({ params }: Props) {
           <div className={styles.sectionBar}></div>
           <h2 className={styles.sectionTitle}>基本情報</h2>
         </div>
-        <div className={styles.infoTable}>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>住所</div>
-            <div className={styles.infoValue}>{spot.address}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>営業時間</div>
-            <div className={styles.infoValue}>{spot.businessHours || '情報なし'}</div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>ウェブサイト</div>
-            <div className={styles.infoValue}>
-              {spot.websiteUrl ? (
-                <a 
-                  href={spot.websiteUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={styles.link}
-                >
-                  {spot.websiteUrl}
-                </a>
-              ) : (
-                "情報なし"
-              )}
-            </div>
-          </div>
-          <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>備考</div>
-            <div className={styles.infoValue}>{spot.remarks || "無し"}</div>
-          </div>
-        </div>
+        <SpotInfoTable 
+          items={[
+            { label: "住所", value: spot.address },
+            { label: "営業時間", value: spot.businessHours },
+            { label: "電話番号", value: spot.phoneNumber },
+            { label: "定休日", value: spot.closedDays },
+            { label: "滞在目安", value: spot.stayDuration },
+            { label: "座席情報", value: spot.seatingInfo },
+            { label: "支払方法", value: spot.paymentMethods },
+            { label: "駐車場", value: spot.parkingInfo },
+            { 
+              label: "ウェブサイト", 
+              value: <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
+            },
+            { label: "備考", value: spot.remarks },
+          ]}
+        />
       </div>
 
       {/* Nearby Spots Section */}

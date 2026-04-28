@@ -210,69 +210,6 @@
   color: #666;
 }
 
-.infoTable {
-  width: 100%;
-  background-color: #f5f5f5; /* Light gray background for the whole box */
-  border-radius: 12px;
-  overflow: hidden; /* Ensures rows don't overlap rounded corners */
-}
-
-.infoRow {
-  display: flex;
-  padding: 0.8rem;
-  border-bottom: 1px solid white; /* White separator line */
-}
-
-.infoRow:last-child {
-  border-bottom: none;
-}
-
-.infoLabel {
-  width: 90px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: var(--text-black);
-}
-
-.infoValue {
-  flex: 1;
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.budgetRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.budgetRow + .budgetRow {
-  margin-top: 6px;
-}
-
-.budgetIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 20%;
-  color: white;
-}
-
-.budgetIcon svg {
-  stroke: white;
-  stroke-width: 2;
-  width: 60%;
-  height: 60%;
-}
-
-.link {
-  color: var(--primary-color);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 .nearbyScroll {
   display: flex;
   gap: 12px;
