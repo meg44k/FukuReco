@@ -208,13 +208,11 @@ export default function ShopDetailPage({ params }: Props) {
             { label: "定休日", value: spot.closedDays },
             { label: "支払方法", value: spot.paymentMethods },
             { label: "駐車場", value: spot.parkingInfo },
-            { 
-              label: "ウェブサイト", 
+            {
+              label: "ウェブサイト",
               value: <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
             },
-            { label: "スポットコメント", value: spot.shopComment },
-            { label: "備考", value: spot.remarks },
-          ]}
+            { label: "備考", value: spot.remarks },          ]}
         />
       </div>
 
