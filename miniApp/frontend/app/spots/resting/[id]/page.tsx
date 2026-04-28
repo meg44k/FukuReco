@@ -17,6 +17,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { Disclaimer } from "@/components/atoms/disclaimer/Disclaimer";
 import { mapToRestingSpot, formatFacilities, RawRestingSpot } from "@/lib/spot-mapper";
 
 interface Props {
@@ -197,6 +198,8 @@ export default function RestingDetailPage({ params }: Props) {
           currentId={spot.id} 
         />
       )}
+
+      <Disclaimer />
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>
