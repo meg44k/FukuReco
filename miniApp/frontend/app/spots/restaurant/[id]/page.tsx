@@ -23,6 +23,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink, BudgetRow } from "@/components/atoms/spotInfoTable/SpotInfoTable";
+import { Disclaimer } from "@/components/atoms/disclaimer/Disclaimer";
 import { mapToRestaurant, RawRestaurant } from "@/lib/spot-mapper";
 
 interface Props {
@@ -268,6 +269,8 @@ export default function RestaurantDetailPage({ params }: Props) {
           currentId={spot.id} 
         />
       )}
+
+      <Disclaimer />
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>

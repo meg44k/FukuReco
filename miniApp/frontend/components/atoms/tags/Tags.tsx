@@ -41,9 +41,9 @@ export default function Tags ({ tags = [] }: TagsProps) {
             aria-expanded={showAllTags}
           >
             {showAllTags ? (
-              <>タグを閉じる <ChevronUp size={16} /></>
+              <>閉じる <ChevronUp size={16} /></>
             ) : (
-              <>タグをすべてみる <ChevronDown size={16} /></>
+              <>すべて見る <ChevronDown size={16} /></>
             )}
           </button>
         )}
