@@ -66,11 +66,14 @@ export const BudgetRow: FunctionComponent<{
   icon: ReactNode;
   iconBgColor: string;
   label: string | number | undefined | null;
-}> = ({ icon, iconBgColor, label }) => (
-  <div className={styles.budgetRow}>
-    <span className={styles.budgetIcon} style={{ backgroundColor: iconBgColor }}>
-      {icon}
-    </span>
-    <span>{label ? label : "情報なし"}</span>
-  </div>
-);
+}> = ({ icon, iconBgColor, label }) => {
+  const displayLabel = (label ?? "") !== "" ? label : "情報なし";
+  return (
+    <div className={styles.budgetRow}>
+      <span className={styles.budgetIcon} style={{ backgroundColor: iconBgColor }}>
+        {icon}
+      </span>
+      <span>{displayLabel}</span>
+    </div>
+  );
+};

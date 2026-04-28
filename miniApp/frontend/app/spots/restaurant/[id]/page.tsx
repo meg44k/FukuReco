@@ -64,11 +64,12 @@ export default function RestaurantDetailPage({ params }: Props) {
         return;
       }
 
-      // restaurantsテーブルのデータを取り出す（1対1または1対多の配列を想定）
+      // restaurantsテーブルのデータを取り出す（1対1の関係を想定）
       const restaurantDetail = Array.isArray(spotRes.data.restaurants) 
         ? spotRes.data.restaurants[0] 
         : spotRes.data.restaurants;
 
+      // restaurants側の追加情報をマージ（データがない場合は空オブジェクトをマージして不完全な状態を防ぐ）
       setSpotData({
         ...spotRes.data,
         ...restaurantDetail
