@@ -17,7 +17,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
-import { mapToRestingSpot, formatFacilities } from "@/lib/spot-mapper";
+import { mapToRestingSpot, formatFacilities, RawRestingSpot } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -94,7 +94,7 @@ export default function RestingDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  const spot = mapToRestingSpot(spotData);
+  const spot = mapToRestingSpot(spotData as unknown as RawRestingSpot);
 
   const photoUrls = assetData
     ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])

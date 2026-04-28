@@ -17,7 +17,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
-import { mapToSightseeingSpot } from "@/lib/spot-mapper";
+import { mapToSightseeingSpot, RawSightseeingSpot } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -97,7 +97,7 @@ export default function SightseeingDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  const spot = mapToSightseeingSpot(spotData);
+  const spot = mapToSightseeingSpot(spotData as unknown as RawSightseeingSpot);
 
   const photoUrls = assetData
     ? (assetData as unknown as { is_photo_gallery: boolean, gallery_order: number, url: string }[])

@@ -19,7 +19,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
-import { mapToShop } from "@/lib/spot-mapper";
+import { mapToShop, RawShop } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -99,7 +99,7 @@ export default function ShopDetailPage({ params }: Props) {
 
   if (loading || !spotData) return null;
 
-  const spot = mapToShop(spotData);
+  const spot = mapToShop(spotData as unknown as RawShop);
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;

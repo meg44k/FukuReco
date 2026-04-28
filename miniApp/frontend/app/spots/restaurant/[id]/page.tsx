@@ -23,7 +23,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink, BudgetRow } from "@/components/atoms/spotInfoTable/SpotInfoTable";
-import { mapToRestaurant } from "@/lib/spot-mapper";
+import { mapToRestaurant, RawRestaurant } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -113,7 +113,7 @@ export default function RestaurantDetailPage({ params }: Props) {
     return <SpotDetailSkeleton />;
   }
 
-  const spot = mapToRestaurant(spotData);
+  const spot = mapToRestaurant(spotData as unknown as RawRestaurant);
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;
