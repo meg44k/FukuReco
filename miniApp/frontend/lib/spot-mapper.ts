@@ -15,7 +15,7 @@ export interface RawSpot {
   phone_number?: string;
   nearest_station?: string;
   website_url?: string;
-  average_budget?: string | number;
+  average_budget?: string;
   place_type: string;
   pricing?: Record<string, unknown>;
   facilities?: Record<string, unknown>;
@@ -33,7 +33,7 @@ export interface RawSpot {
 export interface RawRestaurant extends RawSpot {
   avg_lunch_budget?: string;
   avg_dinner_budget?: string;
-  seating_info?: number;
+  seating_info?: number | string;
   avg_wait_time?: string;
   reservation_url?: string;
   restaurant_comment?: string;
@@ -62,7 +62,6 @@ export const FACILITY_LABELS: Record<string, string> = {
   has_parking: "駐車場あり",
   has_restroom: "トイレあり",
   has_nursing_room: "授乳室あり",
-  // 必要に応じて追加
 };
 
 /**
@@ -108,11 +107,19 @@ function mapBaseSpot(raw: RawSpot): Spot {
 }
 
 export function mapToRestaurant(raw: RawRestaurant): Restaurant {
+  const base = mapBaseSpot(raw);
+
+  const parsedSeating = typeof raw.seating_info === 'string'
+    ? parseInt(raw.seating_info, 10)
+    : raw.seating_info;
+
   return {
-    ...mapBaseSpot(raw),
+    ...base,
     avgLunchBudget: raw.avg_lunch_budget,
     avgDinnerBudget: raw.avg_dinner_budget,
-    seatingInfo: raw.seating_info,
+    seatingInfo: (parsedSeating !== null && parsedSeating !== undefined && !isNaN(Number(parsedSeating)))
+      ? Number(parsedSeating)
+      : undefined,
     avgWaitTime: raw.avg_wait_time,
     reservationURL: raw.reservation_url,
     restaurantComment: raw.restaurant_comment,
