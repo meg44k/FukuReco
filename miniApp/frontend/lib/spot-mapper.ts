@@ -52,6 +52,30 @@ export interface RawSightseeingSpot extends RawSpot {
 }
 
 /**
+ * 設備の表示名マッピング
+ */
+export const FACILITY_LABELS: Record<string, string> = {
+  has_wifi: "Wi-Fiあり",
+  has_outlet: "コンセントあり",
+  is_barrier_free: "バリアフリー",
+  is_smoking_allowed: "喫煙可",
+  has_parking: "駐車場あり",
+  has_restroom: "トイレあり",
+  has_nursing_room: "授乳室あり",
+  // 必要に応じて追加
+};
+
+/**
+ * 設備オブジェクトを表示用の文字列配列に変換する
+ */
+export function formatFacilities(facilities: Record<string, unknown> | undefined): string[] {
+  if (!facilities) return [];
+  return Object.entries(facilities)
+    .filter(([key, value]) => value === true && FACILITY_LABELS[key])
+    .map(([key]) => FACILITY_LABELS[key]);
+}
+
+/**
  * DBの共通カラムをフロントエンドのSpot型にマッピングする
  */
 function mapBaseSpot(raw: RawSpot): Spot {

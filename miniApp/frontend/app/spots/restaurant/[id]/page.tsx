@@ -113,7 +113,7 @@ export default function RestaurantDetailPage({ params }: Props) {
     return <SpotDetailSkeleton />;
   }
 
-  const restaurant = mapToRestaurant(spotData);
+  const spot = mapToRestaurant(spotData);
 
   const assetMap = (assetData as unknown as { id: number, url: string }[]).reduce((acc, asset) => {
     acc[asset.id] = asset.url;
@@ -155,10 +155,10 @@ export default function RestaurantDetailPage({ params }: Props) {
 
       {/* Content Section */}
       <div className={styles.content}>
-        <p className={styles.catchphrase}>{restaurant.catchphrase}</p>
-        <h1 className={styles.title}>{restaurant.name}</h1>
+        <p className={styles.catchphrase}>{spot.catchphrase}</p>
+        <h1 className={styles.title}>{spot.name}</h1>
         <div className={styles.updatedAt}>
-          更新日: {restaurant.updatedAt.toLocaleDateString('ja-JP')}
+          更新日: {spot.updatedAt.toLocaleDateString('ja-JP')}
         </div>
         <Tags tags={tagData} />
       </div>
@@ -171,20 +171,20 @@ export default function RestaurantDetailPage({ params }: Props) {
         </div>
         <div className={styles.safetyCard}>
           <p className={styles.safetyLabel}>最寄り駅/バス停</p>
-          <p className={styles.safetyValue}>{restaurant.nearestStation || '情報なし'}</p>
+          <p className={styles.safetyValue}>{spot.nearestStation || '情報なし'}</p>
         </div>
         <div className={styles.safetyCard}>
           <p className={styles.safetyLabel}>空港・駅から（最短）</p>
-          <p className={styles.safetyValue}>{restaurant.distanceFromTransit || '情報なし'}</p>
+          <p className={styles.safetyValue}>{spot.distanceFromTransit || '情報なし'}</p>
         </div>
         <div className={styles.safetyGrid}>
           <div className={styles.safetyCard}>
             <p className={styles.safetyLabel}>滞在目安</p>
-            <p className={styles.safetyValue}>{restaurant.stayDuration || '情報なし'}</p>
+            <p className={styles.safetyValue}>{spot.stayDuration || '情報なし'}</p>
           </div>
           <div className={styles.safetyCard}>
             <p className={styles.safetyLabel}>近くのコインロッカー</p>
-            <p className={styles.safetyValue}>{restaurant.nearbyCoinLockers || '情報なし'}</p>
+            <p className={styles.safetyValue}>{spot.nearbyCoinLockers || '情報なし'}</p>
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function RestaurantDetailPage({ params }: Props) {
           <p className={styles.noData}>メニューはまだ登録されていません。</p>
         )}
         <div className={styles.staffComment}>
-          <p className={styles.commentText}>{restaurant.fukurekoComment}</p>
+          <p className={styles.commentText}>{spot.fukurekoComment}</p>
           <p className={styles.commentAuthor}>— フクレコ運営スタッフ</p>
         </div>
       </div>
@@ -227,10 +227,10 @@ export default function RestaurantDetailPage({ params }: Props) {
         </div>
         <SpotInfoTable 
           items={[
-            { label: "住所", value: restaurant.address },
-            { label: "営業時間", value: restaurant.businessHours || "情報なし" },
-            { label: "電話番号", value: restaurant.phoneNumber || "情報なし" },
-            { label: "定休日", value: restaurant.closedDays || "情報なし" },
+            { label: "住所", value: spot.address },
+            { label: "営業時間", value: spot.businessHours },
+            { label: "電話番号", value: spot.phoneNumber },
+            { label: "定休日", value: spot.closedDays },
             { 
               label: "平均予算", 
               value: (
@@ -238,62 +238,51 @@ export default function RestaurantDetailPage({ params }: Props) {
                   <BudgetRow 
                     icon={<Sun />} 
                     iconBgColor="#efab58" 
-                    label={restaurant.avgLunchBudget || restaurant.averageBudget || "情報なし"} 
+                    label={spot.avgLunchBudget || spot.averageBudget} 
                   />
                   <BudgetRow 
                     icon={<Moon />} 
                     iconBgColor="#5C6BC0" 
-                    label={restaurant.avgDinnerBudget || "情報なし"} 
+                    label={spot.avgDinnerBudget} 
                   />
                 </>
               )
             },
-            { 
-              label: "支払方法", 
-              value: Array.isArray(restaurant.paymentMethods) ? (
-                restaurant.paymentMethods.map((method, idx) => (
-                  <div key={idx}>{method}</div>
-                ))
-              ) : (
-                restaurant.paymentMethods || "情報なし"
-              )
-            },
-            { label: "駐車場", value: restaurant.parkingInfo || "情報なし" },
+            { label: "支払方法", value: spot.paymentMethods },
+            { label: "駐車場", value: spot.parkingInfo },
             { 
               label: "ウェブサイト", 
-              value: restaurant.websiteUrl ? (
-                <InfoLink href={restaurant.websiteUrl}>{restaurant.websiteUrl}</InfoLink>
-              ) : "情報なし"
+              value: <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
             },
-            { label: "施設コメント", value: restaurant.restaurantComment || "無し" },
-            { label: "備考", value: restaurant.remarks || "無し" },
+            { label: "スポットコメント", value: spot.restaurantComment },
+            { label: "備考", value: spot.remarks },
           ]}
         />
       </div>
 
       {/* Nearby Spots Section */}
-      {typeof restaurant.latitude === 'number' && typeof restaurant.longitude === 'number' && !isNaN(restaurant.latitude) && !isNaN(restaurant.longitude) && (
+      {typeof spot.latitude === 'number' && typeof spot.longitude === 'number' && !isNaN(spot.latitude) && !isNaN(spot.longitude) && (
         <NearbySpots 
-          lat={restaurant.latitude} 
-          lng={restaurant.longitude} 
-          currentId={restaurant.id} 
+          lat={spot.latitude} 
+          lng={spot.longitude} 
+          currentId={spot.id} 
         />
       )}
 
       {/* Action Footer */}
       <div className={styles.actionFooter}>
-        {restaurant.reservationURL ? (
+        {spot.reservationURL ? (
           <a 
-            href={restaurant.reservationURL}
+            href={spot.reservationURL}
             target="_blank"
             rel="noopener noreferrer"
             className={btnStyles.reserveBtn}
           >
             予約する
           </a>
-        ) : restaurant.phoneNumber ? (
+        ) : spot.phoneNumber ? (
           <a 
-            href={`tel:${restaurant.phoneNumber}`}
+            href={`tel:${spot.phoneNumber}`}
             className={btnStyles.reserveBtn}
           >
             電話する
@@ -304,7 +293,7 @@ export default function RestaurantDetailPage({ params }: Props) {
           </button>
         )}
         <a 
-          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${restaurant.name} ${restaurant.address}`)}`}
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className={btnStyles.routeBtn}

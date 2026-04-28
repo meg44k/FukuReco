@@ -202,28 +202,17 @@ export default function ShopDetailPage({ params }: Props) {
         <SpotInfoTable 
           items={[
             { label: "住所", value: spot.address },
-            { label: "営業時間", value: spot.businessHours || "情報なし" },
-            { label: "電話番号", value: spot.phoneNumber || "情報なし" },
-            { label: "定休日", value: spot.closedDays || "情報なし" },
-            { 
-              label: "支払方法", 
-              value: Array.isArray(spot.paymentMethods) ? (
-                spot.paymentMethods.map((method, idx) => (
-                  <div key={idx}>{method}</div>
-                ))
-              ) : (
-                spot.paymentMethods || "情報なし"
-              )
-            },
-            { label: "駐車場", value: spot.parkingInfo || "情報なし" },
+            { label: "営業時間", value: spot.businessHours },
+            { label: "電話番号", value: spot.phoneNumber },
+            { label: "定休日", value: spot.closedDays },
+            { label: "支払方法", value: spot.paymentMethods },
+            { label: "駐車場", value: spot.parkingInfo },
             { 
               label: "ウェブサイト", 
-              value: spot.websiteUrl ? (
-                <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
-              ) : "情報なし"
+              value: <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
             },
-            { label: "店舗コメント", value: spot.shopComment || "無し" },
-            { label: "備考", value: spot.remarks || "無し" },
+            { label: "スポットコメント", value: spot.shopComment },
+            { label: "備考", value: spot.remarks },
           ]}
         />
       </div>

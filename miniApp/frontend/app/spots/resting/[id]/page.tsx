@@ -17,7 +17,7 @@ import Tags from "@/components/atoms/tags/Tags";
 import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
-import { mapToRestingSpot } from "@/lib/spot-mapper";
+import { mapToRestingSpot, formatFacilities } from "@/lib/spot-mapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -144,12 +144,14 @@ export default function RestingDetailPage({ params }: Props) {
         </div>
         <div className={styles.safetyGrid}>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>滞在目安</p>
-            <p className={styles.safetyValue}>{spot.stayDuration || '情報なし'}</p>
+            <p className={styles.safetyLabel}>座席情報</p>
+            <p className={styles.safetyValue}>{spot.seatingInfo || "情報なし"}</p>
           </div>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>座席情報</p>
-            <p className={styles.safetyValue}>{spot.seatingInfo || '情報なし'}</p>
+            <p className={styles.safetyLabel}>設備</p>
+            <p className={styles.safetyValue}>
+              {formatFacilities(spot.facilities).join("、") || "情報なし"}
+            </p>
           </div>
         </div>
       </div>
@@ -171,16 +173,18 @@ export default function RestingDetailPage({ params }: Props) {
         <SpotInfoTable 
           items={[
             { label: "住所", value: spot.address },
-            { label: "営業時間", value: spot.businessHours || "情報なし" },
-            { label: "座席情報", value: spot.seatingInfo || "情報なし" },
-            { label: "駐車場", value: spot.parkingInfo || "情報なし" },
+            { label: "営業時間", value: spot.businessHours },
+            { label: "電話番号", value: spot.phoneNumber },
+            { label: "定休日", value: spot.closedDays },
+            { label: "滞在目安", value: spot.stayDuration },
+            { label: "座席情報", value: spot.seatingInfo },
+            { label: "支払方法", value: spot.paymentMethods },
+            { label: "駐車場", value: spot.parkingInfo },
             { 
               label: "ウェブサイト", 
-              value: spot.websiteUrl ? (
-                <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
-              ) : "情報なし"
+              value: <InfoLink href={spot.websiteUrl}>{spot.websiteUrl}</InfoLink>
             },
-            { label: "備考", value: spot.remarks || "無し" },
+            { label: "備考", value: spot.remarks },
           ]}
         />
       </div>

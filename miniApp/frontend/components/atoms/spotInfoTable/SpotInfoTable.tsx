@@ -13,40 +13,64 @@ interface Props {
 export const SpotInfoTable: FunctionComponent<Props> = ({ items }) => {
   return (
     <div className={styles.infoTable}>
-      {items.map((item, index) => (
-        <div key={index} className={styles.infoRow}>
-          <div className={styles.infoLabel}>{item.label}</div>
-          <div className={styles.infoValue}>{item.value}</div>
-        </div>
-      ))}
+      {items.map((item, index) => {
+        let displayValue = item.value;
+
+        // 配列のハンドリング
+        if (Array.isArray(displayValue)) {
+          if (displayValue.length > 0) {
+            displayValue = displayValue.map((v, i) => <div key={i}>{v}</div>);
+          } else {
+            displayValue = null;
+          }
+        }
+
+        // 判定用のフラグ
+        const isEmpty = 
+          displayValue === null || 
+          displayValue === undefined || 
+          displayValue === "" || 
+          (Array.isArray(item.value) && item.value.length === 0);
+
+        return (
+          <div key={index} className={styles.infoRow}>
+            <div className={styles.infoLabel}>{item.label}</div>
+            <div className={styles.infoValue}>{isEmpty ? "情報なし" : displayValue}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-// 補助的な共通パーツ（予算表示用など）もエクスポートしておくと便利
-export const InfoLink: FunctionComponent<{ href: string; children: ReactNode }> = ({
+// 補助的な共通パーツ（リンク用）
+export const InfoLink: FunctionComponent<{ href: string | null | undefined; children: ReactNode }> = ({
   href,
   children,
-}) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={styles.link}
-  >
-    {children}
-  </a>
-);
+}) => {
+  if (!href) return <>情報なし</>;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={styles.link}
+    >
+      {children}
+    </a>
+  );
+};
 
+// 補助的な共通パーツ（予算表示用）
 export const BudgetRow: FunctionComponent<{
   icon: ReactNode;
   iconBgColor: string;
-  label: string | number;
+  label: string | number | undefined | null;
 }> = ({ icon, iconBgColor, label }) => (
   <div className={styles.budgetRow}>
     <span className={styles.budgetIcon} style={{ backgroundColor: iconBgColor }}>
       {icon}
     </span>
-    <span>{label}</span>
+    <span>{label ? label : "情報なし"}</span>
   </div>
 );
