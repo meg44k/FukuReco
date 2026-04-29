@@ -74,7 +74,7 @@
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 0; /* パディングをリセットし、内部のスペーサーで制御 */
+  padding: 20px 0; /* シャドウが上下に見切れないようにパディングを追加 */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

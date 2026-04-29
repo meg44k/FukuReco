@@ -9,8 +9,6 @@ export const SpotCardSkeleton = () => {
                     <div className={`${styles.skeleton} ${styles.titleSkeleton}`} />
                 </div>
                 <div className={`${styles.skeleton} ${styles.statusSkeleton}`} />
-                <div className={styles.headerButtons}>
-                </div>
             </div>
 
             <div className={`${styles.skeleton} ${styles.cardImage}`} />
