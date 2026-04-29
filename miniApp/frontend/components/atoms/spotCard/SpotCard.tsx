@@ -174,7 +174,7 @@ export const SpotCard = ({
                     onClick={onFavoriteToggle}
                 >
                     <Heart 
-                        size={24} 
+                        size={18} 
                         fill={isFavorite ? "#EF5350" : "none"} 
                         color={isFavorite ? "#EF5350" : "currentColor"} 
                     />

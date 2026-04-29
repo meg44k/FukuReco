@@ -178,17 +178,18 @@
 .cardFooter {
     padding: 0px 5% 10px 5%;
     display: flex;
-    gap: 8px;
+    gap: 12px;
     align-items: center;
 }
 
 .cardFooter > a {
-    height: clamp(34px, 8vw, 44px) !important;
-    font-size: clamp(0.7rem, 0.4rem + 1.5vw, 0.85rem) !important;
+    height: clamp(30px, 7vw, 38px) !important;
+    font-size: clamp(0.65rem, 0.4rem + 1.2vw, 0.8rem) !important;
+    padding: 0 4px !important;
 }
 
 .cardFooter > button {
-    height: clamp(34px, 8vw, 44px) !important;
-    width: clamp(34px, 8vw, 44px) !important;
-    flex: 0 0 clamp(34px, 8vw, 44px) !important;
+    height: clamp(30px, 7vw, 38px) !important;
+    width: clamp(30px, 7vw, 38px) !important;
+    flex: 0 0 clamp(30px, 7vw, 38px) !important;
 }
