@@ -44,7 +44,7 @@
 }
 
 .title {
-    font-size: clamp(0.9rem, 0.3rem + 3.8vw, 1.8rem);
+    font-size: clamp(0.9rem, 0.35rem + 3.1vw, 1.5rem);
     font-weight: 700;
     color: #1E1E1E;
     line-height: 1.5;
