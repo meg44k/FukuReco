@@ -74,8 +74,8 @@ export const SearchTextField = ({ onSearch, onFocus, onBlur, label = "検索" }:
                   className={styles.searchButton}
                 >
                   <Search
-                    size={50}
-                    strokeWidth={3}
+                    size={24}
+                    strokeWidth={2.5}
                     className={styles.icon}
                   />
                 </IconButton>
