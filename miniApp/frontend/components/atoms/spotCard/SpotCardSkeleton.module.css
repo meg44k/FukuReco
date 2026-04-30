@@ -56,13 +56,12 @@
     margin-left: 5%;
     margin-right: auto;
     padding: 2px 0px;
-    width: 100%;
 }
 
 /* 1行の文字の高さ（line-height 1.5想定）に合わせた高さを指定 */
 .titleSkeleton {
     width: 65%;
-    font-size: clamp(0.9rem, 0.3rem + 3.8vw, 1.8rem);
+    font-size: clamp(0.9rem, 0.35rem + 3.1vw, 1.5rem);
     height: 1.5em; 
     border-radius: 4px;
 }
@@ -89,7 +88,7 @@
 
 .cardImage {
     width: 100%;
-    aspect-ratio: 16 / 5;
+    aspect-ratio: 16 / 8;
 }
 
 .cardContents {
@@ -139,7 +138,7 @@
     padding: 0px 5% 10px 5%;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .buttonSkeleton {
