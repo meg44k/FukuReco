@@ -419,10 +419,6 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                       updatedAt={spot.updatedAt}
                       isFavorite={isFavorite(spot.id)}
                       onFavoriteToggle={() => toggleFavorite(spot.id)}
-                      onCloseClick={() => {
-                        setSelectedSpot(null);
-                        setDisplayCards([]);
-                      }}
                     />
                   )}
                 </div>
