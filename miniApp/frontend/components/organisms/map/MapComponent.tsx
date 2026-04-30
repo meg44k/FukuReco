@@ -335,8 +335,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
             key={spot.id}
             position={spot.position}
             zIndex={selectedSpot?.id === spot.id ? 1000 : 1}
+            // 選択中のピンはクリックを無効化（下のピンを触れるようにする）
+            clickable={selectedSpot?.id !== spot.id}
             onClick={async () => {
-              // ピン選択時はその詳細を別途取得するロジックが必要（以前の実装を流用可能）
+              // ピン選択時はその詳細を別途取得するロジックが必要
               const alreadyFetched = displayCards.find(s => s.id === spot.id);
               if (alreadyFetched) {
                 setSelectedSpot(alreadyFetched);
@@ -378,9 +380,15 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
             }}
             icon={{
               url: spot.pinKind,
+              // 普通状態を1割小さく（高さ50px -> 45px, 幅41px -> 37px）
               scaledSize: new google.maps.Size(
-                selectedSpot?.id === spot.id ? 80 : 50,
-                selectedSpot?.id === spot.id ? 80 : 50
+                selectedSpot?.id === spot.id ? 65 : 37,
+                selectedSpot?.id === spot.id ? 80 : 45
+              ),
+              // ピンの先端（底辺中央）を正確な位置に合わせる
+              anchor: new google.maps.Point(
+                selectedSpot?.id === spot.id ? 32.5 : 18.5,
+                selectedSpot?.id === spot.id ? 80 : 45
               ),
             }}
           />
