@@ -4,6 +4,7 @@
     height: 40px;
     background-color: #ffffff !important; /* 背景を白に */
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* 枠線が白なので影で輪郭を出す */
+    padding-right: 3px !important;
 }
 
 /* 文字サイズ調整 */
