@@ -13,78 +13,61 @@ type GeneralMenusProps = {
   GeneralMenus: Menu[];
 }
 
+const MenuItem = ({ item }: { item: Menu }) => {
+  const hasImage = !!item.assetId;
+  const isHttp = typeof item.assetId === 'string' && item.assetId.startsWith('http');
+
+  return (
+    <div className={styles.menuItem}>
+      {hasImage && (
+        <div className={styles.itemImage}>
+          <Image 
+            src={item.assetId!} 
+            alt={item.name} 
+            fill 
+            style={{ objectFit: 'cover' }} 
+            unoptimized={isHttp}
+          />
+        </div>
+      )}
+      <div className={styles.menuItemContent}>
+        <div className={styles.menuItemTop}>
+          <p className={styles.itemName}>{item.name}</p>
+          <div className={styles.dots}></div>
+          <p className={styles.itemPrice}>¥{item.price}</p>
+        </div>
+        <p className={styles.itemDesc}>{item.detail}</p>
+      </div>
+    </div>
+  );
+};
+
 export default function GeneralMenus({GeneralMenus}: GeneralMenusProps){
     const [showAllMenu, setShowAllMenu] = useState(false);
     return (
         <div className={styles.section}>
-       <div className={styles.menuList}>
-          {GeneralMenus.slice(0, 3).map((item, i) => (
-            <div key={i} className={styles.menuItem}>
-              <div className={styles.itemImage}>
-                {item.assetId ? (
-                  <Image 
-                    src={item.assetId} 
-                    alt={item.name} 
-                    fill 
-                    style={{ objectFit: 'cover' }} 
-                    unoptimized={item.assetId.startsWith('http')}
-                  />
-                ) : (
-                  <div className={styles.noImage}>No Image</div>
-                )}
-              </div>
-              <div className={styles.menuItemContent}>
-                <div className={styles.menuItemTop}>
-                  <p className={styles.itemName}>{item.name}</p>
-                  <div className={styles.dots}></div>
-                  <p className={styles.itemPrice}>¥{item.price}</p>
-                </div>
-                <p className={styles.itemDesc}>{item.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <Collapse in={showAllMenu}>
-          <div className={styles.menuList} style={{ marginTop: '1rem' }}>
-            {GeneralMenus.slice(3).map((item, i) => (
-              <div key={i + 3} className={styles.menuItem}>
-                <div className={styles.itemImage}>
-                  {item.assetId ? (
-                    <Image 
-                    src={item.assetId} 
-                    alt={item.name} 
-                    fill 
-                    style={{ objectFit: 'cover' }} 
-                    unoptimized={item.assetId.startsWith('http')}
-                  />
-                  ) : (
-                    <div className={styles.noImage}>No Image</div>
-                  )}
-                </div>
-                <div className={styles.menuItemContent}>
-                  <div className={styles.menuItemTop}>
-                    <p className={styles.itemName}>{item.name}</p>
-                    <div className={styles.dots}></div>
-                    <p className={styles.itemPrice}>¥{item.price}</p>
-                  </div>
-                  <p className={styles.itemDesc}>{item.detail}</p>
-                </div>
-              </div>
+          <div className={styles.menuList}>
+            {GeneralMenus.slice(0, 3).map((item, i) => (
+              <MenuItem key={i} item={item} />
             ))}
           </div>
-        </Collapse>
-        <div 
-          className={styles.showMoreMenu} 
-          onClick={() => setShowAllMenu(!showAllMenu)}
-        >
-          {showAllMenu ? (
-            <>メニューを閉じる <ChevronUp size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
-          ) : (
-            <>メニューをすべてみる <ChevronDown size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
-          )}
+          <Collapse in={showAllMenu}>
+            <div className={styles.menuList} style={{ marginTop: '1rem' }}>
+              {GeneralMenus.slice(3).map((item, i) => (
+                <MenuItem key={i + 3} item={item} />
+              ))}
+            </div>
+          </Collapse>
+          <div 
+            className={styles.showMoreMenu} 
+            onClick={() => setShowAllMenu(!showAllMenu)}
+          >
+            {showAllMenu ? (
+              <>メニューを閉じる <ChevronUp size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
+            ) : (
+              <>メニューをすべてみる <ChevronDown size={18} color="#3F7D58" style={{ transform: 'translateY(2px)' }} /></>
+            )}
+          </div>
         </div>
-      </div>
-
-
     )
 }

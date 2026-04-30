@@ -1,7 +1,8 @@
 .actionBtnBase {
   flex: 1;
   font-size: var(--btn-font-size);
-  padding: 14px 8px;
+  height: 48px;
+  padding: 0 8px;
   border-radius: 30px;
   font-weight: bold;
   display: flex;
@@ -14,6 +15,7 @@
   transition: opacity 0.2s;
   cursor: pointer;
   border: none;
+  box-sizing: border-box;
 }
 
 .actionBtnBase:hover {
@@ -37,7 +39,6 @@
   composes: actionBtnBase;
   flex: 0 0 48px; /* Fixed size, not growing like other buttons */
   width: 48px;
-  height: 48px;
   border-radius: 50%;
   border: 1.5px solid var(--primary-color);
   background-color: white;

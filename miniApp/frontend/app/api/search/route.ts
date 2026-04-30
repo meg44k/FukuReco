@@ -45,6 +45,13 @@ export async function GET(request: Request) {
             updated_at: string;
             spot_tags?: SpotTag[];
             assets?: SpotAsset[];
+            restaurants?: {
+                avg_lunch_budget?: string;
+                avg_dinner_budget?: string;
+            } | {
+                avg_lunch_budget?: string;
+                avg_dinner_budget?: string;
+            }[];
         };
 
         let rawData: RawSpot[] = [];
@@ -69,6 +76,10 @@ export async function GET(request: Request) {
                     assets (
                         url,
                         is_cardthumbnail
+                    ),
+                    restaurants (
+                        avg_lunch_budget,
+                        avg_dinner_budget
                     )
                 `)
                 .or(`name.ilike.%${keyword}%,catchphrase.ilike.%${keyword}%,fukureko_comment.ilike.%${keyword}%`);
@@ -98,6 +109,10 @@ export async function GET(request: Request) {
                             assets (
                                 url,
                                 is_cardthumbnail
+                            ),
+                            restaurants (
+                                avg_lunch_budget,
+                                avg_dinner_budget
                             )
                         )
                     )
@@ -117,6 +132,11 @@ export async function GET(request: Request) {
             const thumbnail = item.assets?.find((a: SpotAsset) => a.is_cardthumbnail === true);
             const imageSrc = thumbnail?.url || "/sampleImage.png";
 
+            // restaurantsテーブルのデータを取得
+            const restaurantDetail = Array.isArray(item.restaurants) 
+                ? item.restaurants[0] 
+                : item.restaurants;
+
             // place_type に基づいて pin画像 と 詳細URL を決定
             const type = item.place_type.toLowerCase();
             let pinKind = "/FoodPin.svg";
@@ -135,13 +155,14 @@ export async function GET(request: Request) {
 
             return {
                 id: item.id,
-                spotKind: item.place_type,
+                spotKind: item.place_type.toLowerCase(),
                 pinKind: pinKind,
                 spotName: item.name,
                 imageSrc: imageSrc,
                 spotTags: item.spot_tags?.map((st: SpotTag) => st.tags?.detail).filter(Boolean) || [],
                 detailURL: detailURL,
-                price1: typeof item.pricing === 'string' ? item.pricing : "価格情報なし",
+                price1: restaurantDetail?.avg_lunch_budget || (typeof item.pricing === 'string' ? item.pricing : "価格情報なし"),
+                price2: restaurantDetail?.avg_dinner_budget || "",
                 position: {
                     lat: typeof item.latitude === 'string' ? parseFloat(item.latitude) : item.latitude,
                     lng: typeof item.longitude === 'string' ? parseFloat(item.longitude) : item.longitude

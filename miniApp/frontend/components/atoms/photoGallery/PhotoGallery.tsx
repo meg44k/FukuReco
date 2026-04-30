@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import styles from "./PhotoGallery.module.css";
 import Image from "next/image";
 import {
@@ -12,22 +12,14 @@ interface PhotoGalleryProps {
 }
 
 export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
-    const headerImages = useMemo(() => {
-        return images && images.length > 0 ? images : [
-            "/ramen.jpg",
-            "/tonkotsu.jpg",
-            "/ramen.jpg", // 仮の3枚目
-        ];
-    }, [images]);
+    const headerImages = images || [];
+    // クローンを追加した画像リストを作成
+    const extendedImages = headerImages.length > 1 
+        ? [headerImages[headerImages.length - 1], ...headerImages, headerImages[0]]
+        : headerImages;
 
-    const [currentImgIndex, setCurrentImgIndex] = useState(0);
-
-    // 画像リストが変わった際にインデックスをリセットする
-    const [prevImages, setPrevImages] = useState(headerImages);
-    if (headerImages !== prevImages) {
-        setPrevImages(headerImages);
-        setCurrentImgIndex(0);
-    }
+    const [currentImgIndex, setCurrentImgIndex] = useState(headerImages.length > 1 ? 1 : 0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -35,14 +27,39 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
     const minSwipeDistance = 50;
 
     const nextImage = useCallback(() => {
-        if (headerImages.length <= 1) return;
-        setCurrentImgIndex((prev) => (prev + 1) % headerImages.length);
-    }, [headerImages.length]);
+        if (headerImages.length <= 1 || isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentImgIndex((prev) => prev + 1);
+    }, [headerImages.length, isTransitioning]);
 
     const prevImage = useCallback(() => {
+        if (headerImages.length <= 1 || isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentImgIndex((prev) => prev - 1);
+    }, [headerImages.length, isTransitioning]);
+
+    const handleTransitionEnd = () => {
+        setIsTransitioning(false);
         if (headerImages.length <= 1) return;
-        setCurrentImgIndex((prev) => (prev - 1 + headerImages.length) % headerImages.length);
-    }, [headerImages.length]);
+
+        // クローンに到達した瞬間に、アニメーションなしで本物の位置へワープする
+        if (currentImgIndex === 0) {
+            // 先頭のクローン（最後の画像）にいる場合 -> 本物の最後へ
+            setCurrentImgIndex(headerImages.length);
+        } else if (currentImgIndex === headerImages.length + 1) {
+            // 末尾のクローン（最初の画像）にいる場合 -> 本物の最初へ
+            setCurrentImgIndex(1);
+        }
+    };
+
+    // インジケーター用の現在のアクティブなインデックス
+    const activeDotIndex = headerImages.length > 1 
+        ? (currentImgIndex === 0 
+            ? headerImages.length - 1 
+            : currentImgIndex === headerImages.length + 1 
+                ? 0 
+                : currentImgIndex - 1)
+        : 0;
 
     const onTouchStart = (e: React.TouchEvent) => {
         setTouchEnd(null);
@@ -72,63 +89,98 @@ export default function PhotoGallery ({ images = [] }: PhotoGalleryProps) {
         return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
     };
 
-    // 自動スライドの設定
-    useEffect(() => {
-        if (headerImages.length <= 1) return;
+    // 表示するドットの範囲を計算（最大5個）
+    const getVisibleDotIndices = () => {
+        const maxVisible = 5;
+        if (headerImages.length <= maxVisible) return headerImages.map((_, i) => i);
+        
+        let start = Math.max(0, activeDotIndex - 2);
+        if (start + maxVisible > headerImages.length) {
+            start = headerImages.length - maxVisible;
+        }
+        return Array.from({ length: maxVisible }, (_, i) => start + i);
+    };
 
-        const interval = setInterval(() => {
-            nextImage();
-        }, 5000); // 5秒ごとにスライド
+    const visibleDotIndices = getVisibleDotIndices();
 
-        return () => clearInterval(interval);
-    }, [nextImage, headerImages.length]);
+    if (headerImages.length === 0) {
+        return null;
+    }
 
     return(
-        <div 
-            className={styles.galleryContainer}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-        >
+        <div className={styles.header}>
             <div 
-          className={styles.imageTrack} 
-          style={{ transform: `translateX(-${currentImgIndex * 100}%)` }}
-        >
-          {headerImages.map((src, index) => (
-            <div key={index} className={styles.imageContainer}>
-              {isVideo(src) ? (
-                  <video 
-                    src={src} 
-                    className={styles.mainVideo} 
-                    autoPlay 
-                    muted 
-                    loop 
-                    playsInline 
-                  />
-              ) : (
-                <Image
-                    src={src}
-                    alt={`Restaurant Media ${index}`}
-                    fill
-                    className={styles.mainImage}
-                    priority={index === 0}
-                    unoptimized={src.startsWith('http')}
-                />
-              )}
+                className={styles.galleryContainer}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+            >
+                <div 
+                    className={styles.imageTrack} 
+                    style={{ 
+                        transform: `translateX(-${currentImgIndex * 100}%)`,
+                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none'
+                    }}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                {extendedImages.map((src, index) => (
+                    <div key={index} className={styles.imageContainer}>
+                    {isVideo(src) ? (
+                        <video 
+                            src={src} 
+                            className={styles.mainVideo} 
+                            autoPlay 
+                            muted 
+                            loop 
+                            playsInline 
+                        />
+                    ) : (
+                        <Image
+                            src={src}
+                            alt={`Spot Media ${index}`}
+                            fill
+                            className={styles.mainImage}
+                            priority={index === 1} // 本物の最初の画像にpriorityをつける
+                            unoptimized={src.startsWith('http')}
+                        />
+                    )}
+                    </div>
+                ))}
+                </div>
+                {headerImages.length > 1 && (
+                <>
+                    <div className={styles.carouselNav}>
+                    <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} aria-label="前の画像へ" />
+                    <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} aria-label="次の画像へ" />
+                    </div>
+                    <div 
+                        className={styles.carouselIndicator} 
+                        role="group" 
+                        aria-label="画像スライダーの進捗"
+                    >
+                    {visibleDotIndices.map((index, idx) => {
+                        const isActive = index === activeDotIndex;
+                        const isFirst = idx === 0;
+                        const isLast = idx === visibleDotIndices.length - 1;
+                        const hasMorePrev = isFirst && index > 0;
+                        const hasMoreNext = isLast && index < headerImages.length - 1;
+
+                        return (
+                            <div 
+                                key={index} 
+                                className={`
+                                    ${styles.dot} 
+                                    ${isActive ? styles.activeDot : ""} 
+                                    ${hasMorePrev || hasMoreNext ? styles.smallDot : ""}
+                                `}
+                                aria-current={isActive ? "true" : "false"}
+                            />
+                        );
+                    })}
+                    </div>
+                </>
+                )}
             </div>
-          ))}
-        </div>
-        {headerImages.length > 1 && (
-          <>
-            <div className={styles.carouselNav}>
-              <ChevronLeft size={32} onClick={prevImage} className={styles.navIcon} />
-              <ChevronRight size={32} onClick={nextImage} className={styles.navIcon} />
-            </div>
-            <div className={styles.carouselIndicator}>
-              {currentImgIndex + 1}/{headerImages.length}
-            </div>
-          </>
-        )}
         </div>
     )
 }

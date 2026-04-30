@@ -1,3 +1,10 @@
+.header {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden; /* Hide images outside the view */
+}
+
 .galleryContainer{
     position: relative; /* 子要素の absolute 配置の基準にする */
     width: 100%;
@@ -8,41 +15,96 @@
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 0.5s ease-in-out; /* Smooth sliding */
 }
 
 .imageContainer {
   position: relative;
   min-width: 100%;
-  flex-shrink: 0; /* 追加: フレックスボックス内で画像が縮まないようにする */
+  flex-shrink: 0;
   height: 100%;
+  background-color: #1e1e1e; /* 背景を濃いグレーに変更 */
 }
 
-.mainImage,
-.mainVideo {
+.mainImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.mainVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 動画は全体が見えるように contain に変更 */
+}
+
 .carouselNav {
   position: absolute;
   top: 50%;
+  left: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   padding: 0 10px;
   transform: translateY(-50%);
-  color: white;
+  pointer-events: none; /* 下の画像へのタッチイベントを邪魔しないように（アイコン以外） */
+}
+
+.navIcon {
+  cursor: pointer;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5)); /* 暗い背景でも見やすいように影を追加 */
+  color: #FFFFFF;
+  transition: opacity 0.2s ease;
+  pointer-events: auto; /* アイコン自体はクリック可能にする */
+}
+
+.navIcon:hover {
+  opacity: 0.8;
+}
+
+.navIcon:active {
+  opacity: 0.5;
 }
 
 .carouselIndicator {
   position: absolute;
   bottom: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(2px);
+  align-items: center;
+  justify-content: center;
+  min-width: 60px; /* 5ドットに合わせて少し広げる */
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+  transform: scale(1);
+}
+
+.dot.smallDot {
+  transform: scale(0.6);
+  opacity: 0.6;
+}
+
+.dot.activeDot {
+  background-color: white;
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* 端にあるがアクティブな場合の表示（詳細度をさらに上げる） */
+.dot.activeDot.smallDot {
+  transform: scale(1);
+  opacity: 1;
 }

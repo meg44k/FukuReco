@@ -16,6 +16,7 @@ type Props = {
 
 export const SearchTextField = ({ onSearch, onFocus, onBlur, label = "検索" }: Props) => {
   const [value, setValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = () => {
     if (!value.trim()) return;
@@ -23,43 +24,66 @@ export const SearchTextField = ({ onSearch, onFocus, onBlur, label = "検索" }:
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // IME変換中のエンターキー押下（変換確定）の場合は検索を実行しない
     if (e.nativeEvent.isComposing) return;
-
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (onFocus) onFocus();
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (onBlur) onBlur();
+  };
+
+  // 入力がある場合はラベルを消す。フォーカス時は専用ラベル、それ以外はデフォルトラベル。
+  const displayLabel = value !== "" ? "" : (isFocused ? "ジャンル　エリア　店名など" : label);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // ページのリロードを防ぐ
+    handleSearch();
+  };
+
   return (
-    <TextField
-      fullWidth
-      variant="outlined"
-      label={label}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onKeyDown={handleKeyDown}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      className={styles.searchField}
-      slotProps={{
-        input: {
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={handleSearch}
-                className={styles.searchButton}
-              >
-                <Search
-                  size={50}
-                  strokeWidth={3}
-                  className={styles.icon}
-                />
-              </IconButton>
-            </InputAdornment>
-          ),
-        },
-      }}
-    />
+    <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+      <TextField
+        fullWidth
+        variant="outlined"
+        label={displayLabel}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        className={styles.searchField}
+        // ラベルが入力文字と重ならないよう、また浮き上がらないように制御
+        InputLabelProps={{
+          shrink: false, 
+        }}
+        slotProps={{
+          input: {
+            enterKeyHint: "search", // スマホキーボードのボタンを「検索」にする
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleSearch}
+                  className={styles.searchButton}
+                >
+                  <Search
+                    size={50}
+                    strokeWidth={3}
+                    className={styles.icon}
+                  />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
+      />
+    </form>
   );
 };

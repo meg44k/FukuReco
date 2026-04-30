@@ -18,33 +18,34 @@ export default function Tags ({ tags = [] }: TagsProps) {
     if (tags.length === 0) return null;
 
     return (
-       <div>
-        <div className={styles.chips}>
-          {tags.slice(0, 3).map((tag, index) => (
-            <Chip key={index} label={tag} variant="outlined" size="small" className={styles.chip} />
-          ))}
-          {tags.length > 3 && !showAllTags && <div style={{ color: "#ccc", display: "flex", alignItems: "center" }}>...</div>}
-        </div>
+       <div className={styles.container}>
+        <Collapse in={showAllTags} collapsedSize={36}>
+          <div className={styles.chips}>
+            {tags.map((tag, index) => (
+              <Chip 
+                key={`${tag}-${index}`} 
+                label={tag} 
+                variant="outlined" 
+                size="small" 
+                className={`${styles.chip} ${!showAllTags && index >= 3 ? styles.hiddenChip : ''}`}
+              />
+            ))}
+          </div>
+        </Collapse>
+        
         {tags.length > 3 && (
-          <>
-            <Collapse in={showAllTags}>
-              <div className={styles.chips} style={{ marginTop: '8px' }}>
-                {tags.slice(3).map((tag, index) => (
-                  <Chip key={index + 3} label={tag} variant="outlined" size="small" className={styles.chip} />
-                ))}
-              </div>
-            </Collapse>
-            <div 
-              className={styles.showMoreTags} 
-              onClick={() => setShowAllTags(!showAllTags)}
-            >
-              {showAllTags ? (
-                <>タグを閉じる <ChevronUp size={16} /></>
-              ) : (
-                <>タグをすべてみる <ChevronDown size={16} /></>
-              )}
-            </div>
-          </>
+          <button 
+            type="button"
+            className={styles.showMoreButton} 
+            onClick={() => setShowAllTags(!showAllTags)}
+            aria-expanded={showAllTags}
+          >
+            {showAllTags ? (
+              <>閉じる <ChevronUp size={16} /></>
+            ) : (
+              <>すべて見る <ChevronDown size={16} /></>
+            )}
+          </button>
         )}
        </div> 
     )
