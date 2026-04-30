@@ -1,0 +1,68 @@
+.infoTable {
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.infoRow {
+  display: flex;
+  padding: 0.8rem;
+  border-bottom: 1px solid white;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  width: 90px;
+  flex-shrink: 0;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--text-black);
+}
+
+.infoValue {
+  flex: 1;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  /* 長いURLや英単語への対策 */
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* リンク用の共通スタイル */
+.link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* レストラン等で使用する予算行のスタイル */
+.budgetRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budgetRow + .budgetRow {
+  margin-top: 6px;
+}
+
+.budgetIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 20%;
+  color: white;
+}
+
+.budgetIcon svg {
+  stroke: white;
+  stroke-width: 2;
+  width: 60%;
+  height: 60%;
+}

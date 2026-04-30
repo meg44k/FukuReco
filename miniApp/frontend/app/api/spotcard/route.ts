@@ -35,6 +35,10 @@ export async function GET(request: Request) {
                 assets (
                     url,
                     is_cardthumbnail
+                ),
+                restaurants (
+                    avg_lunch_budget,
+                    avg_dinner_budget
                 )
             `)
             .eq('id', id)
@@ -51,6 +55,11 @@ export async function GET(request: Request) {
         // サムネイル画像を取得（is_cardthumbnailがtrueのもの）
         const thumbnail = (data.assets as { url: string; is_cardthumbnail: boolean }[] | null)?.find((a) => a.is_cardthumbnail === true);
         const imageSrc = thumbnail?.url || "/sampleImage.png"; // 見つからなければデフォルト画像
+
+        // restaurantsテーブルのデータを取得
+        const restaurantDetail = Array.isArray(data.restaurants) 
+            ? data.restaurants[0] 
+            : data.restaurants;
 
         // Google Places API (New) から営業状況を取得 (resting_spot 以外)
         let isOpen: boolean | null = null;
@@ -84,7 +93,7 @@ export async function GET(request: Request) {
                 });
 
                 if (placesResponse.ok) {
-                    const placesData = await placesResponse.ok ? await placesResponse.json() : null;
+                    const placesData = await placesResponse.json();
                     if (placesData && placesData.places && placesData.places.length > 0) {
                         // currentOpeningHours.openNow があればそれを使用、なければデフォルトfalse
                         isOpen = placesData.places[0].currentOpeningHours?.openNow ?? false;
@@ -114,7 +123,7 @@ export async function GET(request: Request) {
         // MapSpotData (UI用) の形式に整形
         const formattedData = {
             id: data.id,
-            spotKind: data.place_type,
+            spotKind: data.place_type.toLowerCase(),
             pinKind: pinKind,
             spotName: data.name,
             isOpen: isOpen,
@@ -125,7 +134,8 @@ export async function GET(request: Request) {
                 return (tags as { detail: string } | null)?.detail;
             }).filter(Boolean) || [],
             detailURL: detailURL,
-            price1: typeof data.pricing === 'string' ? data.pricing : "価格情報なし", // pricingの形式に合わせて調整が必要
+            price1: restaurantDetail?.avg_lunch_budget || (typeof data.pricing === 'string' ? data.pricing : "価格情報なし"),
+            price2: restaurantDetail?.avg_dinner_budget || "",
             position: {
                 lat: parseFloat(data.latitude),
                 lng: parseFloat(data.longitude)

@@ -16,6 +16,12 @@ const iconConfig: Record<string, { icon1: ReactNode; icon2: ReactNode | null; bg
     bg1: "#efab58",
     bg2: "#5C6BC0",
   },
+  cafe: {
+    icon1: <Sun />,
+    icon2: <Moon />,
+    bg1: "#efab58",
+    bg2: "#5C6BC0",
+  },
   sightseeing_spot: {
     icon1: <User />,
     icon2: <Baby />,
