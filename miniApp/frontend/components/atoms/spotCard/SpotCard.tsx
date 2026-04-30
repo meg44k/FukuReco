@@ -168,7 +168,7 @@ export const SpotCard = ({
                     もっと詳しく
                 </a>
                 <a 
-                    className={btnStyles.routeBtn}
+                    className={`${btnStyles.routeBtn} ${styles.routeBtn}`}
                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(spotName)}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -176,11 +176,11 @@ export const SpotCard = ({
                     ルートを見る
                 </a>
                 <button 
-                    className={btnStyles.heartBtn}
+                    className={`${btnStyles.heartBtn} ${styles.heartBtn}`}
                     onClick={onFavoriteToggle}
                 >
                     <Heart 
-                        size={18} 
+                        size={24} 
                         fill={isFavorite ? "#EF5350" : "none"} 
                         color={isFavorite ? "#EF5350" : "currentColor"} 
                     />

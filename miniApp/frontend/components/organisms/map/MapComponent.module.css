@@ -70,7 +70,7 @@
 .cardWrapper {
   position: absolute;
   left: 0;
-  bottom: 30px; /* 下との余白を増やして浮遊感をアップ */
+  bottom: 0px; /* 元々あったメニューバーの余白を詰め、下部にカードを下ろす */
   width: 100%;
   z-index: 10;
   transition: all 0.3s ease;
