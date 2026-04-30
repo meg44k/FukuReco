@@ -54,9 +54,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   const { isFavorite, toggleFavorite } = useFavorites();
 
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
+
+  if (loadError) {
+    console.error("Google Maps API load error:", loadError);
+  }
 
   // state管理
   const [selectedSpot, setSelectedSpot] = useState<null | MapSpotData>(null);  // 選択中の詳細データ
@@ -107,17 +111,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   // 表示対象（クラスターまたは個別のピン）を計算
   const visibleEntities = useMemo(() => {
-    if (!bounds || zoom > 15) {
-      // ズームが大きい場合は全ピンを表示（またはSuperclusterで単一ピンとして取得）
-      return initialSpots.map(s => ({
-        id: s.id,
-        position: s.position,
-        pinKind: s.pinKind,
-        isCluster: false,
-        count: 1
-      }));
-    }
+    if (!bounds) return [];
 
+    // zoom > 15 の場合でも supercluster を経由することで表示範囲内のみを取得できる
+    // 16以上ではクラスタリングされず個別ピンが返る
     return Object.entries(clustersByCategory).flatMap(([cat, sc]) => {
       const clusters = sc.getClusters(bounds, zoom);
       return clusters.map(c => {
@@ -142,7 +139,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         }
       });
     });
-  }, [clustersByCategory, bounds, zoom, initialSpots]);
+  }, [clustersByCategory, bounds, zoom]);
 
   // クラスター用アイコン生成
   const getClusterIcon = (count: number, pinKind: string) => {
@@ -154,7 +151,10 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="${Math.floor(size/2.5)}px" font-weight="bold" font-family="Arial" dy=".35em">${count}</text>
       </svg>
     `;
-    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      size
+    };
   };
 
   // 選択中のスポットが変わったらURLのクエリパラメータを更新する
@@ -429,20 +429,21 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
         {visibleEntities.map((entity) => {
           if (entity.isCluster) {
+            const { url, size } = getClusterIcon(entity.count, entity.pinKind);
             return (
               <Marker
                 key={entity.id}
                 position={entity.position}
                 onClick={() => {
-                  if (mapRef.current && entity.clusterId && typeof entity.clusterId === 'number') {
+                  if (mapRef.current && entity.clusterId !== undefined && typeof entity.clusterId === 'number') {
                     const expansionZoom = clustersByCategory[entity.pinKind].getClusterExpansionZoom(entity.clusterId);
                     mapRef.current.setZoom(expansionZoom);
                     mapRef.current.panTo(entity.position);
                   }
                 }}
                 icon={{
-                  url: getClusterIcon(entity.count, entity.pinKind),
-                  anchor: new google.maps.Point(20, 20),
+                  url: url,
+                  anchor: new google.maps.Point(size / 2, size / 2),
                 }}
               />
             );
