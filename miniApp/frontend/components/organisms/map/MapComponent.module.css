@@ -1,7 +1,7 @@
 .mapPage {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100dvh; /* iOS Safariのキーボード表示時に高さを自動調整させるためにdvhを使用 */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -37,6 +37,13 @@
   box-sizing: border-box;
   transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: auto;
+}
+
+/* iOSデバイス限定のスタイル適用（Androidには影響させない） */
+@supports (-webkit-touch-callout: none) {
+  .tagSearchContainer {
+    padding-bottom: 50vh; /* iOSでのみキーボードの高さを考慮した余白を追加 */
+  }
 }
 
 .tagSearchHidden {
