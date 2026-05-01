@@ -6,14 +6,6 @@
   font-weight: bold;
 }
 
-.itemImage {
-  width: 100px;
-  height: 100px;
-  background-color: #ddd;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
 .itemInfo {
   flex: 1;
 }
@@ -21,19 +13,14 @@
 .itemName {
   font-weight: bold;
   font-size: 1.05rem;
-  margin-bottom: 2px;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .itemDesc {
   font-size: 0.8rem;
   color: #888;
-  margin-bottom: 4px;
-}
-
-.itemPrice {
-  color: #EF633D;
-  font-weight: bold;
-  font-size: 1.1rem;
+  margin: 2px 0 0 0;
 }
 
 .menuList {
@@ -80,28 +67,6 @@
   width: 100%;
 }
 
-.itemName {
-  font-weight: bold;
-  font-size: 1.05rem;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.itemDesc {
-  font-size: 0.8rem;
-  color: #888;
-  margin: 2px 0 0 0;
-}
-
-.itemPrice {
-  color: #EF633D;
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin: 0;
-  white-space: nowrap;
-}
-
-
 .dots {
   flex: 1;
   border-bottom: 1.5px dotted #ccc;
@@ -121,4 +86,3 @@
   margin-bottom: 2rem;
   cursor: pointer;
 }
-
