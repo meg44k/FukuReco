@@ -1,0 +1,11 @@
+.price {
+  color: #EF633D;
+  font-weight: bold;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.currencyMark {
+  font-size: 0.85em;
+  margin-right: 1px;
+}
