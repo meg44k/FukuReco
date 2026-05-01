@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 import { Menu } from '@/types/menu'
 import Image from 'next/image'
+import { formatPrice } from '@/lib/format';
 
 type GeneralMenusProps = {
   GeneralMenus: Menu[];
@@ -34,7 +35,7 @@ const MenuItem = ({ item }: { item: Menu }) => {
         <div className={styles.menuItemTop}>
           <p className={styles.itemName}>{item.name}</p>
           <div className={styles.dots}></div>
-          <p className={styles.itemPrice}>¥{item.price}</p>
+          <p className={styles.itemPrice}>¥{formatPrice(item.price)}</p>
         </div>
         <p className={styles.itemDesc}>{item.detail}</p>
       </div>

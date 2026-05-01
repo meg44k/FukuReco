@@ -1,6 +1,7 @@
 import {Menu} from '@/types/menu'
 import styles from './RecommendMenu.module.css'
 import Image from 'next/image'
+import { formatPrice } from '@/lib/format';
 
 type recommendMenuProps = {
     recommendMenu: Menu;
@@ -26,7 +27,7 @@ export default function RecommendMenu ({ recommendMenu }: recommendMenuProps) {
             <div className={styles.itemInfo}>
                 <p className={styles.itemName}>{recommendMenu.name}</p>
                 <p className={styles.itemDesc}>{recommendMenu.detail}</p>
-                <p className={styles.itemPrice}>¥{recommendMenu.price}</p>
+                <p className={styles.itemPrice}>¥{formatPrice(recommendMenu.price)}</p>
             </div>
         </div>
     )
