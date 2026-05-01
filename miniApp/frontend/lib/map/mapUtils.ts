@@ -7,8 +7,8 @@ export const calculateOffsetByZoom = (zoom: number) => 0.00012 * Math.pow(2, 20 
 /**
  * 指定した座標を、画面中央から10%上に表示するように地図を移動
  */
-export const panMapToSpot = (map: google.maps.Map, position: google.maps.LatLngLiteral) => {
-  const zoom = map.getZoom() ?? 15;
+export const panMapToSpot = (map: google.maps.Map, position: google.maps.LatLngLiteral, targetZoom?: number) => {
+  const zoom = targetZoom ?? map.getZoom() ?? 15;
   const offsetLat = calculateOffsetByZoom(zoom);
 
   // 地図の中心を「ピンの座標より少し南（下）」に設定することで、
