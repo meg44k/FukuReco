@@ -31,7 +31,6 @@ const containerStyle = {
 const ZOOM_THRESHOLD = 15;
 const NORMAL_PIN_SIZE = { width: 37, height: 45 };
 const SELECTED_PIN_SIZE = { width: 58.5, height: 72 };
-const MAX_HISTORY_CARDS = 10;
 
 // ピンごとのメタデータ（色と種別）
 const PIN_METADATA: Record<string, { color: string, spotKind: "shop" | "spot" }> = {
@@ -48,7 +47,7 @@ const initCenter = {
 };
 
 type Props = {
-  initialSpots: MinimalSpotData[]; // 初期表示は最小限のデータ配列を受け取る
+  initialSpots: MinimalSpotData[]; // 初期表示は最小限েরデータ配列を受け取る
   keyword?: string; // 検索キーワード（URL等から）
   options?: string; // 検索タグ（URL等から）
 }
@@ -91,66 +90,59 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const lastSelectedSource = useRef<'map' | 'scroll'>('map'); // 選択元の判定用フラグ
   const lastRequestSpotId = useRef<number | null>(null);
 
-  // カテゴリごとにSuperclusterのインスタンスを作成
-  const clustersByCategory = useMemo(() => {
-    const categories = Array.from(new Set(initialSpots.map(s => s.pinKind)));
-    const result: Record<string, Supercluster> = {};
-
-    categories.forEach(cat => {
-      const sc = new Supercluster({
-        radius: 60,
-        maxZoom: ZOOM_THRESHOLD, // これ以上のズームでは集約しない
-      });
-      const features = initialSpots
-        .filter(s => s.pinKind === cat)
-        .map(s => ({
-          type: 'Feature' as const,
-          properties: { cluster: false, spotId: s.id, pinKind: s.pinKind },
-          geometry: {
-            type: 'Point' as const,
-            coordinates: [s.position.lng, s.position.lat],
-          },
-        }));
-      sc.load(features);
-      result[cat] = sc;
+  // Superclusterのインスタンスを作成
+  const supercluster = useMemo(() => {
+    const sc = new Supercluster({
+      radius: 60,
+      maxZoom: ZOOM_THRESHOLD, // これ以上のズームでは集約しない
     });
-    return result;
+    
+    const features = initialSpots.map(s => ({
+      type: 'Feature' as const,
+      properties: { cluster: false, spotId: s.id, pinKind: s.pinKind },
+      geometry: {
+        type: 'Point' as const,
+        coordinates: [s.position.lng, s.position.lat],
+      },
+    }));
+    
+    sc.load(features);
+    return sc;
   }, [initialSpots]);
 
   // 表示対象（クラスターまたは個別のピン）を計算
   const visibleEntities = useMemo(() => {
-    if (!bounds) return [];
+    if (!bounds || !supercluster) return [];
 
-    return Object.entries(clustersByCategory).flatMap(([cat, sc]) => {
-      const clusters = sc.getClusters(bounds, zoom);
-      return clusters.map(c => {
-        const [lng, lat] = c.geometry.coordinates;
-        if (c.properties.cluster) {
-          return {
-            id: `cluster-${cat}-${c.id}`,
-            position: { lat, lng },
-            pinKind: cat,
-            isCluster: true,
-            count: c.properties.point_count,
-            clusterId: c.id
-          };
-        } else {
-          return {
-            id: c.properties.spotId,
-            position: { lat, lng },
-            pinKind: c.properties.pinKind,
-            isCluster: false,
-            count: 1
-          };
-        }
-      });
+    const clusters = supercluster.getClusters(bounds, zoom);
+    return clusters.map(c => {
+      const [lng, lat] = c.geometry.coordinates;
+      if (c.properties.cluster) {
+        return {
+          id: `cluster-${c.id}`,
+          position: { lat, lng },
+          pinKind: 'cluster', // 混合クラスター用
+          isCluster: true,
+          count: c.properties.point_count,
+          clusterId: c.id
+        };
+      } else {
+        return {
+          id: c.properties.spotId,
+          position: { lat, lng },
+          pinKind: c.properties.pinKind,
+          isCluster: false,
+          count: 1
+        };
+      }
     });
-  }, [clustersByCategory, bounds, zoom]);
+  }, [supercluster, bounds, zoom]);
 
   // クラスター用アイコン生成
   const getClusterIcon = (count: number, pinKind: string) => {
+    // クラスター（混合）の場合はデフォルトカラー、単一ピンの場合はその色を使用
     const metadata = PIN_METADATA[pinKind];
-    const color = metadata?.color || "#666";
+    const color = metadata?.color || "#3F7D58"; // 混合クラスターはメインカラー（緑）
     const size = count < 10 ? 40 : count < 100 ? 50 : 60;
     const svg = `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
@@ -353,15 +345,16 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
   // スポットクリック時の詳細取得処理
   const handleSpotClick = async (spotId: number, position: google.maps.LatLngLiteral, pinKind: string) => {
-    // すでに取得済みなら先頭に移動させて終了（LRU）
-    const alreadyFetched = displayCards.find(s => s.id === spotId);
-    if (alreadyFetched) {
-      setDisplayCards(prev => [alreadyFetched, ...prev.filter(s => s.id !== spotId)]);
-      setSelectedSpot(alreadyFetched);
+    lastSelectedSource.current = 'map';
+    
+    // すでに現在のリストにあるなら、そのスポットを選択（スクロール）するだけにする
+    const alreadyInList = displayCards.find(s => s.id === spotId);
+    if (alreadyInList) {
+      setSelectedSpot(alreadyInList);
       return;
     }
     
-    // メタデータから種別を取得
+    // リストにない場合、新規スポット1件のみを表示する形に切り替える（リストが際限なく増えるのを防ぐ）
     const inferredSpotKind = PIN_METADATA[pinKind]?.spotKind || "spot";
 
     setIsCardLoading(true);
@@ -380,8 +373,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
       updatedAt: new Date()
     };
     
-    // リストの先頭に追加（既存の重複は削除し、最大件数保持）
-    setDisplayCards(prev => [dummySpot, ...prev.filter(s => s.id !== spotId)].slice(0, MAX_HISTORY_CARDS));
+    setDisplayCards([dummySpot]);
     setSelectedSpot(dummySpot);
 
     try {
@@ -393,14 +385,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
       
       // レースコンディション対策：最新のリクエストのみ処理
       if (lastRequestSpotId.current === spotId) {
-        setDisplayCards(prev => [detailData, ...prev.filter(s => s.id !== spotId)].slice(0, MAX_HISTORY_CARDS));
+        setDisplayCards([detailData]);
         setSelectedSpot(detailData);
       }
     } catch (e) { 
       console.error("スポット詳細取得失敗:", e);
-      // エラー時はリストからダミーを削除して状態を戻す
       if (lastRequestSpotId.current === spotId) {
-        setDisplayCards(prev => prev.filter(s => s.id !== spotId));
+        setDisplayCards([]);
         setSelectedSpot(null);
       }
     } finally {
@@ -504,16 +495,31 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                 key={entity.id}
                 position={entity.position}
                 zIndex={!entity.isCluster && isSelected ? 1000 : 1}
-                clickable={entity.isCluster || !isSelected}
+                clickable={true}
                 onClick={() => {
                   if (entity.isCluster) {
                     if (mapRef.current && entity.clusterId !== undefined && typeof entity.clusterId === 'number') {
-                      const expansionZoom = clustersByCategory[entity.pinKind].getClusterExpansionZoom(entity.clusterId);
+                      const expansionZoom = supercluster.getClusterExpansionZoom(entity.clusterId);
                       mapRef.current.setZoom(expansionZoom);
-                      mapRef.current.panTo(entity.position);
+                      
+                      // カードが開いている場合はオフセットを考慮して移動
+                      if (selectedSpot) {
+                        panMapToSpot(mapRef.current, entity.position, expansionZoom);
+                      } else {
+                        mapRef.current.panTo(entity.position);
+                      }
                     }
                   } else {
                     handleSpotClick(spotId, entity.position, entity.pinKind);
+                    // 単一ピン（丸1）をクリックした際、詳細ピンが見えるズームレベルまで拡大する
+                    if (mapRef.current) {
+                      const nextZoom = zoom <= ZOOM_THRESHOLD ? ZOOM_THRESHOLD + 1 : zoom;
+                      if (zoom <= ZOOM_THRESHOLD) {
+                        mapRef.current.setZoom(nextZoom);
+                      }
+                      // ズーム変更と移動を同期させるため、明示的にズームレベルを渡す
+                      panMapToSpot(mapRef.current, entity.position, nextZoom);
+                    }
                   }
                 }}
                 icon={{
@@ -531,7 +537,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
               key={entity.id}
               position={entity.position}
               zIndex={isSelected ? 1000 : 1}
-              clickable={!isSelected}
+              clickable={true}
               onClick={() => handleSpotClick(spotId, entity.position, entity.pinKind)}
               icon={{
                 url: entity.pinKind,
