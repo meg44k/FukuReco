@@ -79,7 +79,12 @@ export function useFavorites() {
         );
 
       if (error) {
-        console.error("Error ensuring user exists (atomic upsert):", error);
+        console.error("Error ensuring user exists (atomic upsert) detailed:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
       } else {
         console.log("User existence verified/ensured for:", lineId);
       }
@@ -149,7 +154,12 @@ export function useFavorites() {
           .eq("spot_id", spotId);
 
         if (error) {
-          console.error("Error removing favorite detailed:", error);
+          console.error("Error removing favorite detailed:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
         } else {
           setFavorites((prev) => prev.filter((id) => id !== spotId));
         }
@@ -160,7 +170,12 @@ export function useFavorites() {
           .insert([{ user_id: lineId, spot_id: spotId }]);
 
         if (error) {
-          console.error("Error adding favorite detailed:", error);
+          console.error("Error adding favorite detailed:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
         } else {
           console.log("Successfully added favorite");
           setFavorites((prev) => [...prev, spotId]);
