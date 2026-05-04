@@ -170,10 +170,10 @@
   }
 
   .cardItem > div {
-    width: 98%; /* コンテナ幅いっぱいに広げて検索バーに近づける */
-    margin: 0; 
-    /* 画面内に収めるための縦幅基準の制限を復活 (以前「いい感じ」だった基準付近に調整) */
-    max-width: min(800px, 90dvh); 
+    width: 38vw; /* 46vwと元の設定の中間サイズ */
+    max-height: 90dvh;
+    margin: 0;
+    max-width: 600px;
   }
 
   .spacer {
