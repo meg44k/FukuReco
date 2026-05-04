@@ -3,11 +3,8 @@ import { createClient } from '@/lib/supabase/client';
 import { notFound, useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import styles from '../page.module.css'; 
-import btnStyles from '@/styles/common-buttons.module.css';
 import {
   Clock,
-  ExternalLink,
-  Heart,
   ChevronLeft,
   X,
 } from "lucide-react";
@@ -16,11 +13,11 @@ import { Menu } from '@/types/menu'
 import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
-import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
 import { Disclaimer } from "@/components/atoms/disclaimer/Disclaimer";
 import { mapToShop, RawShop } from "@/lib/spot-mapper";
+import SpotActionFooter from "@/components/atoms/spotActionFooter/SpotActionFooter";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -38,8 +35,6 @@ export default function ShopDetailPage({ params }: Props) {
   
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -227,28 +222,7 @@ export default function ShopDetailPage({ params }: Props) {
 
       <Disclaimer />
 
-      {/* Action Footer */}
-      <div className={styles.actionFooter}>
-        <a 
-          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={btnStyles.routeBtn}
-          style={{ flex: 1.5 }}
-        >
-          ルートを見る <ExternalLink size={18} />
-        </a>
-        <button 
-          className={btnStyles.heartBtn}
-          onClick={() => toggleFavorite(id)}
-        >
-          <Heart 
-            size={24} 
-            fill={isFavorite(id) ? "#EF5350" : "none"} 
-            color={isFavorite(id) ? "#EF5350" : "currentColor"}
-          />
-        </button>
-      </div>
+      <SpotActionFooter spot={spot} />
     </div>
   );
 }
