@@ -14,7 +14,7 @@ import {
   IconButton,
 } from "@mui/material";
 import {
-  Heart,
+  Bookmark,
   Bell,
   HelpCircle,
   MessageCircle,
@@ -28,7 +28,7 @@ type Props = {
 
 export const MenuDrawer = ({ open, onClose }: Props) => {
   const menuItems = [
-    { text: "保存済み", icon: <Heart size={20} />, href: "/favorites" },
+    { text: "保存済み", icon: <Bookmark size={20} />, href: "/favorites" },
     { text: "お知らせ", icon: <Bell size={20} />, href: "/news" },
   ];
 
