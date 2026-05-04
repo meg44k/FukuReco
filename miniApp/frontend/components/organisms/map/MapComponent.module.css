@@ -74,8 +74,8 @@
   width: 100%;
   z-index: 10;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  /* 下部の余白はカード本体（SpotCard）のパディングで34px確保するため、ここでは0にする */
-  padding-bottom: 0;
+  /* カードと画面下部の間に余白(34px)を確保 */
+  padding-bottom: var(--footer-action-bottom-padding);
 }
 
 /* カードのリスト（横スクロール用） */
@@ -150,6 +150,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-bottom: 0; /* 縦画面用の余白をリセット */
   }
 
   .cardListContainer {
