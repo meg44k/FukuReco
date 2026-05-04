@@ -1,7 +1,7 @@
 "use client";
 
 import { Liff } from "@line/liff";
-import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 
 interface LIFFContextValue {
   liff: Liff | null;
@@ -9,13 +9,9 @@ interface LIFFContextValue {
   liffError: string | null;
 }
 
-const LIFFContext = createContext<LIFFContextValue>({
-  liff: null,
-  isLoading: true,
-  liffError: null,
-});
+const LIFFContext = createContext<LIFFContextValue | undefined>(undefined);
 
-function LIFFProvider({ children }: { children: React.ReactNode }) {
+export function LIFFProvider({ children }: { children: ReactNode }) {
   const [liffObject, setLiffObject] = useState<Liff | null>(null);
   const [liffError, setLiffError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,48 +23,52 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
 
     let isMounted = true;
     const timeoutId = setTimeout(() => {
-      if (isMounted && isLoading) {
-        console.warn("LIFF init timed out. Proceeding as guest.");
-        setIsLoading(false);
+      if (isMounted && isLoading) setIsLoading(false);
+    }, 10000);
+
+    const initLiff = async () => {
+      try {
+        const { default: liff } = await import("@line/liff");
+        await liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! });
+
+        if (!isMounted) return;
+
+        // 1. 現在のURL情報を取得
+        const currentUrl = new URL(window.location.href);
+        const isCallback = currentUrl.searchParams.has("code") || currentUrl.searchParams.has("liff.state");
+
+        // 2. ログイン判定
+        if (!liff.isLoggedIn()) {
+          // コールバック中（?code=...）でなければ、今いるURLを戻り先に指定してログイン
+          if (!isCallback) {
+            liff.login({ redirectUri: window.location.href });
+            return;
+          }
+          // コールバック中ならSDKの処理が終わるまで待つ（何もしない）
+        } else {
+          // ログイン済みならSDKをセット
+          setLiffObject(liff);
+
+          // 3. 「特定のページのみ」自動遷移させたい場合の処理
+          // ログイン後、もしトップページにいるなら /map へ移動
+          if (window.location.pathname === "/") {
+            window.location.replace("/map");
+            return;
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLiffError(error instanceof Error ? error.message : "Init failed");
+        }
+      } finally {
+        if (isMounted) {
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+        }
       }
-    }, 10000); // 10秒でタイムアウト
+    };
 
-    import("@line/liff")
-      .then((liff) => liff.default)
-      .then((liff) => {
-        console.log("LIFF init starting... URL:", window.location.href);
-        liff
-          .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
-          .then(() => {
-            if (!isMounted) return;
-            console.log("LIFF init succeeded! Logged in:", liff.isLoggedIn());
-            setLiffObject(liff);
-
-            // ログインリダイレクト処理の判定
-            const urlParams = new URLSearchParams(window.location.search);
-            const isProcessingCallback = urlParams.has("liff.state") || urlParams.has("code");
-
-            if (!liff.isLoggedIn()) {
-              if (isProcessingCallback) {
-                console.log("LIFF is currently processing login callback. Waiting...");
-              } else {
-                console.log("Not logged in. Initiating liff.login()...");
-                liff.login();
-              }
-            }
-          })
-          .catch((error: Error) => {
-            if (!isMounted) return;
-            console.error("LIFF init failed:", error);
-            setLiffError(error.toString());
-          })
-          .finally(() => {
-            if (isMounted) {
-              clearTimeout(timeoutId);
-              setIsLoading(false);
-            }
-          });
-      });
+    initLiff();
 
     return () => {
       isMounted = false;
@@ -76,20 +76,17 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const value: LIFFContextValue = {
-    liff: liffObject,
-    isLoading,
-    liffError: liffError,
-  };
-  return <LIFFContext.Provider value={value}>{children}</LIFFContext.Provider>;
+  return (
+    <LIFFContext.Provider value={{ liff: liffObject, isLoading, liffError }}>
+      {children}
+    </LIFFContext.Provider>
+  );
 }
 
-function useLIFF(): LIFFContextValue {
-  const liff = useContext(LIFFContext);
-  if (!liff) {
+export function useLIFF() {
+  const context = useContext(LIFFContext);
+  if (context === undefined) {
     throw new Error("useLIFF must be used within a LIFFProvider");
   }
-  return liff;
+  return context;
 }
-
-export { LIFFProvider, useLIFF };

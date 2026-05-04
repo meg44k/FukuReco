@@ -93,7 +93,7 @@ export default function MenuBar(){
                     />
                     <BottomNavigationAction 
                         value="heart" 
-                        label="保存" 
+                        label="お気に入り" 
                         icon={<Heart/>} 
                         component={Link}
                         href="/favorites"
