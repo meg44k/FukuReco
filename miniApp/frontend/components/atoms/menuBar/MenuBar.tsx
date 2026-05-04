@@ -11,7 +11,7 @@ import {
 import{
     Map,
     Route,
-    Heart,
+    Bookmark,
     User,
     Search
 } from "lucide-react";
@@ -27,7 +27,7 @@ export default function MenuBar(){
     const getValueFromPath = (path: string) => {
         if (path.startsWith('/maps')) return 'map';
         if (path.startsWith('/modelcourse')) return 'route';
-        if (path.startsWith('/favorites')) return 'heart';
+        if (path.startsWith('/favorites')) return 'bookmark';
         if (path.startsWith('/mypage')) return 'user';
         if (path.startsWith('/search')) return 'search';
         return 'map';
@@ -92,9 +92,9 @@ export default function MenuBar(){
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 
                     />
                     <BottomNavigationAction 
-                        value="heart" 
-                        label="お気に入り" 
-                        icon={<Heart/>} 
+                        value="bookmark" 
+                        label="保存" 
+                        icon={<Bookmark/>} 
                         component={Link}
                         href="/favorites"
                         sx={{ ...labelPreventWrapStyle, ...selectedStyle }} 

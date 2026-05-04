@@ -38,7 +38,7 @@ export const SpotCardSkeleton = () => {
             <div className={styles.cardFooter}>
                 <div className={`${styles.skeleton} ${styles.buttonSkeleton}`} />
                 <div className={`${styles.skeleton} ${styles.buttonSkeleton}`} />
-                <div className={`${styles.skeleton} ${styles.heartSkeleton}`} />
+                <div className={`${styles.skeleton} ${styles.favoriteSkeleton}`} />
             </div>
         </div>
     );

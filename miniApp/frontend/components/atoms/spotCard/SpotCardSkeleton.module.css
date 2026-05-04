@@ -144,7 +144,7 @@
 }
 
 .cardFooter {
-    padding: 0px 5% 10px 5%;
+    padding: 0px 5% 12px 5%; /* 34pxから12pxに縮小 */
     display: flex;
     align-items: center;
     gap: 12px;
@@ -156,9 +156,9 @@
     border-radius: 9999px;
 }
 
-.heartSkeleton {
-    flex: 0 0 clamp(34px, 8.5cqw, 44px);
-    width: clamp(34px, 8.5cqw, 44px);
+.favoriteSkeleton {
     height: clamp(34px, 8.5cqw, 44px);
+    width: clamp(34px, 8.5cqw, 44px);
+    flex: 0 0 clamp(34px, 8.5cqw, 44px);
     border-radius: 50%;
 }

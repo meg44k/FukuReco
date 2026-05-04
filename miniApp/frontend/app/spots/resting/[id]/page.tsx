@@ -3,22 +3,19 @@ import { createClient } from '@/lib/supabase/client';
 import { notFound, useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import styles from '../page.module.css'; 
-import btnStyles from '@/styles/common-buttons.module.css';
 import {
   Clock,
-  ExternalLink,
-  Heart,
   ChevronLeft,
   X,
 } from "lucide-react";
 
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import Tags from "@/components/atoms/tags/Tags";
-import { useFavorites } from '@/hooks/useFavorites';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink } from "@/components/atoms/spotInfoTable/SpotInfoTable";
 import { Disclaimer } from "@/components/atoms/disclaimer/Disclaimer";
 import { mapToRestingSpot, formatFacilities, RawRestingSpot } from "@/lib/spot-mapper";
+import SpotActionFooter from "@/components/atoms/spotActionFooter/SpotActionFooter";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -35,8 +32,6 @@ export default function RestingDetailPage({ params }: Props) {
   
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -144,11 +139,7 @@ export default function RestingDetailPage({ params }: Props) {
           <p className={styles.safetyValue}>{spot.distanceFromTransit || '情報なし'}</p>
         </div>
         <div className={styles.safetyGrid}>
-          <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>座席情報</p>
-            <p className={styles.safetyValue}>{spot.seatingInfo || "情報なし"}</p>
-          </div>
-          <div className={styles.safetyCard}>
+          <div className={styles.safetyCard} style={{ gridColumn: 'span 2' }}>
             <p className={styles.safetyLabel}>設備</p>
             <p className={styles.safetyValue}>
               {formatFacilities(spot.facilities).join("、") || "情報なし"}
@@ -178,7 +169,6 @@ export default function RestingDetailPage({ params }: Props) {
             { label: "電話番号", value: spot.phoneNumber },
             { label: "定休日", value: spot.closedDays },
             { label: "滞在目安", value: spot.stayDuration },
-            { label: "座席情報", value: spot.seatingInfo },
             { label: "支払方法", value: spot.paymentMethods },
             { label: "駐車場", value: spot.parkingInfo },
             { 
@@ -201,28 +191,7 @@ export default function RestingDetailPage({ params }: Props) {
 
       <Disclaimer />
 
-      {/* Action Footer */}
-      <div className={styles.actionFooter}>
-        <a 
-          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={btnStyles.routeBtn}
-          style={{ flex: 1.5 }}
-        >
-          ルートを見る <ExternalLink size={18} />
-        </a>
-        <button 
-          className={btnStyles.heartBtn}
-          onClick={() => toggleFavorite(id)}
-        >
-          <Heart 
-            size={24} 
-            fill={isFavorite(id) ? "#EF5350" : "none"} 
-            color={isFavorite(id) ? "#EF5350" : "currentColor"}
-          />
-        </button>
-      </div>
+      <SpotActionFooter spot={spot} />
     </div>
   );
 }

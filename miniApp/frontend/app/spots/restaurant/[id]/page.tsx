@@ -3,11 +3,8 @@ import { createClient } from '@/lib/supabase/client';
 import { notFound, useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import styles from '../page.module.css'; 
-import btnStyles from '@/styles/common-buttons.module.css';
 import {
   Clock,
-  ExternalLink,
-  Heart,
   ChevronLeft,
   X,
   Sun,
@@ -19,12 +16,12 @@ import RecommendMenu from "@/components/atoms/recommendMenu/RecommendMenu";
 import PhotoGallery from "@/components/atoms/photoGallery/PhotoGallery";
 import GeneralMenus from "@/components/atoms/generalMenus/GeneralMenus"
 import Tags from "@/components/atoms/tags/Tags";
-import { useFavorites } from '@/hooks/useFavorites';
 import { SpotDetailSkeleton } from '@/components/atoms/spotCard/SpotDetailSkeleton';
 import NearbySpots from "@/components/organisms/nearbySpots/NearbySpots";
 import { SpotInfoTable, InfoLink, BudgetRow } from "@/components/atoms/spotInfoTable/SpotInfoTable";
 import { Disclaimer } from "@/components/atoms/disclaimer/Disclaimer";
 import { mapToRestaurant, RawRestaurant } from "@/lib/spot-mapper";
+import SpotActionFooter from "@/components/atoms/spotActionFooter/SpotActionFooter";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -42,8 +39,6 @@ export default function RestaurantDetailPage({ params }: Props) {
   
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -271,49 +266,7 @@ export default function RestaurantDetailPage({ params }: Props) {
 
       <Disclaimer />
 
-      {/* Action Footer */}
-      <div className={styles.actionFooter}>
-        {spot.reservationURL ? (
-          <a 
-            href={spot.reservationURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={btnStyles.reserveBtn}
-          >
-            予約する
-          </a>
-        ) : spot.phoneNumber ? (
-          <a 
-            href={`tel:${spot.phoneNumber}`}
-            className={btnStyles.reserveBtn}
-          >
-            電話する
-          </a>
-        ) : (
-          <button className={btnStyles.reserveBtn} disabled>
-            予約不可
-          </button>
-        )}
-        <a 
-          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${spot.name} ${spot.address}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={btnStyles.routeBtn}
-          style={{ flex: 1.5 }}
-        >
-          ルートを見る <ExternalLink size={18} />
-        </a>
-        <button 
-          className={btnStyles.heartBtn}
-          onClick={() => toggleFavorite(id)}
-        >
-          <Heart 
-            size={24} 
-            fill={isFavorite(id) ? "#EF5350" : "none"} 
-            color={isFavorite(id) ? "#EF5350" : "currentColor"}
-          />
-        </button>
-      </div>
+      <SpotActionFooter spot={spot} showReservation={true} />
     </div>
   );
 }

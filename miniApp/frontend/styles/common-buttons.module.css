@@ -35,7 +35,7 @@
   border: 1.5px solid var(--primary-color);
 }
 
-.heartBtn {
+.favoriteBtn {
   composes: actionBtnBase;
   flex: 0 0 48px; /* Fixed size, not growing like other buttons */
   width: 48px;
