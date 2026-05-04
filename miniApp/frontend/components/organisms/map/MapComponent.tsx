@@ -549,7 +549,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                       
                       // カードが開いている場合はオフセットを考慮して移動
                       if (selectedSpot) {
-                        panMapToSpot(mapRef.current, entity.position, expansionZoom);
+                        panMapToSpot(mapRef.current, entity.position, isLandscape);
                       } else {
                         mapRef.current.panTo(entity.position);
                       }
@@ -562,8 +562,8 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                       if (zoom <= ZOOM_THRESHOLD) {
                         mapRef.current.setZoom(nextZoom);
                       }
-                      // ズーム変更と移動を同期させるため、明示的にズームレベルを渡す
-                      panMapToSpot(mapRef.current, entity.position, nextZoom);
+                      // ズーム変更と移動を同期させるため、isLandscapeを渡す
+                      panMapToSpot(mapRef.current, entity.position, isLandscape);
                     }
                   }
                 }}
