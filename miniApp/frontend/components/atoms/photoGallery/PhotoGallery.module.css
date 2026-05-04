@@ -23,7 +23,7 @@
   width: 100%;
   flex-shrink: 0;
   height: 100%;
-  background-color: #000000; /* 背景を真っ黒にして余白を目立たなくする */
+  background-color: #1e1e1e; /* 元の濃いグレーに戻す */
   display: flex;
   align-items: center;
   justify-content: center;
