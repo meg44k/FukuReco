@@ -11,10 +11,11 @@
 }
 
 .chip {
-  border-color: #EF633D !important;
+  border-color: #FF9D85 !important;
   color: #EF633D !important;
   background-color: rgba(239, 99, 61, 0.1) !important;
-  font-weight: bold !important;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
   transition: opacity 0.3s ease !important;
 }
 
