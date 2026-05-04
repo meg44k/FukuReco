@@ -139,11 +139,7 @@ export default function RestingDetailPage({ params }: Props) {
           <p className={styles.safetyValue}>{spot.distanceFromTransit || '情報なし'}</p>
         </div>
         <div className={styles.safetyGrid}>
-          <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>座席情報</p>
-            <p className={styles.safetyValue}>{spot.seatingInfo || "情報なし"}</p>
-          </div>
-          <div className={styles.safetyCard}>
+          <div className={styles.safetyCard} style={{ gridColumn: 'span 2' }}>
             <p className={styles.safetyLabel}>設備</p>
             <p className={styles.safetyValue}>
               {formatFacilities(spot.facilities).join("、") || "情報なし"}
@@ -173,7 +169,6 @@ export default function RestingDetailPage({ params }: Props) {
             { label: "電話番号", value: spot.phoneNumber },
             { label: "定休日", value: spot.closedDays },
             { label: "滞在目安", value: spot.stayDuration },
-            { label: "座席情報", value: spot.seatingInfo },
             { label: "支払方法", value: spot.paymentMethods },
             { label: "駐車場", value: spot.parkingInfo },
             { 
