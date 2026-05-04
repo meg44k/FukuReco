@@ -1,5 +1,6 @@
 import React, { FunctionComponent, ReactNode } from "react";
 import styles from "./SpotInfoTable.module.css";
+import { formatPrice } from "@/lib/format";
 
 export interface InfoItem {
   label: string;
@@ -67,7 +68,7 @@ export const BudgetRow: FunctionComponent<{
   iconBgColor: string;
   label: string | number | undefined | null;
 }> = ({ icon, iconBgColor, label }) => {
-  const displayLabel = (label ?? "") !== "" ? label : "情報なし";
+  const displayLabel = (label ?? "") !== "" ? formatPrice(label) : "情報なし";
   return (
     <div className={styles.budgetRow}>
       <span className={styles.budgetIcon} style={{ backgroundColor: iconBgColor }}>

@@ -3,6 +3,7 @@ import { Sun, Moon, User, Baby, Banknote, Heart } from 'lucide-react';
 import styles from './SpotCard.module.css';
 import btnStyles from '@/styles/common-buttons.module.css';
 import Image from "next/image"
+import { formatPrice } from '@/lib/format';
 
 // 将来的にtypesディレクトリに移動
 type SpotKinds = "restaurant" | "sightseeing_spot" | "gift_spot" | "resting_spot" | string;
@@ -135,7 +136,7 @@ export const SpotCard = ({
                             >
                             {config.icon1}
                             </span>
-                            {price1 || "-"}
+                            {formatPrice(price1) || "-"}
                         </div>
                     )}
                 </div>
@@ -157,7 +158,7 @@ export const SpotCard = ({
                             >
                             {config.icon2}
                             </span>
-                            {price2 || "-"}
+                            {formatPrice(price2) || "-"}
                         </div>
                     )}
                 </div>

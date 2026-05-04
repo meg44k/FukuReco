@@ -1,7 +1,7 @@
 "use client";
 
 import { Liff } from "@line/liff";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 
 interface LIFFContextValue {
   liff: Liff | null;
@@ -19,37 +19,61 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
   const [liffObject, setLiffObject] = useState<Liff | null>(null);
   const [liffError, setLiffError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isInitializing = useRef(false);
 
-  // Execute liff.init() when the app is initialized
   useEffect(() => {
-    // to avoid `window is not defined` error
+    if (isInitializing.current || liffObject) return;
+    isInitializing.current = true;
+
+    let isMounted = true;
+    const timeoutId = setTimeout(() => {
+      if (isMounted && isLoading) {
+        console.warn("LIFF init timed out. Proceeding as guest.");
+        setIsLoading(false);
+      }
+    }, 10000); // 10秒でタイムアウト
+
     import("@line/liff")
       .then((liff) => liff.default)
       .then((liff) => {
-        console.log("LIFF init...");
+        console.log("LIFF init starting... URL:", window.location.href);
         liff
           .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
           .then(() => {
-            console.log("LIFF init succeeded.");
+            if (!isMounted) return;
+            console.log("LIFF init succeeded! Logged in:", liff.isLoggedIn());
             setLiffObject(liff);
-            
-            /*
-            // ログイン状態の確認と自動ログイン
+
+            // ログインリダイレクト処理の判定
+            const urlParams = new URLSearchParams(window.location.search);
+            const isProcessingCallback = urlParams.has("liff.state") || urlParams.has("code");
+
             if (!liff.isLoggedIn()) {
-              console.log("Not logged in, initiating login...");
-              // LINEアプリ内（ミニアプリ環境）であれば、通常はスムーズに進行します
-              // ブラウザ環境ではリダイレクトが発生します
-              liff.login();
+              if (isProcessingCallback) {
+                console.log("LIFF is currently processing login callback. Waiting...");
+              } else {
+                console.log("Not logged in. Initiating liff.login()...");
+                liff.login();
+              }
             }
-            */          })
+          })
           .catch((error: Error) => {
-            console.log("LIFF init failed.");
+            if (!isMounted) return;
+            console.error("LIFF init failed:", error);
             setLiffError(error.toString());
           })
           .finally(() => {
-            setIsLoading(false);
+            if (isMounted) {
+              clearTimeout(timeoutId);
+              setIsLoading(false);
+            }
           });
       });
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const value: LIFFContextValue = {
