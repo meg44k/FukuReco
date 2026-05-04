@@ -2,7 +2,7 @@
 
 import styles from "./MapComponent.module.css"
 import { useEffect, useRef, useState, useMemo } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import {
   GoogleMap,
   Marker,
@@ -53,7 +53,6 @@ type Props = {
 }
 
 export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: Props) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const hasInitializedFromUrl = useRef(false);
