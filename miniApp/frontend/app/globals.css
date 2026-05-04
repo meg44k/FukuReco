@@ -30,6 +30,11 @@ h1, h2{
   --text-black: #1E1E1E;
   --text-gray: #999999;
 
+  /* Layout Constants */
+  --footer-action-bottom-padding: 34px; /* 必ず34pxに固定 */
+  --footer-action-height: 94px; /* 上パディング(12px) + ボタン高さ(48px) + 下パディング(34px) */
+  --safe-area-bottom: env(safe-area-inset-bottom);
+
   /* Font sizes */
   --title-size: 2rem;
   --subtitle-size: 1.2rem;
