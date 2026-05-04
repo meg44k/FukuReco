@@ -29,6 +29,8 @@ const containerStyle = {
 
 // --- 定数定義 ---
 const ZOOM_THRESHOLD = 15;
+const MAX_ZOOM = 20; // Google Maps の一般的な最大ズーム
+const CLUSTER_EXPANSION_ZOOM_INCREMENT = 2; // クラスター展開時の追加ズームレベル
 const NORMAL_PIN_SIZE = { width: 37, height: 45 };
 const SELECTED_PIN_SIZE = { width: 58.5, height: 72 };
 
@@ -500,11 +502,14 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                   if (entity.isCluster) {
                     if (mapRef.current && entity.clusterId !== undefined && typeof entity.clusterId === 'number') {
                       const expansionZoom = supercluster.getClusterExpansionZoom(entity.clusterId);
-                      mapRef.current.setZoom(expansionZoom);
+                      // クラスターをより詳細に展開するため、推奨ズームよりさらに深くズームする
+                      // MAX_ZOOM を超えないようにクランプする
+                      const nextZoom = Math.min(expansionZoom + CLUSTER_EXPANSION_ZOOM_INCREMENT, MAX_ZOOM);
+                      mapRef.current.setZoom(nextZoom);
                       
                       // カードが開いている場合はオフセットを考慮して移動
                       if (selectedSpot) {
-                        panMapToSpot(mapRef.current, entity.position, expansionZoom);
+                        panMapToSpot(mapRef.current, entity.position, nextZoom);
                       } else {
                         mapRef.current.panTo(entity.position);
                       }
@@ -513,7 +518,11 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
                     handleSpotClick(spotId, entity.position, entity.pinKind);
                     // 単一ピン（丸1）をクリックした際、詳細ピンが見えるズームレベルまで拡大する
                     if (mapRef.current) {
-                      const nextZoom = zoom <= ZOOM_THRESHOLD ? ZOOM_THRESHOLD + 1 : zoom;
+                      // クラスタークリックと同様に、閾値より深くズームして視認性を高める
+                      const nextZoom = zoom <= ZOOM_THRESHOLD 
+                        ? Math.min(ZOOM_THRESHOLD + CLUSTER_EXPANSION_ZOOM_INCREMENT, MAX_ZOOM) 
+                        : zoom;
+                      
                       if (zoom <= ZOOM_THRESHOLD) {
                         mapRef.current.setZoom(nextZoom);
                       }
