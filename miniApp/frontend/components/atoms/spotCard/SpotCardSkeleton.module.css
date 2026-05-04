@@ -40,13 +40,14 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
+    container-type: inline-size;
 }
 
 .cardHeader {
     display: flex;
     align-items: center;
     padding-right: 8px;
-    gap: clamp(8px, 1.5vw, 16px);
+    gap: clamp(8px, 1.3cqw, 16px);
     justify-content: space-between;
 }
 
@@ -56,12 +57,13 @@
     margin-left: 5%;
     margin-right: auto;
     padding: 2px 0px;
+    width: 100%;
 }
 
 /* 1行の文字の高さ（line-height 1.5想定）に合わせた高さを指定 */
 .titleSkeleton {
     width: 65%;
-    font-size: clamp(0.9rem, 0.35rem + 3.1vw, 1.5rem);
+    font-size: clamp(0.9rem, 0.35rem + 3.3cqw, 1.5rem);
     height: 1.5em; 
     border-radius: 4px;
 }
@@ -69,7 +71,7 @@
 /* 1行の文字の高さ ＋ 上下padding(2px*2) ＋ 上下border(1px*2) に合わせた高さを指定 */
 .statusSkeleton {
     width: 60px;
-    font-size: clamp(0.65rem, 0.4rem + 1.4vw, 0.95rem);
+    font-size: clamp(0.65rem, 0.4rem + 1.5cqw, 0.95rem);
     height: calc(1.5em + 6px); 
     border-radius: 10px;
 }
@@ -95,7 +97,7 @@
     padding: 5px 5%;
     display: flex;
     flex-direction: column;
-    gap: 4px clamp(10px, 1.5vw, 16px);
+    gap: 4px clamp(10px, 1.6cqw, 16px);
 }
 
 .row {
@@ -107,14 +109,14 @@
 
 .tagsRow {
     display: flex;
-    gap: clamp(6px, 1vw, 10px);
-    height: clamp(1.125rem, 0.5625rem + 2.7vw, 1.6875rem);
+    gap: clamp(6px, 1.1cqw, 10px);
+    height: clamp(1.125rem, 0.5625rem + 3.0cqw, 1.6875rem);
     align-items: center;
 }
 
 .tagItem {
     width: 50px;
-    font-size: clamp(0.75rem, 0.375rem + 1.8vw, 1.125rem);
+    font-size: clamp(0.75rem, 0.375rem + 2.0cqw, 1.125rem);
     height: 1.5em; 
     border-radius: 4px;
 }
@@ -123,13 +125,20 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: clamp(6px, 1vw, 10px);
-    height: calc(clamp(0.875rem, 0.375rem + 2.5vw, 1.375rem) * 1.5);
+    gap: clamp(6px, 1.1cqw, 10px);
+    height: calc(clamp(0.875rem, 0.375rem + 2.7cqw, 1.375rem) * 1.5);
+}
+
+.pieceIconSkeleton {
+    width: clamp(0.875rem, 0.65rem + 1.6cqw, 1.75rem);
+    height: clamp(0.875rem, 0.65rem + 1.6cqw, 1.75rem);
+    border-radius: 20%;
+    flex-shrink: 0;
 }
 
 .priceSkeleton {
     width: 60px;
-    font-size: clamp(0.875rem, 0.375rem + 2.5vw, 1.375rem);
+    font-size: clamp(0.875rem, 0.375rem + 2.7cqw, 1.375rem);
     height: 1.5em;
     border-radius: 4px;
 }
@@ -143,13 +152,13 @@
 
 .buttonSkeleton {
     flex: 1;
-    height: clamp(34px, 8vw, 44px);
+    height: clamp(34px, 8.5cqw, 44px);
     border-radius: 9999px;
 }
 
 .heartSkeleton {
-    flex: 0 0 clamp(34px, 8vw, 44px);
-    width: clamp(34px, 8vw, 44px);
-    height: clamp(34px, 8vw, 44px);
+    flex: 0 0 clamp(34px, 8.5cqw, 44px);
+    width: clamp(34px, 8.5cqw, 44px);
+    height: clamp(34px, 8.5cqw, 44px);
     border-radius: 50%;
 }

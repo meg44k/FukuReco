@@ -596,42 +596,70 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
         <div className={selectedSpot ? styles.cardWrapper : `${styles.cardWrapper} ${styles.cardHidden}`}>
           {selectedSpot && (
-            <div
-              className={styles.cardListContainer}
-              ref={cardListRef}
-              onScroll={handleScroll}
-            >
-              <div className={styles.spacer} />
-              {displayCards.map((spot) => (
-                <div 
-                  key={spot.id} 
-                  className={styles.cardItem}
-                  data-spot-id={spot.id}
-                  ref={(el) => {
-                    cardRefs.current[spot.id] = el;
-                  }}
-                >
-                  {isCardLoading && selectedSpot?.id === spot.id ? (
-                    <SpotCardSkeleton />
-                  ) : (
-                    <SpotCard
-                      spotKind={spot.spotKind}
-                      spotName={spot.spotName}
-                      isOpen={spot.isOpen}
-                      imageSrc={spot.imageSrc}
-                      spotTags={spot.spotTags}
-                      detailURL={spot.detailURL}
-                      price1={spot.price1}
-                      price2={spot.price2}
-                      updatedAt={spot.updatedAt}
-                      isFavorite={isFavorite(spot.id)}
-                      onFavoriteToggle={() => toggleFavorite(spot.id)}
+            <>
+              <div
+                className={styles.cardListContainer}
+                ref={cardListRef}
+                onScroll={handleScroll}
+              >
+                {/* 最初と最後のカードも中央に来るようにスペーサーを配置 */}
+                <div className={styles.spacer} />
+                {displayCards.map((spot) => (
+                  <div 
+                    key={spot.id} 
+                    className={styles.cardItem}
+                    data-spot-id={spot.id}
+                    ref={(el) => {
+                      cardRefs.current[spot.id] = el;
+                    }}
+                  >
+                    {isCardLoading && selectedSpot?.id === spot.id ? (
+                      <SpotCardSkeleton />
+                    ) : (
+                      <SpotCard
+                        spotKind={spot.spotKind}
+                        spotName={spot.spotName}
+                        isOpen={spot.isOpen}
+                        imageSrc={spot.imageSrc}
+                        spotTags={spot.spotTags}
+                        detailURL={spot.detailURL}
+                        price1={spot.price1}
+                        price2={spot.price2}
+                        updatedAt={spot.updatedAt}
+                        isFavorite={isFavorite(spot.id)}
+                        onFavoriteToggle={() => toggleFavorite(spot.id)}
+                      />
+                    )}
+                  </div>
+                ))}
+                <div className={styles.spacer} />
+              </div>
+
+              {/* 横画面用のスクロールインジケーター（詳細ページの画像スクロール風） */}
+              {isLandscape && displayCards.length > 1 && (
+                <div className={styles.verticalIndicator}>
+                  {displayCards.map((spot) => (
+                    <div
+                      key={spot.id}
+                      className={`${styles.dot} ${selectedSpot.id === spot.id ? styles.activeDot : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // クリックで該当カードへスクロール
+                        const el = cardRefs.current[spot.id];
+                        if (el) {
+                          isScrollingByCode.current = true;
+                          el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                          setTimeout(() => {
+                            isScrollingByCode.current = false;
+                          }, 500);
+                        }
+                        setSelectedSpot(spot);
+                      }}
                     />
-                  )}
+                  ))}
                 </div>
-              ))}
-              <div className={styles.spacer} />
-            </div>
+              )}
+            </>
           )}
         </div>
 
