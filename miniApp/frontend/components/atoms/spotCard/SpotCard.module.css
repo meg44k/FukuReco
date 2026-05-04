@@ -177,7 +177,7 @@
    フッター
 ================================= */
 .cardFooter {
-    padding: 0px 5% 34px 5%;
+    padding: 0px 5% 12px 5%; /* 34pxから12pxに縮小 */
     display: flex;
     gap: 12px;
     align-items: center;
