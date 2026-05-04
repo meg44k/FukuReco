@@ -68,12 +68,14 @@
 
 /* カード表示領域（ピン選択時） */
 .cardWrapper {
-  position: absolute;
+  position: fixed; /* absoluteからfixedに変更して位置をより安定させる */
   left: 0;
-  bottom: 0px; /* 元々あったメニューバーの余白を詰め、下部にカードを下ろす */
+  bottom: 0;
   width: 100%;
   z-index: 10;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  /* 下部の余白はカード本体（SpotCard）のパディングで34px確保するため、ここでは0にする */
+  padding-bottom: 0;
 }
 
 /* カードのリスト（横スクロール用） */
@@ -81,7 +83,7 @@
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 20px 0; /* シャドウが上下に見切れないようにパディングを追加 */
+  padding: 20px 0 0 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -96,7 +98,7 @@
   scroll-snap-stop: always;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end; /* カードをコンテナの下部に揃える */
 }
 
 /* カード自体の横幅制御 */

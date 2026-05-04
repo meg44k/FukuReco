@@ -38,7 +38,7 @@
 .container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text-black);
-  padding-bottom: 80px; /* Space for fixed bottom buttons and nav */
+  padding-bottom: var(--footer-action-height); /* Space for fixed bottom buttons and nav */
   max-width: 500px;
   margin: 0 auto;
 }
@@ -230,7 +230,7 @@
   bottom: 0px; /* Above bottom nav */
   left: 0;
   right: 0;
-  padding: 12px 20px;
+  padding: 12px 20px var(--footer-action-bottom-padding) 20px;
   display: flex;
   gap: 12px;
   align-items: center;
