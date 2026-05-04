@@ -1,23 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   allowedDevOrigins: [
     ...(process.env.DEV_ALLOWED_ORIGIN ? [process.env.DEV_ALLOWED_ORIGIN] : []),
     'localhost:3000'
   ],
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'fukureco.jp',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.fukureco.jp',
-        pathname: '/**',
-      },
+      { protocol: 'https', hostname: 'fukureco.jp', pathname: '/**' },
+      { protocol: 'https', hostname: '**.fukureco.jp', pathname: '/**' },
       {
         protocol: 'http',
         hostname: 'localhost',

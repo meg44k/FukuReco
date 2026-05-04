@@ -32,7 +32,7 @@
   height: 100%;
   background-color: #ffffff;
   z-index: 99;
-  padding: 80px 20px 20px 20px;
+  padding: 80px 20px calc(20px + var(--keyboard-offset, 0px)) 20px;
   overflow-y: auto;
   box-sizing: border-box;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -101,8 +101,8 @@
 
 /* カード自体の横幅制御 */
 .cardItem > div {
-  width: 98%; /* 隣のカードとの隙間を詰める（2%分） */
-  max-width: 600px;
+  width: 95%; /* 隣のカードとの隙間を詰める */
+  max-width: min(600px, 48dvh); /* 縦幅に収まるようにdvhで幅を制限し、縦横比を維持して全体を縮小させる */
 }
 
 /* 最初と最後の余白用スペーサー */
@@ -129,4 +129,92 @@
   border: 1px solid #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ----------- Landscape (横画面) 用のスタイル ----------- */
+@media (orientation: landscape) {
+  .topBar {
+    left: 75%;
+    width: 48%;
+  }
+
+  /* カードコンテナを左半分に */
+  .cardWrapper {
+    width: 50%;
+    height: 100%;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cardListContainer {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+  }
+
+  .cardItem {
+    width: 100%;
+    flex: 0 0 auto;
+    margin: 20px 0;
+    scroll-snap-align: center;
+    justify-content: flex-start; /* 左寄せ */
+    padding-left: 20px; /* 左側の隙間を10pxから20pxに倍増 */
+  }
+
+  .cardItem > div {
+    width: 38vw;
+    max-height: 90dvh;
+    margin: 0;
+    max-width: 600px;
+  }
+
+  .spacer {
+    flex: 0 0 50vh;
+    width: 100%;
+  }
+
+  /* 横画面用のスクロールインジケーター */
+  .verticalIndicator {
+    position: absolute;
+    /* カード(38vw) + 左の隙間(20px) のすぐ右側に配置 */
+    left: calc(38vw + 35px);
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: rgba(0, 0, 0, 0.1); /* 背景色をさらに薄く */
+    padding: 8px 4px; /* 全体的に小さく */
+    border-radius: 20px;
+    backdrop-filter: none; /* ぼかしを消して目立たないように */
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+  }
+
+  .dot {
+    width: 5px; /* ドットを8pxから5pxに小型化 */
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2); /* 非アクティブドットをより控えめに */
+    transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    box-shadow: none; /* 影を消す */
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .dot.activeDot {
+    background-color: rgba(0, 0, 0, 0.5); /* アクティブ時も黒系の薄い色に */
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
