@@ -1,9 +1,10 @@
 "use client";
 
 import React from 'react';
-import { ExternalLink, Heart } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { Spot } from '@/types/spot';
 import { useFavorites } from '@/hooks/useFavorites';
+import FavoriteButton from '@/components/atoms/favoriteButton/FavoriteButton';
 import styles from './SpotActionFooter.module.css';
 import btnStyles from '@/styles/common-buttons.module.css';
 
@@ -57,16 +58,11 @@ const SpotActionFooter: React.FC<SpotActionFooterProps> = ({
         ルートを見る <ExternalLink size={18} />
       </a>
       
-      <button 
-        className={btnStyles.heartBtn}
-        onClick={() => toggleFavorite(id)}
-      >
-        <Heart 
-          size={24} 
-          fill={isFavorite(id) ? "#EF5350" : "none"} 
-          color={isFavorite(id) ? "#EF5350" : "currentColor"}
-        />
-      </button>
+      <FavoriteButton 
+        isFavorite={isFavorite(id)} 
+        onClick={() => toggleFavorite(id)} 
+        className={btnStyles.favoriteBtn}
+      />
     </div>
   );
 };

@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
-import { Sun, Moon, User, Baby, Banknote, Heart } from 'lucide-react';
+import { Sun, Moon, User, Baby, Banknote } from 'lucide-react';
 import styles from './SpotCard.module.css';
 import btnStyles from '@/styles/common-buttons.module.css';
 import Image from "next/image"
 import { formatPrice } from '@/lib/format';
+import FavoriteButton from '@/components/atoms/favoriteButton/FavoriteButton';
 
 // 将来的にtypesディレクトリに移動
 type SpotKinds = "restaurant" | "sightseeing_spot" | "gift_spot" | "resting_spot" | string;
@@ -176,16 +177,11 @@ export const SpotCard = ({
                 >
                     ルートを見る
                 </a>
-                <button 
-                    className={`${btnStyles.heartBtn} ${styles.heartBtn}`}
-                    onClick={onFavoriteToggle}
-                >
-                    <Heart 
-                        size={24} 
-                        fill={isFavorite ? "#EF5350" : "none"} 
-                        color={isFavorite ? "#EF5350" : "currentColor"} 
-                    />
-                </button>
+                <FavoriteButton 
+                    isFavorite={!!isFavorite} 
+                    onClick={onFavoriteToggle || (() => {})} 
+                    className={`${btnStyles.favoriteBtn} ${styles.favoriteBtn}`}
+                />
             </div>
         </div>
     );
