@@ -101,8 +101,8 @@
 
 /* カード自体の横幅制御 */
 .cardItem > div {
-  width: 98%; /* 隣のカードとの隙間を詰める（2%分） */
-  max-width: 600px;
+  width: 95%; /* 隣のカードとの隙間を詰める */
+  max-width: min(600px, 48dvh); /* 縦幅に収まるようにdvhで幅を制限し、縦横比を維持して全体を縮小させる */
 }
 
 /* 最初と最後の余白用スペーサー */
@@ -129,4 +129,55 @@
   border: 1px solid #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ----------- Landscape (横画面) 用のスタイル ----------- */
+@media (orientation: landscape) {
+  .topBar {
+    left: 75%;
+    width: 48%;
+  }
+
+  /* カードコンテナを左半分に */
+  .cardWrapper {
+    width: 50%;
+    height: 100%;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cardListContainer {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+  }
+
+  .cardItem {
+    width: 100%;
+    flex: 0 0 auto;
+    margin: 20px 0;
+    scroll-snap-align: center;
+    justify-content: flex-start; /* 中央寄せから左寄せに変更 */
+    padding-left: 10px; /* 左側に最小限の隙間を確保 */
+  }
+
+  .cardItem > div {
+    width: 100%; /* 横幅を最大限使用 */
+    margin: 0; /* 左寄せにするためmargin: autoを削除 */
+    /* さらに1.1倍程度拡大 (720px -> 800px, 96dvh -> 105dvh) */
+    max-width: min(800px, 105dvh); 
+  }
+
+  .spacer {
+    flex: 0 0 50vh;
+    width: 100%;
+  }
 }

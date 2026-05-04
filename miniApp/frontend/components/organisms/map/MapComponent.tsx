@@ -70,6 +70,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const [activeKeyword, setActiveKeyword] = useState<string | undefined>(keyword); // 現在の検索キーワード
   const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューの開閉状態
   const [isSearchFocused, setIsSearchFocused] = useState(false); // 検索バーのフォーカス状態
+  const [isLandscape, setIsLandscape] = useState(false); // 横画面状態
 
   // カード表示用リスト
   const [displayCards, setDisplayCards] = useState<MapSpotData[]>([]);
@@ -90,15 +91,15 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     if (newId) {
       if (currentId !== newId) {
         params.set('selectedId', newId);
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
       }
     } else {
       if (currentId) {
         params.delete('selectedId');
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
       }
     }
-  }, [selectedSpot?.id, pathname, router]);
+  }, [selectedSpot?.id, pathname]);
 
   // iOS等のソフトウェアキーボード表示時の高さを取得してCSS変数にセットする
   useEffect(() => {
@@ -116,6 +117,16 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         window.visualViewport?.removeEventListener('resize', handleResize);
       };
     }
+  }, []);
+
+  // 横画面の判定
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // 位置情報を取得する
@@ -227,7 +238,9 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     
     const container = cardListRef.current;
     const containerRect = container.getBoundingClientRect();
-    const containerCenter = containerRect.left + containerRect.width / 2;
+    const containerCenter = isLandscape 
+      ? containerRect.top + containerRect.height / 2
+      : containerRect.left + containerRect.width / 2;
 
     let closestSpotId: number | null = null;
     let minDistance = Infinity;
@@ -235,7 +248,9 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     Object.entries(cardRefs.current).forEach(([id, el]) => {
       if (el) {
         const rect = el.getBoundingClientRect();
-        const elCenter = rect.left + rect.width / 2;
+        const elCenter = isLandscape
+          ? rect.top + rect.height / 2
+          : rect.left + rect.width / 2;
         const distance = Math.abs(containerCenter - elCenter);
         if (distance < minDistance) {
           minDistance = distance;
@@ -267,17 +282,30 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     const el = cardRefs.current[selectedSpot.id];
     if (el) {
       isScrollingByCode.current = true;
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      el.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: isLandscape ? 'center' : 'nearest', 
+        inline: isLandscape ? 'nearest' : 'center' 
+      });
       setTimeout(() => {
         isScrollingByCode.current = false;
       }, 500); 
     }
-  }, [selectedSpot]);
+  }, [selectedSpot, isLandscape]);
 
   useEffect(() => {
     if (!selectedSpot || !mapRef.current) return;
-    panMapToSpot(mapRef.current, selectedSpot.position);
-  }, [selectedSpot]);
+    const map = mapRef.current;
+    
+    // プロジェクションが準備できるのを待ってから移動
+    const listener = google.maps.event.addListener(map, 'tilesloaded', () => {
+      panMapToSpot(map, selectedSpot.position, isLandscape);
+      google.maps.event.removeListener(listener);
+    });
+
+    // すでにロード済みの場合は直接呼ぶ
+    panMapToSpot(map, selectedSpot.position, isLandscape);
+  }, [selectedSpot, isLandscape]);
 
   const handleBackToCurrent = () => {
     if (mapRef.current && currentPos) {
@@ -326,7 +354,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         onLoad={(map) => {
           mapRef.current = map;
           if (selectedSpot) {
-            panMapToSpot(map, selectedSpot.position);
+            panMapToSpot(map, selectedSpot.position, isLandscape);
           }
         }}
         onClick={() => {

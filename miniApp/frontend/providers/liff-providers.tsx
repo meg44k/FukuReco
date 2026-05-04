@@ -23,33 +23,34 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
   // Execute liff.init() when the app is initialized
   useEffect(() => {
     // to avoid `window is not defined` error
-    import("@line/liff")
-      .then((liff) => liff.default)
-      .then((liff) => {
-        console.log("LIFF init...");
-        liff
-          .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
-          .then(() => {
-            console.log("LIFF init succeeded.");
-            setLiffObject(liff);
+    // import("@line/liff")
+    //   .then((liff) => liff.default)
+    //   .then((liff) => {
+    //     console.log("LIFF init...");
+    //     liff
+    //       .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! })
+    //       .then(() => {
+    //         console.log("LIFF init succeeded.");
+    //         setLiffObject(liff);
             
-            /*
-            // ログイン状態の確認と自動ログイン
-            if (!liff.isLoggedIn()) {
-              console.log("Not logged in, initiating login...");
-              // LINEアプリ内（ミニアプリ環境）であれば、通常はスムーズに進行します
-              // ブラウザ環境ではリダイレクトが発生します
-              liff.login();
-            }
-            */          })
-          .catch((error: Error) => {
-            console.log("LIFF init failed.");
-            setLiffError(error.toString());
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      });
+    //         /*
+    //         // ログイン状態の確認と自動ログイン
+    //         if (!liff.isLoggedIn()) {
+    //           console.log("Not logged in, initiating login...");
+    //           // LINEアプリ内（ミニアプリ環境）であれば、通常はスムーズに進行します
+    //           // ブラウザ環境ではリダイレクトが発生します
+    //           liff.login();
+    //         }
+    //         */          })
+    //       .catch((error: Error) => {
+    //         console.log("LIFF init failed.");
+    //         setLiffError(error.toString());
+    //       })
+    //       .finally(() => {
+    //         setIsLoading(false);
+    //       });
+    //   });
+    setIsLoading(false);
   }, []);
 
   const value: LIFFContextValue = {
