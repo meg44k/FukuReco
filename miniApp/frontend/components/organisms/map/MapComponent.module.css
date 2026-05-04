@@ -15,7 +15,7 @@
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: 95%;
+  width: 90%;
   max-width: 600px;
   z-index: 100;
   display: flex;
@@ -170,10 +170,10 @@
   }
 
   .cardItem > div {
-    width: 100%; /* 横幅を最大限使用 */
-    margin: 0; /* 左寄せにするためmargin: autoを削除 */
-    /* さらに1.1倍程度拡大 (720px -> 800px, 96dvh -> 105dvh) */
-    max-width: min(800px, 105dvh); 
+    width: 98%; /* コンテナ幅いっぱいに広げて検索バーに近づける */
+    margin: 0; 
+    /* 画面内に収めるための縦幅基準の制限を復活 (以前「いい感じ」だった基準付近に調整) */
+    max-width: min(800px, 90dvh); 
   }
 
   .spacer {
