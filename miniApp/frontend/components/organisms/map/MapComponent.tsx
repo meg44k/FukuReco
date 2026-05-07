@@ -12,7 +12,6 @@ import { LocateFixed } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { SpotCard } from "@/components/atoms/spotCard/SpotCard";
 import { SpotCardSkeleton } from "@/components/atoms/spotCard/SpotCardSkeleton";
-import Loading from "@/components/atoms/loading/Loading";
 import { SearchTextField } from "@/components/atoms/searchTextField/SearchTextField";
 import { MenuButton } from "@/components/atoms/menuButton/MenuButton";
 import { MenuDrawer } from "@/components/organisms/menuDrawer/MenuDrawer";
@@ -448,7 +447,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     }
   };
 
-  if (!isLoaded) return <Loading />;
+  if (!isLoaded) return null;
 
   return (
     <div className={styles.mapPage}>

@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { Button } from "@mui/material";
-import Loading from "@/components/atoms/loading/Loading";
 import { createClient } from "@/lib/supabase/client";
 import { useLIFF } from "@/providers/liff-providers";
 
@@ -99,7 +98,7 @@ const FavoritesPage = () => {
   }, [liff]);
 
   if (loading) {
-    return <Loading />;
+    return null;
   }
 
   const getDetailPath = (placeType: string, id: number) => {

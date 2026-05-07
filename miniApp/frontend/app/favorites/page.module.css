@@ -79,14 +79,6 @@
   height: 80px;
 }
 
-.loadingContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: #3f7d58;
-}
-
 .emptyMessage {
   text-align: center;
   color: #888;
