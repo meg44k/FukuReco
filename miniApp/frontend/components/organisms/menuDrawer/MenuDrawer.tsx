@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   Drawer,
   List,
@@ -29,12 +30,11 @@ type Props = {
 export const MenuDrawer = ({ open, onClose }: Props) => {
   const menuItems = [
     { text: "保存済み", icon: <Bookmark size={20} />, href: "/favorites" },
-    { text: "お知らせ", icon: <Bell size={20} />, href: "/news" },
   ];
 
   const subMenuItems = [
-    { text: "よくある質問", icon: <HelpCircle size={20} />, href: "/faq" },
-    { text: "お問い合わせ", icon: <MessageCircle size={20} />, href: "/contact" },
+    { text: "よくある質問", icon: <HelpCircle size={20} />, href: "https://fukureco.jp/faqs/" },
+    { text: "お問い合わせ", icon: <MessageCircle size={20} />, href: "https://fukureco.jp/contact/" },
   ];
 
   return (
@@ -65,7 +65,12 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
         <List>
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={onClose} sx={{ borderRadius: "10px", margin: "4px 8px" }}>
+              <ListItemButton 
+                component={Link}
+                href={item.href}
+                onClick={onClose} 
+                sx={{ borderRadius: "10px", margin: "4px 8px" }}
+              >
                 <ListItemIcon sx={{ minWidth: 40, color: "#3F7D58" }}>
                   {item.icon}
                 </ListItemIcon>
@@ -83,7 +88,14 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
         <List>
           {subMenuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={onClose} sx={{ borderRadius: "10px", margin: "4px 8px" }}>
+              <ListItemButton 
+                component="a"
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose} 
+                sx={{ borderRadius: "10px", margin: "4px 8px" }}
+              >
                 <ListItemIcon sx={{ minWidth: 40, color: "#666" }}>
                   {item.icon}
                 </ListItemIcon>
@@ -102,13 +114,21 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
         <Box sx={{ display: "flex", justifyContent: "center", gap: "16px", marginBottom: "8px" }}>
           <Typography 
             variant="caption" 
-            sx={{ color: "text.secondary", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+            sx={{ color: "text.secondary", cursor: "pointer", "&:hover": { textDecoration: "underline" }, textDecoration: "none" }}
+            component="a"
+            href="https://fukureco.jp/terms/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             利用規約
           </Typography>
           <Typography 
             variant="caption" 
-            sx={{ color: "text.secondary", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+            sx={{ color: "text.secondary", cursor: "pointer", "&:hover": { textDecoration: "underline" }, textDecoration: "none" }}
+            component="a"
+            href="https://fukureco.jp/privacy-policy/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             プライバシーポリシー
           </Typography>
