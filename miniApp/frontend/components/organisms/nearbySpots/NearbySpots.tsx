@@ -52,7 +52,7 @@ export default function NearbySpots({ lat, lng, currentId }: Props) {
   }, [lat, lng, currentId]);
 
   if (loading) {
-    return <div className={styles.loading}>周辺スポットを探しています...</div>;
+    return null;
   }
 
   // エラーもなく、スポットも0件の場合はセクションごと非表示
@@ -68,7 +68,7 @@ export default function NearbySpots({ lat, lng, currentId }: Props) {
       </div>
 
       {error ? (
-        <div className={styles.loading}>周辺スポットの取得に失敗しました。</div>
+        <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.9rem', color: '#888' }}>周辺スポットの取得に失敗しました。</div>
       ) : (
         <div className={styles.scrollContainer}>
           {spots.map((spot) => (
