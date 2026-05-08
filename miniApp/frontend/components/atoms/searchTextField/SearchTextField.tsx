@@ -58,6 +58,7 @@ export const SearchTextField = ({ onSearch, onFocus, onBlur, label = "検索" }:
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
+        onClick={handleFocus}
         onBlur={handleBlur}
         className={styles.searchField}
         // ラベルが入力文字と重ならないよう、また浮き上がらないように制御
