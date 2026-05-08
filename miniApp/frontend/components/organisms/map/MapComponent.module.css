@@ -169,7 +169,7 @@
     margin: 20px 0;
     scroll-snap-align: center;
     justify-content: flex-start; /* 左寄せ */
-    padding-left: 20px; /* 左側の隙間を10pxから20pxに倍増 */
+    padding-left: calc(20px + var(--safe-area-left, 0px)); /* 左側の隙間を10pxから20pxに倍増 + セーフエリア考慮 */
   }
 
   .cardItem > div {
