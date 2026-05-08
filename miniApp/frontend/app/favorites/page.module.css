@@ -5,6 +5,37 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+.skeleton {
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .title {
   font-size: 24px;
   font-weight: bold;
@@ -34,30 +65,64 @@
   height: 120px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
+  background: #ffffff;
 }
 
-.cardImage {
-  width: 40%;
-  height: 100%;
+.cardImageContainer {
+  width: 120px;
+  height: 120px;
   position: relative;
+  flex-shrink: 0;
 }
 
-.cardOverlay {
+.cardContent {
   flex: 1;
   position: relative;
-  background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 12px 16px;
+  min-width: 0; /* Important for text truncation if added */
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .cardName {
   color: #1a1a1a;
   font-size: 16px;
   font-weight: bold;
+  margin: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 11px;
+  color: #3f7d58;
+  background-color: #f0f7f3;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .cardFooter {
