@@ -79,6 +79,38 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const [isSearchFocused, setIsSearchFocused] = useState(false); // 検索バーのフォーカス状態
   const [isLandscape, setIsLandscape] = useState(false); // 横画面状態
 
+  // タグ検索の履歴管理（戻るボタン対応）
+  const handleSearchFocus = () => {
+    if (!isSearchFocused) {
+      window.history.pushState({ searchOpen: true }, '');
+      setIsSearchFocused(true);
+    }
+  };
+
+  const handleSearchClose = () => {
+    if (isSearchFocused) {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      if (window.history.state?.searchOpen) {
+        window.history.back();
+      } else {
+        setIsSearchFocused(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setIsSearchFocused(false);
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // クラスター用state
   const [zoom, setZoom] = useState(14);
   const [bounds, setBounds] = useState<[number, number, number, number] | null>(null);
@@ -454,14 +486,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
       <div className={styles.topBar}>
         <SearchTextField 
           onSearch={(val) => setActiveKeyword(val)} 
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+          onFocus={handleSearchFocus}
           label="行きたい場所を検索" 
         />
         <MenuButton 
           onClick={() => {
             if (isSearchFocused) {
-              setIsSearchFocused(false);
+              handleSearchClose();
             } else {
               setIsMenuOpen(true);
             }
