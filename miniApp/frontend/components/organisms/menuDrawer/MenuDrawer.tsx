@@ -47,6 +47,7 @@ export const MenuDrawer = ({ open, onClose }: Props) => {
           width: 280,
           borderRadius: "20px 0 0 20px",
           padding: "16px 8px",
+          paddingRight: "calc(8px + var(--safe-area-right, 0px))",
           display: "flex",
           flexDirection: "column",
         },
