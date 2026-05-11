@@ -75,6 +75,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   const [currentPos, setCurrentPos] = useState<google.maps.LatLngLiteral | null>(null);
   const [locationStatus, setLocationStatus] = useState<'loading' | 'allowed' | 'denied'>('loading');
   const [activeKeyword, setActiveKeyword] = useState<string | undefined>(keyword); // 現在の検索キーワード
+  const [activeOptions, setActiveOptions] = useState<string | undefined>(searchOptions); // 現在の検索タグ
   const [isMenuOpen, setIsMenuOpen] = useState(false); // メニューの開閉状態
   const [isSearchFocused, setIsSearchFocused] = useState(false); // 検索バーのフォーカス状態
   const [isLandscape, setIsLandscape] = useState(false); // 横画面状態
@@ -231,7 +232,15 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   // 横画面の判定
   useEffect(() => {
     const handleResize = () => {
-      setIsLandscape(window.innerWidth > window.innerHeight);
+      let isLand = false;
+      if (window.screen && window.screen.orientation && window.screen.orientation.type) {
+        isLand = window.screen.orientation.type.startsWith('landscape');
+      } else if (typeof window.orientation !== 'undefined') {
+        isLand = Math.abs(window.orientation as number) === 90;
+      } else {
+        isLand = window.innerWidth > window.innerHeight;
+      }
+      setIsLandscape(isLand);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -280,7 +289,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
       const url = new URL(window.location.origin + '/api/search');
       if (activeKeyword) url.searchParams.append('keyword', activeKeyword);
-      if (searchOptions) url.searchParams.append('options', searchOptions);
+      if (activeOptions) url.searchParams.append('options', activeOptions);
       
       url.searchParams.append('lat', currentPos.lat.toString());
       url.searchParams.append('lng', currentPos.lng.toString());
@@ -337,7 +346,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
 
     fetchTop5();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationStatus, currentPos, activeKeyword, searchOptions]);
+  }, [locationStatus, currentPos, activeKeyword, activeOptions]);
 
   // スクロール中のカードを検知し、マップを連動させる
   const handleScroll = () => {
@@ -482,10 +491,14 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
   if (!isLoaded) return null;
 
   return (
-    <div className={styles.mapPage}>
+    <div className={`${styles.mapPage} ${isLandscape ? styles.landscapeMode : ""}`}>
       <div className={styles.topBar}>
         <SearchTextField 
-          onSearch={(val) => setActiveKeyword(val)} 
+          onSearch={(val) => {
+            setActiveOptions(undefined);
+            setActiveKeyword(val);
+            handleSearchClose();
+          }} 
           onFocus={handleSearchFocus}
           label="行きたい場所を検索" 
         />
@@ -502,7 +515,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
       </div>
 
       <div className={`${styles.tagSearchContainer} ${isSearchFocused ? styles.tagSearchVisible : styles.tagSearchHidden}`}>
-        <TagSearchButtons />
+        <TagSearchButtons 
+          onSearch={(option) => {
+            setActiveKeyword(undefined);
+            setActiveOptions(option);
+            handleSearchClose();
+          }} 
+        />
       </div>
 
       <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

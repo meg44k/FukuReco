@@ -14,6 +14,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1.0,
   viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
