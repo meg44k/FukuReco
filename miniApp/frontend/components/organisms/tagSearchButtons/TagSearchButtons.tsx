@@ -5,11 +5,16 @@ import { useRouter } from "next/navigation";
 import styles from "./TagSearchButtons.module.css";
 import { FILTER_GROUPS } from "@/types/search";
 
-export const TagSearchButtons = () => {
+export const TagSearchButtons = ({ onClose, onSearch }: { onClose?: () => void, onSearch?: (option: string) => void }) => {
     const router = useRouter();
 
     const handleSearch = (option: string) => {
-        router.push(`/map?options=${encodeURIComponent(option)}`);
+        if (onSearch) {
+            onSearch(option);
+        } else {
+            router.push(`/map?options=${encodeURIComponent(option)}`);
+            if (onClose) onClose();
+        }
     };
 
     return (

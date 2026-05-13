@@ -134,7 +134,7 @@
 }
 
 /* ----------- Landscape (横画面) 用のスタイル ----------- */
-@media (orientation: landscape) {
+.landscapeMode {
   .topBar {
     left: auto;
     right: 44px;
