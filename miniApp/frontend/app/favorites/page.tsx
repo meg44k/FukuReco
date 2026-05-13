@@ -99,7 +99,6 @@ const SpotListItem = ({
 const Section = ({ 
   title, 
   items, 
-  sectionKey, 
   emptyMessage,
   isExpanded,
   onToggle,
@@ -109,7 +108,6 @@ const Section = ({
 }: { 
   title: string, 
   items: FavoriteSpot[], 
-  sectionKey: string,
   emptyMessage: string,
   isExpanded: boolean,
   onToggle: () => void,
@@ -153,6 +151,19 @@ const Section = ({
     </div>
   </section>
 );
+
+interface RawSpotData {
+  id: number;
+  name: string;
+  place_type: string;
+  spot_tags: {
+    tags: {
+      detail: string;
+    } | {
+      detail: string;
+    }[] | null;
+  }[] | null;
+}
 
 const FavoritesPage = () => {
   const router = useRouter();
@@ -219,15 +230,15 @@ const FavoritesPage = () => {
           return acc;
         }, {});
 
-        const formattedDetails: FavoriteSpot[] = spotData.map((spot: any) => ({
+        const formattedDetails: FavoriteSpot[] = (spotData as unknown as RawSpotData[]).map((spot) => ({
           id: spot.id,
           name: spot.name,
           placeType: spot.place_type,
           image: assetMap[spot.id] || "/sampleImage.png",
-          tags: spot.spot_tags?.map((st: any) => {
+          tags: spot.spot_tags?.map((st) => {
             const tags = st.tags;
             return Array.isArray(tags) ? tags[0]?.detail : tags?.detail;
-          }).filter(Boolean) || [],
+          }).filter((detail): detail is string => !!detail) || [],
         }));
 
         setFavoriteDetails(formattedDetails);
@@ -313,7 +324,6 @@ const FavoritesPage = () => {
       <Section 
         title="飲食店" 
         items={restaurants} 
-        sectionKey="restaurants" 
         emptyMessage="保存済みの飲食店はまだありません。" 
         isExpanded={expandedSections.restaurants}
         onToggle={() => toggleSection("restaurants")}
@@ -325,7 +335,6 @@ const FavoritesPage = () => {
       <Section 
         title="観光スポット" 
         items={sightseeingSpots} 
-        sectionKey="sightseeing" 
         emptyMessage="保存済みの観光スポットはまだありません。" 
         isExpanded={expandedSections.sightseeing}
         onToggle={() => toggleSection("sightseeing")}
@@ -337,7 +346,6 @@ const FavoritesPage = () => {
       <Section 
         title="ショップ" 
         items={shops} 
-        sectionKey="shops" 
         emptyMessage="保存済みのショップはまだありません。" 
         isExpanded={expandedSections.shops}
         onToggle={() => toggleSection("shops")}
@@ -349,7 +357,6 @@ const FavoritesPage = () => {
       <Section 
         title="休憩スポット" 
         items={restingSpots} 
-        sectionKey="resting" 
         emptyMessage="保存済みの休憩スポットはまだありません。" 
         isExpanded={expandedSections.resting}
         onToggle={() => toggleSection("resting")}
