@@ -12,8 +12,10 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const options = searchParams.get('options');
         const keyword = searchParams.get('keyword');
+        const placeType = searchParams.get('type');
         const lat = searchParams.get('lat');
         const lng = searchParams.get('lng');
+        const limit = parseInt(searchParams.get('limit') || '5', 10);
 
         // 距離計算用関数 (Haversine formula)
         const getDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
@@ -29,7 +31,7 @@ export async function GET(request: Request) {
         };
 
         // バリデーション
-        if (!options && !keyword) {
+        if (!options && !keyword && !placeType) {
             return NextResponse.json([], { status: 200 });
         }
 
@@ -125,6 +127,36 @@ export async function GET(request: Request) {
                 throw error;
             }
             rawData = (data.spot_tags as unknown as { spots: RawSpot }[]).map((item) => item.spots).filter(Boolean);
+        } else if (placeType) {
+            // place_type による検索
+            const { data, error } = await supabase
+                .from('spots')
+                .select(`
+                    id,
+                    name,
+                    place_type,
+                    pricing,
+                    latitude,
+                    longitude,
+                    updated_at,
+                    spot_tags (
+                        tags (
+                            detail 
+                        )
+                    ),
+                    assets (
+                        url,
+                        is_cardthumbnail
+                    ),
+                    restaurants (
+                        avg_lunch_budget,
+                        avg_dinner_budget
+                    )
+                `)
+                .eq('place_type', placeType);
+
+            if (error) throw error;
+            rawData = (data as unknown as RawSpot[]) || [];
         }
 
         // フォーマットとソート
@@ -171,7 +203,7 @@ export async function GET(request: Request) {
             };
         });
 
-        // 現在地が渡されている場合は距離でソートし、5件に絞る
+        // 現在地が渡されている場合は距離でソートし、指定件数に絞る
         if (lat && lng) {
             const userLat = parseFloat(lat);
             const userLng = parseFloat(lng);
@@ -180,7 +212,7 @@ export async function GET(request: Request) {
                 const distB = getDistance(userLat, userLng, b.position.lat, b.position.lng);
                 return distA - distB;
             });
-            formattedData = formattedData.slice(0, 5);
+            formattedData = formattedData.slice(0, limit);
         }
 
         // 各スポットの営業状況を Google Places API (New) から取得 (上位のみ)
@@ -190,8 +222,8 @@ export async function GET(request: Request) {
 
         if (apiKey && formattedData.length > 0) {
             // 通信量とクォータを考慮し、既に絞り込まれた上位数件のみ取得
-            // 距離ソートされていない場合（現在地なし）でも、念のため最初の5件に制限
-            const targetData = formattedData.slice(0, 5);
+            // 距離ソートされていない場合（現在地なし）でも、指定件数に制限
+            const targetData = formattedData.slice(0, limit);
             
             const resultsWithOpenStatus = await Promise.all(targetData.map(async (spot) => {
                 let isOpen: boolean | null = null;

@@ -441,12 +441,13 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
       return;
     }
     
-    // リストにない場合、新規スポット1件のみを表示する形に切り替える（リストが際限なく増えるのを防ぐ）
+    // リストにない場合、周辺の同一種別のスポットを含めて表示する
     const inferredSpotKind = PIN_METADATA[pinKind]?.spotKind || "spot";
 
     setIsCardLoading(true);
     lastRequestSpotId.current = spotId;
 
+    // とりあえずクリックされたスポットをプレースホルダーとして表示
     const dummySpot: MapSpotData = {
       id: spotId,
       position: position,
@@ -464,16 +465,34 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
     setSelectedSpot(dummySpot);
 
     try {
+      // 1. まずクリックされたスポットの正確な情報を取得して、その種類(place_type)を確認
       const response = await fetch(`/api/spotcard?id=${spotId}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch spot details: ${response.status}`);
       }
-      const detailData: MapSpotData = await response.json();
+      const clickedSpot: MapSpotData = await response.json();
+
+      // 2. そのスポットの種類と同じ、周辺のスポットを取得する（クリックしたスポットが必ず含まれることを考慮して4件要求）
+      const nearbyResponse = await fetch(
+        `/api/search?type=${clickedSpot.spotKind}&lat=${position.lat}&lng=${position.lng}&limit=4`
+      );
+      
+      let finalCards = [clickedSpot];
+
+      if (nearbyResponse.ok) {
+        const nearbySpots: MapSpotData[] = await nearbyResponse.json();
+        if (nearbySpots.length > 0) {
+          // クリックしたスポットが検索結果に含まれているか確認し、重複を除去してマージ
+          const otherSpots = nearbySpots.filter(s => s.id !== clickedSpot.id);
+          // 選択したスポット + 他のスポット最大3件（合計4件）にする
+          finalCards = [clickedSpot, ...otherSpots.slice(0, 3)];
+        }
+      }
       
       // レースコンディション対策：最新のリクエストのみ処理
       if (lastRequestSpotId.current === spotId) {
-        setDisplayCards([detailData]);
-        setSelectedSpot(detailData);
+        setDisplayCards(finalCards);
+        setSelectedSpot(clickedSpot);
       }
     } catch (e) { 
       console.error("スポット詳細取得失敗:", e);
