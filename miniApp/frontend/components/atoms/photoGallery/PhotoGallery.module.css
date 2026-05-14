@@ -10,6 +10,8 @@
     width: 100%;
     height: 100%;      /* ここで具体的な高さを指定 */
     overflow: hidden;
+    touch-action: pan-y; /* 垂直スクロールは許可し、水平方向はJSで制御する */
+    overscroll-behavior-x: none; /* ブラウザの戻る・進むジェスチャーを防止 */
 }
 .imageTrack {
   display: flex;
