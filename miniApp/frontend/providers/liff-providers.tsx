@@ -74,7 +74,7 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
       isMounted = false;
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [isLoading, liffObject]);
 
   const value: LIFFContextValue = {
     liff: liffObject,

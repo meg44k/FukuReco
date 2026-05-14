@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import {
   Bookmark,
-  Bell,
   HelpCircle,
   MessageCircle,
   X,
