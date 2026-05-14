@@ -3,13 +3,15 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [react()];
+  plugins: [react()],
   test: {
     enviroment: 'jsdom',
     globals: true,
     setupFiles: './vitest.setup.ts',
+    include:['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    exclude:['**/node_modules/**', '**/tests/**','**/tests-examples/**'],
     alias: {
-      '@' : path.resolve(_dirname, './'),
+      '@' : path.resolve(__dirname, './'),
     },
   },
 })
