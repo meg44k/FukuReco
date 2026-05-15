@@ -550,7 +550,7 @@ export const MapComponent = ({ initialSpots, keyword, options: searchOptions }: 
         center={initCenter}
         zoom={zoom}
         options={{
-          mapId: "2180f9c8f0d419cfa3681583",
+          mapId: "91d1b2bb29c2975abe599596",
           disableDefaultUI: true,
         }}
         onLoad={(map) => {
