@@ -2,6 +2,8 @@ import '@testing-library/jest-dom'
 import {beforeAll, afterEach, afterAll, vi } from 'vitest'
 import { server } from './tests/mocks/node'
 
+process.env.NEXT_PUBLIC_SUPABASE_URL ='https://mock.supabase.co'
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ='mock-anon-key'
 // Google Maps API の簡易的なモック
 global.google = {
   maps: {

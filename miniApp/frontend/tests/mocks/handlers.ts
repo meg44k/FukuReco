@@ -39,6 +39,10 @@ export const handlers = [
   }),
 
 
+  http.post('*/rest/v1/users*',()=>{
+    return HttpResponse.json({success: true},{status: 201})
+  }),
+
   // --- Supabase REST API Mocks ---
   // Supabase URLは環境変数によって変わるため、ワイルドカードでマッチさせます
   
