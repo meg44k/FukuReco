@@ -6,6 +6,13 @@ type Props = {
 
 export default async function Home({ searchParams }: Props) {
   const params = await searchParams;
+
+  // LIFF経由のアクセス: liff.state に元のパスが入っているのでそちらへリダイレクト
+  const liffState = params["liff.state"];
+  if (typeof liffState === "string" && liffState.startsWith("/")) {
+    redirect(liffState);
+  }
+
   const queryString = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {
