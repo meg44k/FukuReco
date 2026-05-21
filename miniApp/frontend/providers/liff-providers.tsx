@@ -53,7 +53,7 @@ function LIFFProvider({ children }: { children: React.ReactNode }) {
                 console.log("LIFF is currently processing login callback. Waiting...");
               } else {
                 console.log("Not logged in. Initiating liff.login()...");
-                liff.login();
+                liff.login({ redirectUri: window.location.href });
               }
             }
           })
